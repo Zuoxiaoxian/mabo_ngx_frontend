@@ -1,0 +1,43 @@
+<!--
+ * @Author: Zhang Hengye
+ * @Date: 2020-11-06 12:00:34
+ * @LastEditors: Zhang Hengye
+ * @LastEditTime: 2020-11-11 17:58:57
+-->
+<div class="row">
+    <div class="col-xxl-12">
+        <p>间隔5s,自动更新</p>
+    </div>
+
+    <div class="col-xxl-5">
+        <p>test_module works!</p>
+        <br>
+        <p>剩下的该怎么搞啊!</p>
+        <button (click)="testpost()">
+            send post test
+        </button>
+        <br>
+        <br>
+        <br>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xxl-7">
+        <!-- <button (click)="need_update_funs()">
+            update
+        </button> -->
+        <ul *ngIf="abnormal_model_dict_key && abnormal_model_dict_key.length > 0">
+            <li *ngFor="let key of abnormal_model_dict_key; trackBy: trackBy_abnormal_model_dict">
+                <span class="badge">{{abnormal_model_dict[key]['model_name']}}</span> {{abnormal_model_dict[key]['link']}}
+            </li>
+        </ul>
+        <!-- here -->
+        <ul class="col-xxl-7" *ngIf="!(abnormal_model_dict_key && abnormal_model_dict_key.length > 0)">
+            <p>未发现异常</p>
+        </ul>
+    </div>
+    <br>
+    <br>
+    <br>
+</div>
+
