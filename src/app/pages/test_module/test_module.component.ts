@@ -4,27 +4,18 @@
  * @Author: Zhang Hengye
  * @Date: 2020-11-06 12:00:34
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2020-11-11 17:22:15
+ * @LastEditTime: 2020-11-13 10:27:02
  */
 import { Component, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
-import { HttpHeaders, HttpClient, } from '@angular/common/http';
-import { map } from 'rxjs/operators';
-import { Subject, Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-test_module',
   templateUrl: './test_module.component.html',
   styleUrls: ['./test_module.component.scss']
 })
-// export class Test_moduleComponent implements OnInit {
 
-//   constructor() { }
-
-//   ngOnInit() {
-//   }
-
-// }
 export class Test_moduleComponent {
   loading = false;
   abnormal_model_dict = {};
@@ -34,12 +25,18 @@ export class Test_moduleComponent {
 
   constructor(
     private http: HttpserviceService,
+    // private DPService: DPlayerService
   ) { }
+
+  onResize() {
+    console.log('resize');
+  }
 
   ngOnInit(): void {
     // 初始化界面时，检查是否记住密码？
     this.need_update_funs();
     this.timer = setInterval(() => { this.need_update_funs() }, 5000);
+    
   }
 
   ngOnDestroy() {

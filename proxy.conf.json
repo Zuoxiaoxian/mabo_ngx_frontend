@@ -1,5 +1,15 @@
 {
     "/api": {
         "target": "http://localhost:2379"
+    },
+    "/live": {
+        "target": "rtmp://localhost:1935"
+    },
+    "/local": {
+        "target": "http://localhost:80",
+        "secure": false,
+        "pathRewrite": {
+            "^/local": ""
+        }
     }
 }

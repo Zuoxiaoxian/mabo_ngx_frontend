@@ -2,7 +2,7 @@
  * @Author: Zhang Hengye
  * @Date: 2020-11-06 12:00:34
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2020-11-11 17:58:57
+ * @LastEditTime: 2020-11-13 11:48:43
 -->
 <div class="row">
     <div class="col-xxl-12">
@@ -41,3 +41,16 @@
     <br>
 </div>
 
+
+<div class="row">
+    <div class="col-xxl-7">
+        <p>视频：</p>
+        
+        <app-vjs-player [options]="{ autoplay: true, controls: true, sources: [{ src: '/local/playlist.m3u8', type: 'application/x-mpegURL' }]}"></app-vjs-player>
+        <!-- <app-vjs-player width=960 height=540 [options]="{ autoplay: true, controls: true, sources: [{ src: 'rtmp://localhost:1935/live/screen', type: 'rtmp/mp4' }]}"></app-vjs-player> -->
+        <p>视频end</p>
+    </div>
+    <br>
+    <br>
+    <br>
+</div>
