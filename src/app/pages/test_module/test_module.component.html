@@ -2,7 +2,7 @@
  * @Author: Zhang Hengye
  * @Date: 2020-11-06 12:00:34
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2020-11-13 11:48:43
+ * @LastEditTime: 2020-11-13 14:43:47
 -->
 <div class="row">
     <div class="col-xxl-12">
@@ -43,12 +43,25 @@
 
 
 <div class="row">
-    <div class="col-xxl-7">
+    <div class="col-xxl-12">
         <p>视频：</p>
-        
-        <app-vjs-player [options]="{ autoplay: true, controls: true, sources: [{ src: '/local/playlist.m3u8', type: 'application/x-mpegURL' }]}"></app-vjs-player>
-        <!-- <app-vjs-player width=960 height=540 [options]="{ autoplay: true, controls: true, sources: [{ src: 'rtmp://localhost:1935/live/screen', type: 'rtmp/mp4' }]}"></app-vjs-player> -->
+
+        <app-vjs-player [options]="{ width:'800',height:'auto',autoplay: true, controls: true, sources: [{ src: '/local/playlist.m3u8', type: 'application/x-mpegURL' }]}"></app-vjs-player>
+        <!-- <app-vjs-player[options]="{ autoplay: true, controls: true, sources: [{ src: 'rtmp://localhost:1935/live/screen', type: 'rtmp/mp4' }]}"></app-vjs-player> -->
         <p>视频end</p>
+    </div>
+    <br>
+    <br>
+    <br>
+</div>
+
+
+<div class="row">
+    <div class="col-xxl-7">
+        <p>grafana test：</p>
+        <iframe src="http://10.7.0.115:3000/d-solo/5UTanLRZk/cwtkan-ban?refresh=5s&orgId=1&panelId=17&from=1605248800227&to=1605249100227&theme=light" width="450" height="200" frameborder="0"></iframe>
+        <p>grafana end</p>
+
     </div>
     <br>
     <br>
