@@ -14,9 +14,9 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'cube-outline',
     link: '/pages/test_module',
   },
-  // {
-  //   title: 'video-page',
-  //   icon: 'cube-outline',
-  //   link: '/pages/video-base-page',
-  // },
+  {
+    title: 'video-page',
+    icon: 'cube-outline',
+    link: '/pages/video-base-page',
+  },
 ];
