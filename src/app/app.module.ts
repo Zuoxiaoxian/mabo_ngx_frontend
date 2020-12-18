@@ -1,3 +1,11 @@
+
+
+/*
+ * @Author: Zhang Hengye
+ * @Date: 2020-11-04 10:55:41
+ * @LastEditors: Zhang Hengye
+ * @LastEditTime: 2020-12-18 15:45:17
+ */
 /**
  * @license
  * Copyright Akveo. All Rights Reserved.
@@ -22,7 +30,7 @@ import {
 } from '@nebular/theme';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent,],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

@@ -4,6 +4,14 @@
  * @Author: Zhang Hengye
  * @Date: 2020-11-06 12:00:34
  * @LastEditors: Zhang Hengye
+ * @LastEditTime: 2020-12-17 14:12:45
+ */
+
+
+/*
+ * @Author: Zhang Hengye
+ * @Date: 2020-11-06 12:00:34
+ * @LastEditors: Zhang Hengye
  * @LastEditTime: 2020-11-13 10:27:02
  */
 import { Component, OnInit } from '@angular/core';
@@ -52,7 +60,7 @@ export class Test_moduleComponent {
 
   // 刷新列表
   get_abnormal_module() {
-    this.http.get('/api', null).subscribe(
+    this.http.get('/api/ApiTest', null).subscribe(
       (res) => {
         // console.log("test: ", res);
         this.abnormal_model_dict = res;
@@ -79,7 +87,7 @@ export class Test_moduleComponent {
     // );
 
     // 尝试 app/json的content-type
-    this.http.post('/api', { 'value': '123' }, null).subscribe(
+    this.http.post('/api/ApiTest', { 'value': '123' }, null).subscribe(
       (res) => {
         console.log("test: ", res);
       }

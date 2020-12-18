@@ -1,3 +1,11 @@
+
+
+/*
+ * @Author: Zhang Hengye
+ * @Date: 2020-11-04 10:55:41
+ * @LastEditors: Zhang Hengye
+ * @LastEditTime: 2020-12-18 16:02:46
+ */
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import {
@@ -56,6 +64,8 @@ const config: ExtraOptions = {
 @NgModule({
   imports: [RouterModule.forRoot(routes, config)],
   exports: [RouterModule],
+   declarations: [		
+   ],
 })
 export class AppRoutingModule {
 }
