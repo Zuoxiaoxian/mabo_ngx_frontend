@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2020-11-04 10:55:43
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2020-12-17 14:21:46
+ * @LastEditTime: 2020-12-30 13:38:30
  */
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
@@ -37,7 +37,7 @@ const routes: Routes = [{
     },
     {
       path: '',
-      redirectTo: 'test_module',
+      redirectTo: 'tv_mat_espec_video_crop_1',
       pathMatch: 'full',
     },
     {

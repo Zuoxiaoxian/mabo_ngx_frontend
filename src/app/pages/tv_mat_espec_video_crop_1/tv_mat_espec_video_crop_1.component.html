@@ -2,27 +2,40 @@
  * @Author: Zhang Hengye
  * @Date: 2020-12-17 13:10:31
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2020-12-18 16:34:10
+ * @LastEditTime: 2020-12-30 13:40:36
 -->
 <div class="row">
-    <div *ngIf="vjs_address; else elseBlock" class="col-xxl-12">
+    <div *ngIf="vjs_address; else elseBlock" class="col-lg">
         <app-vjs-player [options]="{ width: '800',height: 'auto',autoplay: true, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
     </div>
     <ng-template #elseBlock>
-        <div class="col">
-            <p>视频地址： 未获取到视频地址</p>
-            <button (click)="get_hls_address()">
+        <p>视频地址： 未获取到视频地址</p>
+        <button (click)="get_hls_address()">
                 重新获取视频地址
             </button>
-        </div>
     </ng-template>
+
+    <div class="col-md">
+        <p>crop_id_main,模型展示：</p>
+        <ul class="model">
+            <li *ngFor="let each of model_list;let i = index;" [class.selected]="i === selectedModel" (click)="onSelect(i)">
+                <span class="badge">{{each['model_name']}}</span>
+            </li>
+        </ul>
+        <img [src]="model_list[selectedModel]['model_jpg']" width="500">
+        <p>PS：数据是写死前端，API服务器未编写完成，只有main的部分。</p>
+    </div>
 </div>
 
 <div class="row">
     <li *ngFor="let each of grafana_iframe; let i = index; trackBy:trackby_grafana_iframe">
-        <div class="col">
-            <p> {{each.crop_name}}: </p>
-            <iframe [src]="each.grafana_iframe_url | safe: 'resourceUrl'" width="450" height="200" [title]="each.crop_name"></iframe>
-        </div>
+        <!-- <div class="col"> -->
+        <p> {{each.crop_name}}: </p>
+        <iframe [src]="each.grafana_iframe_url | safe: 'resourceUrl'" width="385" height="200" [title]="each.crop_name"></iframe>
+        <!-- </div> -->
     </li>
 </div>
+
+
+<!-- <div class="row">
+</div> -->
