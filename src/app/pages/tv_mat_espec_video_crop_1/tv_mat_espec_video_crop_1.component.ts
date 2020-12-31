@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2020-12-28 12:31:47
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2020-12-30 13:36:41
+ * @LastEditTime: 2020-12-30 14:56:31
  */
 import { Component, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
@@ -31,7 +31,7 @@ export class Tv_mat_espec_video_crop_1Component implements OnInit {
   ]
   model_list = [
     {
-      "model_name": "model_1",
+      "model_name": "model_0",
       "model_jpg": "http://10.7.0.117:9096/video_cache/tv_mat_espec_video/screen_abnormal/bhanew_bha_folder_20201217/crop_id_main/model/permanent/model_0_frame_1_crop.jpg",
     },
     {
