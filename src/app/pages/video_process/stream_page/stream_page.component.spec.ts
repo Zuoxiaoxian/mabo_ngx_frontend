@@ -3,21 +3,21 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { VideoBasePageComponent } from './video-base-page.component';
+import { Stream_pageComponent } from './stream_page.component';
 
-describe('VideoBasePageComponent', () => {
-  let component: VideoBasePageComponent;
-  let fixture: ComponentFixture<VideoBasePageComponent>;
+describe('Stream_pageComponent', () => {
+  let component: Stream_pageComponent;
+  let fixture: ComponentFixture<Stream_pageComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VideoBasePageComponent ]
+      declarations: [ Stream_pageComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VideoBasePageComponent);
+    fixture = TestBed.createComponent(Stream_pageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,29 @@
+<!--
+ * @Author: Zhang Hengye
+ * @Date: 2021-03-02 10:45:19
+ * @LastEditors: Zhang Hengye
+ * @LastEditTime: 2021-03-04 16:47:33
+-->
+<p>
+  video_process works!
+</p>
+
+<!-- <div class="cart-item" *ngFor="let recipient of stream_details | keyvalue;">
+  <span>{{ recipient.key }} </span>
+  <span>{{ recipient.value['stream_name'] }} </span>
+  <span>{{ recipient.value['eqpt_no'] }} </span>
+  <span>{{ recipient.value['current_project_name'] }} </span>
+  <span>{{ recipient.value['stream_transform'] }} </span>
+</div> -->
+
+<nb-card>
+  <nb-card-header>
+      Smart Table
+  </nb-card-header>
+
+  <nb-card-body>
+      <!-- 123 -->
+      <ng2-smart-table [settings]="setting" [source]="source">
+      </ng2-smart-table>
+  </nb-card-body>
+</nb-card>
