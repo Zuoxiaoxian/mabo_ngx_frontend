@@ -4,12 +4,12 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-02 10:45:19
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-04 17:11:01
+ * @LastEditTime: 2021-03-10 10:16:23
  */
 import { Component, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 import { LocalDataSource } from 'ng2-smart-table';
-import {LinkViewComponent} from '../LinkView/LinkView.component'
+import { LinkViewComponent } from '../LinkView/LinkView.component'
 
 @Component({
   selector: 'app-source_page',
@@ -24,15 +24,6 @@ export class Source_pageComponent implements OnInit {
   public stream_details_keys = [];
 
   public timer;
-  // stream_name: 'tv_mat_test',
-  //   eqpt_no: 'tv_mat_test',
-  //   current_project_name: 'test_202103',
-  //   init_timeout: 5,
-  //   origin_url: 'rtsp://admin:patac2016@10.7.93.176:2379',
-  //   stream_transform: 'rtsp_direct',
-  //   project_list: [
-  //       'test_202103'
-  //   ]
   public setting = {
     actions: {
       add: false,
@@ -105,7 +96,7 @@ export class Source_pageComponent implements OnInit {
             this.get_stream_details(stream_name);
           }
         });
-        console.log(JSON.stringify(this.stream_details));
+        // console.log(JSON.stringify(this.stream_details));
       }
     );
   }
@@ -117,7 +108,10 @@ export class Source_pageComponent implements OnInit {
         stream_name = res['stream_name']
         // https://stackoverflow.com/questions/52522317/how-to-add-hyperlink-in-ng2-smart-table-in-angular6
         // res['stream_name'] = '<a href=stream/' + stream_name + ' >' + stream_name + '</a>'
-
+        res['stream_name'] = [{
+          'linkText': stream_name,
+          'router_link': stream_name
+        }]
         this.stream_details.push(res);
         this.stream_details_keys.push(stream_name);
         this.source.load(this.stream_details);

@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2020-11-04 10:55:43
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-04 16:40:06
+ * @LastEditTime: 2021-03-10 12:58:34
  */
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
@@ -13,8 +13,6 @@ import { PagesComponent } from './pages.component';
 import { Test_moduleComponent } from './test_module/test_module.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
 import { Tv_mat_espec_video_crop_1Component } from './tv_mat_espec_video_crop_1/tv_mat_espec_video_crop_1.component';
-import { Video_processComponent } from './video_process/video_process.component'
-import {Video_processModule} from './video_process/video_process.module'
 
 const routes: Routes = [{
   path: '',
