@@ -1,0 +1,44 @@
+:host ::ng-deep tr .ng2-smart-actions {
+    display: flex;
+}
+
+:host ::ng-deep nbng2-st-tbody-custom {
+    display: flex;
+}
+
+:host ::ng-deep ng2-st-tbody-edit-delete a.ng2-smart-action {
+    display: inline-block !important;
+}
+
+:host ::ng-deep ng2-st-tbody-create-cancel a.ng2-smart-action {
+    display: inline-block !important;
+}
+
+:host ::ng-deep ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
+    display: inline-block;
+    width: 50px;
+    text-align: center;
+}
+
+.order-table {
+    thead th.ng2-smart-actions.ng-star-inserted {
+        width: 1em;
+    }
+    td.ng2-smart-actions {
+        float: right !important;
+        ng2-st-tbody-custom {
+            float: right;
+            width: auto;
+            display: flex;
+            margin-top: 0.5em;
+            margin-left: 1em;
+            a.ng2-smart-action.ng2-smart-action-custom-custom {
+                margin-right: 0.5em;
+            }
+        }
+    }
+}
+
+.nb-theme-default ng2-smart-table .ng2-smart-actions a.ng2-smart-action:not(:last-child) {
+    border-right: 0px;
+}

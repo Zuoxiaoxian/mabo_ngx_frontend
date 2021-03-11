@@ -5,7 +5,14 @@ var proxyConfig = [{
     secure: false,
     changeOrigin: true,
     // pathRewrite: { "^/api": "" }
-}];
+},{
+    context: '/cache',
+    target: 'http://10.7.0.117:9096',
+    secure: false,
+    changeOrigin: true,
+    // pathRewrite: { "^/api": "" }
+},
+];
 
 function setupForCorporateProxy(proxyConfig) {
     // var proxyServer = process.env.http_proxy || process.env.HTTP_PROXY;

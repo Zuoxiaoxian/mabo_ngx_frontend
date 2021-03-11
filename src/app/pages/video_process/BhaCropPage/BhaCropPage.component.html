@@ -1,3 +1,52 @@
-<p>
-  BhaCropPage works!
-</p>
+<!--
+ * @Author: Zhang Hengye
+ * @Date: 2021-03-10 12:57:54
+ * @LastEditors: Zhang Hengye
+ * @LastEditTime: 2021-03-11 14:10:08
+-->
+<h3>{{stream_name}}/{{project_name}}/{{crop_name}} 详情</h3>
+<div class="row">
+    <div class="col-lg-8">
+        <div *ngIf="vjs_address; else elseBlock" class="col-md">
+            <app-vjs-player [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+        </div>
+        <ng-template #elseBlock>
+            <p>视频地址： 未获取到视频地址</p>
+            <br>
+            <button (click)="get_hls_address()">
+                    重新获取视频地址
+                </button>
+        </ng-template>
+    </div>
+
+    <div class="col-lg-4">
+        <nb-card>
+            <nb-card-header>
+                {{stream_name}} Stream Info
+            </nb-card-header>
+            <nb-card-body>
+                <ng2-smart-table [settings]="models_setting" [source]="models_source">
+                </ng2-smart-table>
+            </nb-card-body>
+        </nb-card>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-8">
+        <nb-card>
+            <nb-card-header>
+                模型详情
+            </nb-card-header>
+            <nb-card-body>
+                <ng2-smart-table [settings]="model_list_setting" [source]="model_list_source" (custom)="onCustomAction($event)">
+                </ng2-smart-table>
+            </nb-card-body>
+        </nb-card>
+    </div>
+    <div class="col-lg-4">
+        <img [src]="img_url" width='100%'>
+        <p>模型{{img_uuid}} 首次出现记录图</p>
+    </div>
+</div>

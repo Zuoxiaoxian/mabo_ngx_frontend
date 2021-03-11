@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-04 10:04:50
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-10 13:00:50
+ * @LastEditTime: 2021-03-10 13:45:52
  */
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -28,7 +28,7 @@ const routes: Routes = [{
       component: Stream_pageComponent,
     },
     {
-      path: 'stream/:stream_name/project/:project_name/:crop_name/model_info',
+      path: 'stream/:stream_name/project/:project_name/:crop_name/models_info',
       component: BhaCropPageComponent,
     },
   ]
