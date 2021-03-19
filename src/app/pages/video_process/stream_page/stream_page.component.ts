@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-04 10:04:08
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-10 15:53:26
+ * @LastEditTime: 2021-03-18 14:22:40
  */
 import { Component, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
@@ -28,7 +28,8 @@ export class Stream_pageComponent implements OnInit {
   public current_project_name;
   public project_list = [];
   public project_details = [];
-  public rtsp_address = "";
+  public org_address = "";
+  public org_type = ""
   public vjs_address = "";
 
   public setting = {
@@ -135,7 +136,7 @@ export class Stream_pageComponent implements OnInit {
     this.need_update_funs();
     this.timer = setInterval(() => { this.need_update_funs() }, 5000);
     setTimeout(() => {
-      this.get_hls_address();
+      this.getHlsAddress();
     }, 1000)
   }
 
@@ -144,22 +145,28 @@ export class Stream_pageComponent implements OnInit {
     this.get_stream_details();
   }
 
-  get_hls_address() {
-    if (this.rtsp_address) {
-      this.http.post('/api/rtsp2hls', { 'rtsp_url': this.rtsp_address }, null).subscribe(
-        (res) => {
-          // console.log("test: ", res);
-          this.vjs_address = res['value'];
-        }
-      );
+  getHlsAddress() {
+    if (this.org_address) {
+      if (this.org_type == 'hls') {
+        this.vjs_address = this.org_address;
+      } else {
+        this.http.post('/api/rtsp2hls', { 'rtsp_url': this.org_address }, null).subscribe(
+          (res) => {
+            // console.log("test: ", res);
+            this.vjs_address = res['value'];
+          }
+        );
+      }
+
     }
   }
 
   get_stream_base_info() {
     this.http.get('/api/mongo_api/video_process/stream/' + this.stream_name, null).subscribe(
       (res) => {
-        this.rtsp_address = res['origin_url'];
-        var url_format = '<a href="' + this.rtsp_address + '">Rtsp Link</a>';
+        this.org_address = res['origin_url'];
+        this.org_type = res['stream_transform']
+        var url_format = '<a href="' + this.org_address + '">Rtsp Link</a>';
         this.source.empty();
         this.source.append({ 'key': '源地址', 'value': url_format });
         this.current_project_name = res['current_project_name']
@@ -219,10 +226,7 @@ export class Stream_pageComponent implements OnInit {
                 project_hash['bha_permanent_cnt'] += `<li>` + res["models_info"][models_key]["permanent_models_idx_cnt"] + `</li>`
                 project_hash['bha_temporary_cnt'] += `<li>` + res["models_info"][models_key]["temporary_models_idx_cnt"] + `</li>`
               }
-
             };
-
-
             console.log('project_hash: ', project_hash);
             this.project_source.append(project_hash);
             this.tmp_bha_model_info = res['models_info'];

@@ -1,20 +1,22 @@
 var HttpsProxyAgent = require('https-proxy-agent');
 var proxyConfig = [{
     context: '/api',
-    target: 'http://10.7.0.117:9096',
+    // target: 'http://10.7.0.117:9096',
+    target: 'http://127.0.0.1:5000',
+    pathRewrite: { "^/api": "" },
     secure: false,
-    changeOrigin: true,
-    // pathRewrite: { "^/api": "" }
-},{
+    changeOrigin: true
+}, {
     context: '/cache',
-    target: 'http://10.7.0.117:9096',
+    // target: 'http://10.7.0.117:9096',
+    target: 'http://localhost:81',
     secure: false,
     changeOrigin: true,
     // pathRewrite: { "^/api": "" }
 },
 ];
 
-function setupForCorporateProxy(proxyConfig) {
+function setupForCorporateProxy() {
     // var proxyServer = process.env.http_proxy || process.env.HTTP_PROXY;
     var proxyServer = "http://10.7.0.117:2379"
     if (proxyServer) {
@@ -26,5 +28,5 @@ function setupForCorporateProxy(proxyConfig) {
     }
     return proxyConfig;
 }
-
-module.exports = setupForCorporateProxy(proxyConfig);
+module.exports = proxyConfig
+// module.exports = setupForCorporateProxy();

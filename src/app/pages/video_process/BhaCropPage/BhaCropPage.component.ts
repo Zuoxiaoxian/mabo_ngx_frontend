@@ -4,13 +4,13 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-11 14:09:42
+ * @LastEditTime: 2021-03-19 09:58:01
  */
 import { Component, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 import { ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
-
+import { FlatpickrOptions } from 'ng2-flatpickr';
 
 @Component({
   selector: 'app-BhaCropPage',
@@ -23,7 +23,8 @@ export class BhaCropPageComponent implements OnInit {
   public project_name: string;
   public crop_name: string;
   public timer;
-  public rtsp_address = "";
+  public org_address = "";
+  public org_type = ""
   public vjs_address = "";
   public current_project_name;
   // 用于展示简报
@@ -112,7 +113,61 @@ export class BhaCropPageComponent implements OnInit {
   public model_list = [];
   public img_url;
   public img_uuid;
+  // 用于展示模型详情
+  public isShowModelDetail = false;
+  // 用于展示历史异常列表
+  public exampleOptions: FlatpickrOptions = {
+    defaultDate: '2017-03-15'
+  };
 
+  public ab_his_range = {
+    'past': '3d',
+    'start': '123',
+    'end': '234'
+  };
+  public ab_history_setting = {
+    mode: 'inline',
+    actions: {
+      columnTitle: '操作',
+      add: false,
+      edit: false,
+      delete: false,
+      position: 'right',
+      // custom: [
+      //   {
+      //     name: 'viewrecord',
+      //     title: `<i class="fa fa-image">`
+      //   },
+      // ]
+    },
+    pager: {
+      display: true,
+      perPage: 6
+    },
+    columns: {
+      time: {
+        title: '出现时间',
+        type: 'text',
+        valuePrepareFunction: (value) => {
+          //讲道理啊,这种转换形式,非常吃藕
+          value = new Date(Date.parse(value)).toLocaleString()
+          return value
+        },
+        // sort: true,
+        // sortDirection: 'asc'
+      },
+      bha_model_idx: {
+        title: '当前模型序号',
+        type: 'text',
+      },
+      dynamic_sum_area: {
+        title: '动态区域和',
+        type: 'text',
+      },
+
+    }
+  };
+  public ab_history_source: LocalDataSource = new LocalDataSource();
 
   constructor(
     private routerInfo: ActivatedRoute,
@@ -130,25 +185,36 @@ export class BhaCropPageComponent implements OnInit {
   }
 
   need_update_funs() {
+    console.log('update page data')
     this.getStreamBaseInfo();
     this.getModelsInfo();
-    this.getModelList();
+    this.getAbHistory();
+    if (this.isShowModelDetail) {
+      this.getModelList();
+    }
   }
 
   getHlsAddress() {
-    if (this.rtsp_address) {
-      this.http.post('/api/rtsp2hls', { 'rtsp_url': this.rtsp_address }, null).subscribe(
-        (res) => {
-          this.vjs_address = res['value'];
-        }
-      );
+    if (this.org_address) {
+      if (this.org_type == 'hls') {
+        this.vjs_address = this.org_address;
+      } else {
+        this.http.post('/api/rtsp2hls', { 'rtsp_url': this.org_address }, null).subscribe(
+          (res) => {
+            // console.log("test: ", res);
+            this.vjs_address = res['value'];
+          }
+        );
+      }
+
     }
   }
 
   getStreamBaseInfo() {
     this.http.get('/api/mongo_api/video_process/stream/' + this.stream_name, null).subscribe(
       (res) => {
-        this.rtsp_address = res['origin_url'];
+        this.org_address = res['origin_url'];
+        this.org_type = res['stream_transform']
         this.current_project_name = res['current_project_name']
       }
     );
@@ -169,10 +235,9 @@ export class BhaCropPageComponent implements OnInit {
   }
 
   getModelList() {
-    this.http.get('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/model', null).subscribe(
-      (res) => {
-        var model_list = res[this.crop_name]
-        for (var model_uuid of model_list) {
+    this.http.get('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model', null).subscribe(
+      (res: string[]) => {
+        for (var model_uuid of res) {
           if (!(model_uuid in this.model_list)) {
             this.getModelDetail(model_uuid)
             this.model_list.push(model_uuid)
@@ -204,6 +269,37 @@ export class BhaCropPageComponent implements OnInit {
       this.setImgUrl(event.data['image_path'], event.data['model_uuid'])
     }
 
+  }
+
+  changeShowModelDetail() {
+    this.isShowModelDetail = !this.isShowModelDetail;
+    if (this.isShowModelDetail) {
+      this.getModelList();
+    }
+  }
+
+  getAbHistory() {
+    var param = {}
+    if (this.ab_his_range['past']) {
+      param = {
+        'past_range': this.ab_his_range['past']
+      };
+      this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/change_past', param).subscribe(
+        (res: {}[]) => {
+          this.ab_history_source.load(res)
+        });
+    } else {
+      param = {
+        "time_range": {
+          'start': this.ab_his_range['start'],
+          'end': this.ab_his_range['end'],
+        }
+      };
+      this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/change_range', param).subscribe(
+        (res: {}[]) => {
+          this.ab_history_source.load(res)
+        });
+    }
   }
 
 }

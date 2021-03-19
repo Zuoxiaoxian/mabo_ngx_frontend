@@ -1,3 +1,11 @@
+
+
+/*
+ * @Author: Zhang Hengye
+ * @Date: 2020-12-28 12:31:48
+ * @LastEditors: Zhang Hengye
+ * @LastEditTime: 2021-03-18 16:52:09
+ */
 import { Injectable } from '@angular/core';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -17,7 +25,7 @@ export class HttpserviceService {
 
 
   // GET
-  public get(url: string, headers?: any) {
+  public get(url: string, headers?: any,) {
     if (headers == null) {
       headers = { headers: new HttpHeaders({ "Content-Type": "application/json" }) }
     }

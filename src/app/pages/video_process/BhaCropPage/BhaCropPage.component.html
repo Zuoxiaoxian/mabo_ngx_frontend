@@ -2,22 +2,22 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-11 14:10:08
+ * @LastEditTime: 2021-03-19 10:02:15
 -->
 <h3>{{stream_name}}/{{project_name}}/{{crop_name}} 详情</h3>
 <div class="row">
-    <div class="col-lg-8">
+    <!-- <div class="col-lg-8">
         <div *ngIf="vjs_address; else elseBlock" class="col-md">
             <app-vjs-player [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
         </div>
         <ng-template #elseBlock>
             <p>视频地址： 未获取到视频地址</p>
             <br>
-            <button (click)="get_hls_address()">
+            <button (click)="getHlsAddress()">
                     重新获取视频地址
                 </button>
         </ng-template>
-    </div>
+    </div> -->
 
     <div class="col-lg-4">
         <nb-card>
@@ -32,8 +32,29 @@
     </div>
 </div>
 
+<ng2-flatpickr [config]="exampleOptions" formControlName="formControlName"></ng2-flatpickr>
+
 
 <div class="row">
+    <div class="col-lg-8">
+        <nb-card>
+            <nb-card-header>
+                异常历史
+            </nb-card-header>
+            <nb-card-body>
+                <ng2-smart-table [settings]="ab_history_setting" [source]="ab_history_source" (custom)="onCustomAction($event)">
+                </ng2-smart-table>
+            </nb-card-body>
+        </nb-card>
+    </div>
+
+
+</div>
+
+
+
+<button (click)="changeShowModelDetail()">展示/隐藏 模型详情</button>
+<div class="row" *ngIf="isShowModelDetail">
     <div class="col-lg-8">
         <nb-card>
             <nb-card-header>

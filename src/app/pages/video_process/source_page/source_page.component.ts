@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-02 10:45:19
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-10 10:16:23
+ * @LastEditTime: 2021-03-16 12:39:31
  */
 import { Component, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
@@ -75,11 +75,10 @@ export class Source_pageComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log('ngOnInit');
     this.need_update_funs();
     this.timer = setInterval(() => { this.need_update_funs() }, 5000);
   }
-
-
 
   need_update_funs() {
     console.log('update data');
@@ -96,7 +95,7 @@ export class Source_pageComponent implements OnInit {
             this.get_stream_details(stream_name);
           }
         });
-        // console.log(JSON.stringify(this.stream_details));
+        console.log(JSON.stringify(this.stream_details));
       }
     );
   }
