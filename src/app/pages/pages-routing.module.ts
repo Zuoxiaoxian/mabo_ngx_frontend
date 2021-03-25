@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2020-11-04 10:55:43
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-16 12:41:47
+ * @LastEditTime: 2021-03-25 14:00:40
  */
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
@@ -36,7 +36,7 @@ const routes: Routes = [{
     },
     {
       path: '',
-      redirectTo: 'video_process',
+      redirectTo: 'video_process/stream',
       pathMatch: 'full',
     },
     {

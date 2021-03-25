@@ -2,12 +2,12 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-19 10:02:15
+ * @LastEditTime: 2021-03-25 16:50:54
 -->
 <h3>{{stream_name}}/{{project_name}}/{{crop_name}} 详情</h3>
 <div class="row">
     <!-- <div class="col-lg-8">
-        <div *ngIf="vjs_address; else elseBlock" class="col-md">
+        <div *ngIf="vjs_address; else elseBlock">
             <app-vjs-player [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
         </div>
         <ng-template #elseBlock>
@@ -34,26 +34,63 @@
 
 <ng2-flatpickr [config]="exampleOptions" formControlName="formControlName"></ng2-flatpickr>
 
-
+<!-- <button (click)="clear_history_video_res()">
+    clear history_video_res
+</button> -->
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-lg-6">
+        <a [href]="allVideoUri" target="_blank">stream视频存储目录(PS: 存储目录中文件名以utc时区命名) </a>
         <nb-card>
             <nb-card-header>
                 异常历史
             </nb-card-header>
             <nb-card-body>
-                <ng2-smart-table [settings]="ab_history_setting" [source]="ab_history_source" (custom)="onCustomAction($event)">
+                <ng2-smart-table [settings]="ab_history_setting" [source]="ab_history_source" (custom)="onCustomActionHistory($event)">
                 </ng2-smart-table>
             </nb-card-body>
         </nb-card>
+    </div>
+    <div class="col-lg-6">
+        <div *ngIf="!(history_video_res.length===0);else no_his_vjs">
+            <ng-container *ngFor="let item of history_video_res; trackBy:history_video_res.id">
+                <ng-container *ngIf="item['uri'];else his_err">
+                    <app-vjs-player #history_vjs id="history_vjs" [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: item['uri'], type: 'video/mp4' }]}"></app-vjs-player>
+                    <!-- download -->
+                    <a [href]="item['uri']" download>右键另存为, 下载视频.<br>{{getHisVideoParamDescription()}}</a>
+                    <!-- <form method="get" [action]="item['uri']">
+                        <button type="submit">Download!</button>
+                     </form> -->
+                </ng-container>
+                <ng-template #his_err>
+                    <p>获取历史视频地址异常: {{item['fail']}}</p>
+                    <br>
+                </ng-template>
+            </ng-container>
+        </div>
+        <ng-template #no_his_vjs>
+            <ng-container *ngIf="isLoadingHisVideoRes;else no_select">
+                <div class="loading" ng-show="busy"> <i class="fa fa-spin fa-spinner fa-lg"></i> loading ...
+                </div>
+            </ng-container>
+            <ng-template #no_select>
+                <p>未选取历史视频</p>
+                <br>
+            </ng-template>
+        </ng-template>
+
+
     </div>
 
 
 </div>
 
 
-
-<button (click)="changeShowModelDetail()">展示/隐藏 模型详情</button>
+<ng-container *ngIf="isShowModelDetail;else showModel">
+    <button (click)="changeShowModelDetail()">隐藏 模型详情</button>
+</ng-container>
+<ng-template #showModel>
+    <button (click)="changeShowModelDetail()">显示 模型详情</button>
+</ng-template>
 <div class="row" *ngIf="isShowModelDetail">
     <div class="col-lg-8">
         <nb-card>

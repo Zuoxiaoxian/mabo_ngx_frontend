@@ -4,9 +4,9 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-19 09:58:01
+ * @LastEditTime: 2021-03-25 16:53:17
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 import { ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
@@ -115,11 +115,12 @@ export class BhaCropPageComponent implements OnInit {
   public img_uuid;
   // 用于展示模型详情
   public isShowModelDetail = false;
+
+
   // 用于展示历史异常列表
   public exampleOptions: FlatpickrOptions = {
     defaultDate: '2017-03-15'
   };
-
   public ab_his_range = {
     'past': '3d',
     'start': '123',
@@ -133,12 +134,12 @@ export class BhaCropPageComponent implements OnInit {
       edit: false,
       delete: false,
       position: 'right',
-      // custom: [
-      //   {
-      //     name: 'viewrecord',
-      //     title: `<i class="fa fa-image">`
-      //   },
-      // ]
+      custom: [
+        {
+          name: 'getVideoClip',
+          title: `<i class="fa fa-video"></i>`
+        },
+      ]
     },
     pager: {
       display: true,
@@ -146,15 +147,15 @@ export class BhaCropPageComponent implements OnInit {
     },
     columns: {
       time: {
-        title: '出现时间',
+        title: '出现时间(tz: ' + Intl.DateTimeFormat().resolvedOptions().timeZone + ')',
         type: 'text',
         valuePrepareFunction: (value) => {
           //讲道理啊,这种转换形式,非常吃藕
           value = new Date(Date.parse(value)).toLocaleString()
           return value
         },
-        // sort: true,
-        // sortDirection: 'asc'
+        sort: true,
+        sortDirection: 'desc'
       },
       bha_model_idx: {
         title: '当前模型序号',
@@ -168,6 +169,13 @@ export class BhaCropPageComponent implements OnInit {
     }
   };
   public ab_history_source: LocalDataSource = new LocalDataSource();
+  public history_video_res = []; // 做成list 以方便ngfor
+  public isLoadingHisVideoRes = false;
+  public allVideoUri;
+  public hisVideoParam = {};
+
+
+  @ViewChild('history_vjs') his_vjs: ElementRef;
 
   constructor(
     private routerInfo: ActivatedRoute,
@@ -177,6 +185,7 @@ export class BhaCropPageComponent implements OnInit {
     this.stream_name = this.routerInfo.snapshot.params['stream_name']
     this.project_name = this.routerInfo.snapshot.params['project_name']
     this.crop_name = this.routerInfo.snapshot.params['crop_name']
+    this.getAllVideoIndex()
     this.need_update_funs();
     this.timer = setInterval(() => { this.need_update_funs() }, 20000);
     setTimeout(() => {
@@ -263,8 +272,8 @@ export class BhaCropPageComponent implements OnInit {
   }
 
   onCustomAction(event) {
-    console.log('onCustomAction, action', event.action)
-    console.log('onCustomAction, data', event.data)
+    // console.log('onCustomAction, action', event.action)
+    // console.log('onCustomAction, data', event.data)
     if (event.action == 'viewrecord') {
       this.setImgUrl(event.data['image_path'], event.data['model_uuid'])
     }
@@ -300,6 +309,52 @@ export class BhaCropPageComponent implements OnInit {
           this.ab_history_source.load(res)
         });
     }
+  }
+
+
+
+  onCustomActionHistory(event) {
+    // console.log('onCustomAction, action', event.action)
+    // console.log('onCustomAction, data', event.data)
+    if (event.action == 'getVideoClip') {
+      this.getVideoClip(event.data)
+    }
+  }
+
+  getVideoClip(data) {
+    var appearTime: string = data['time'];
+    var appear_stamp = Date.parse(appearTime) / 1000
+    this.hisVideoParam = {
+      'start_stamp': appear_stamp - 60,
+      'end_stamp': appear_stamp + 60,
+    }
+    this.isLoadingHisVideoRes = true;
+    this.history_video_res.length = 0;
+    this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/video_clip', this.hisVideoParam).subscribe(
+      (res: {}[]) => {
+        console.log('video_clip:', res)
+        this.history_video_res.push(res);
+        this.isLoadingHisVideoRes = false
+      });
+  }
+
+  getHisVideoParamDescription() {
+    var start = new Date(this.hisVideoParam['start_stamp'] * 1000).toLocaleString()
+    var end = new Date(this.hisVideoParam['end_stamp'] * 1000).toLocaleString()
+    return 'From [ ' + start + ' ] To [ ' + end + ' ], ' + Intl.DateTimeFormat().resolvedOptions().timeZone
+  }
+
+  clear_history_video_res() {
+    this.history_video_res = [];
+  }
+
+  getAllVideoIndex() {
+    this.http.get('/api/mongo_api/video_process/stream/' + this.stream_name + '/video_save_addr').subscribe(
+      (res) => {
+        this.allVideoUri = res['uri']
+      });
+
+
   }
 
 }
