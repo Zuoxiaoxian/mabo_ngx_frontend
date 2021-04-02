@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2020-11-04 10:55:43
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-04 17:16:48
+ * @LastEditTime: 2021-04-02 14:48:37
  */
 import { NbMenuItem } from '@nebular/theme';
 
@@ -14,11 +14,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
   //   icon: 'cube-outline',
   //   link: '/pages/test_module',
   // },
-  {
-    title: 'tv_mat_espec_video',
-    icon: 'cube-outline',
-    link: '/pages/tv_mat_espec_video_crop_1',
-  },
+  // {
+  //   title: 'tv_mat_espec_video',
+  //   icon: 'cube-outline',
+  //   link: '/pages/tv_mat_espec_video_crop_1',
+  // },
   {
     title: 'video_process',
     icon: 'film-outline',

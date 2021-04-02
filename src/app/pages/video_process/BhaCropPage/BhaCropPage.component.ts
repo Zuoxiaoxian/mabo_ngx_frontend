@@ -4,13 +4,13 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-25 16:53:17
+ * @LastEditTime: 2021-04-02 14:44:00
  */
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 import { ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
-import { FlatpickrOptions } from 'ng2-flatpickr';
+// import { FlatpickrOptions } from 'ng2-flatpickr';
 
 @Component({
   selector: 'app-BhaCropPage',
@@ -118,14 +118,31 @@ export class BhaCropPageComponent implements OnInit {
 
 
   // 用于展示历史异常列表
-  public exampleOptions: FlatpickrOptions = {
-    defaultDate: '2017-03-15'
+  // public exampleOptions: FlatpickrOptions = {
+  //   // defaultDate: '2017-03-15',
+  //   enableTime: true,
+  //   mode:"range",
+  //   allowInput:true,
+  //   inline:true,
+  // };
+  public datePickerOptions = {};
+  public datePickerSettings = {
+    "retailCalendar": false,
+    "timezoneSupport": false,
+    "timePicker": true,
+    "type": "daily",
+    "viewDateFormat": "MMM D, YYYY",
+    "placeholder": "Date Time Range",
+    "inputDateFormat": "YYYY-MM-DD"
   };
+  public selectedDate = {};
+
   public ab_his_range = {
-    'past': '3d',
-    'start': '123',
-    'end': '234'
+    'past': '30d',
+    'start': 0,
+    'end': 0
   };
+  public ab_his_selectedMoments = [];
   public ab_history_setting = {
     mode: 'inline',
     actions: {
@@ -173,6 +190,8 @@ export class BhaCropPageComponent implements OnInit {
   public isLoadingHisVideoRes = false;
   public allVideoUri;
   public hisVideoParam = {};
+  public hisVideoDescribe = ''
+  public selectedMoments = [];
 
 
   @ViewChild('history_vjs') his_vjs: ElementRef;
@@ -287,12 +306,50 @@ export class BhaCropPageComponent implements OnInit {
     }
   }
 
+
+  closedAbHisSpy() {
+    this.ab_his_range = {
+      'past': null,
+      'start': this.ab_his_selectedMoments[0].getTime() * 1000000,
+      'end': this.ab_his_selectedMoments[1].getTime() * 1000000
+    };
+    this.getAbHistory()
+
+  }
+
+  getPastRange(past_str: string) {
+    // smhd
+    var start = new Date();
+    var end = new Date();
+    var unit = past_str.substr(past_str.length - 1);
+    var range = parseInt(past_str.substr(0, past_str.length - 1));
+    console.log(past_str)
+    switch (unit) {
+      case 's':
+        start.setDate(end.getSeconds() - range);
+        break;
+      case 'm':
+        start.setDate(end.getMinutes() - range);
+        break;
+      case 'h':
+        start.setDate(end.getHours() - range);
+        break;
+      case 'd':
+        start.setDate(end.getDate() - range);
+        break;
+    }
+    this.ab_his_selectedMoments[0] = start;
+    this.ab_his_selectedMoments[1] = end;
+
+  }
+
   getAbHistory() {
     var param = {}
     if (this.ab_his_range['past']) {
       param = {
         'past_range': this.ab_his_range['past']
       };
+      this.getPastRange(this.ab_his_range['past'])
       this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/change_past', param).subscribe(
         (res: {}[]) => {
           this.ab_history_source.load(res)
@@ -311,41 +368,46 @@ export class BhaCropPageComponent implements OnInit {
     }
   }
 
-
-
   onCustomActionHistory(event) {
     // console.log('onCustomAction, action', event.action)
     // console.log('onCustomAction, data', event.data)
     if (event.action == 'getVideoClip') {
-      this.getVideoClip(event.data)
+      var data = event.data
+      var appearTime: string = data['time'];
+      var appear_stamp = Date.parse(appearTime) / 1000
+      this.hisVideoParam = {
+        'start_stamp': appear_stamp - 60,
+        'end_stamp': appear_stamp + 60,
+      }
+      this.isLoadingHisVideoRes = true;
+      this.history_video_res.length = 0;
+      var start = new Date(this.hisVideoParam['start_stamp'] * 1000)
+      var end = new Date(this.hisVideoParam['end_stamp'] * 1000)
+      this.selectedMoments = [start, end]
+      this.getVideoClip()
     }
   }
 
-  getVideoClip(data) {
-    var appearTime: string = data['time'];
-    var appear_stamp = Date.parse(appearTime) / 1000
-    this.hisVideoParam = {
-      'start_stamp': appear_stamp - 60,
-      'end_stamp': appear_stamp + 60,
-    }
-    this.isLoadingHisVideoRes = true;
-    this.history_video_res.length = 0;
+  getVideoClip() {
+    console.log('ready to set data', this.hisVideoParam)
     this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/video_clip', this.hisVideoParam).subscribe(
       (res: {}[]) => {
         console.log('video_clip:', res)
         this.history_video_res.push(res);
         this.isLoadingHisVideoRes = false
       });
+    this.getHisVideoParamDescription()
   }
 
   getHisVideoParamDescription() {
-    var start = new Date(this.hisVideoParam['start_stamp'] * 1000).toLocaleString()
-    var end = new Date(this.hisVideoParam['end_stamp'] * 1000).toLocaleString()
-    return 'From [ ' + start + ' ] To [ ' + end + ' ], ' + Intl.DateTimeFormat().resolvedOptions().timeZone
+    var start = new Date(this.hisVideoParam['start_stamp'] * 1000)
+    var end = new Date(this.hisVideoParam['end_stamp'] * 1000)
+    this.hisVideoDescribe = 'From [ ' + start.toLocaleString() + ' ] To [ ' + end.toLocaleString() + ' ], ' + Intl.DateTimeFormat().resolvedOptions().timeZone
   }
 
   clear_history_video_res() {
     this.history_video_res = [];
+    this.selectedMoments = [];
   }
 
   getAllVideoIndex() {
@@ -357,4 +419,16 @@ export class BhaCropPageComponent implements OnInit {
 
   }
 
+  closedSpy() {
+    console.log(this.selectedMoments)
+    console.log('start stamp: ' + this.selectedMoments[0].getTime())
+    console.log('end stamp: ' + this.selectedMoments[1].getTime())
+    this.hisVideoParam = {
+      'start_stamp': this.selectedMoments[0].getTime() / 1000,
+      'end_stamp': this.selectedMoments[1].getTime(),
+    };
+    this.isLoadingHisVideoRes = true;
+    this.history_video_res.length = 0;
+    this.getVideoClip()
+  }
 }

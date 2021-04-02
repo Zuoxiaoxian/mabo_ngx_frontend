@@ -5,6 +5,7 @@ import { DebugElement } from '@angular/core';
 
 import { BhaCropPageComponent } from './BhaCropPage.component';
 
+
 describe('BhaCropPageComponent', () => {
   let component: BhaCropPageComponent;
   let fixture: ComponentFixture<BhaCropPageComponent>;

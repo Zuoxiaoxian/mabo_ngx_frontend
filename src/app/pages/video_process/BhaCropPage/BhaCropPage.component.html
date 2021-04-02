@@ -2,11 +2,11 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-25 16:50:54
+ * @LastEditTime: 2021-04-02 14:49:03
 -->
 <h3>{{stream_name}}/{{project_name}}/{{crop_name}} 详情</h3>
 <div class="row">
-    <!-- <div class="col-lg-8">
+    <div class="col-lg-8">
         <div *ngIf="vjs_address; else elseBlock">
             <app-vjs-player [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
         </div>
@@ -17,7 +17,7 @@
                     重新获取视频地址
                 </button>
         </ng-template>
-    </div> -->
+    </div>
 
     <div class="col-lg-4">
         <nb-card>
@@ -32,14 +32,15 @@
     </div>
 </div>
 
-<ng2-flatpickr [config]="exampleOptions" formControlName="formControlName"></ng2-flatpickr>
 
-<!-- <button (click)="clear_history_video_res()">
-    clear history_video_res
-</button> -->
+
 <div class="row">
     <div class="col-lg-6">
         <a [href]="allVideoUri" target="_blank">stream视频存储目录(PS: 存储目录中文件名以utc时区命名) </a>
+        <br>
+        <label>历史异常时间(可自行选取):</label>
+        <input [(ngModel)]="ab_his_selectedMoments" [selectMode]="'range'" [owlDateTimeTrigger]="ab_his_date_range" [owlDateTime]="ab_his_date_range" style="width: 60%; color: cornflowerblue" id="ab_his_daterange" matInput>
+        <owl-date-time (afterPickerClosed)="closedAbHisSpy()" #ab_his_date_range></owl-date-time>
         <nb-card>
             <nb-card-header>
                 异常历史
@@ -51,15 +52,13 @@
         </nb-card>
     </div>
     <div class="col-lg-6">
+        <br>
+        <br>
         <div *ngIf="!(history_video_res.length===0);else no_his_vjs">
             <ng-container *ngFor="let item of history_video_res; trackBy:history_video_res.id">
                 <ng-container *ngIf="item['uri'];else his_err">
                     <app-vjs-player #history_vjs id="history_vjs" [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: item['uri'], type: 'video/mp4' }]}"></app-vjs-player>
-                    <!-- download -->
-                    <a [href]="item['uri']" download>右键另存为, 下载视频.<br>{{getHisVideoParamDescription()}}</a>
-                    <!-- <form method="get" [action]="item['uri']">
-                        <button type="submit">Download!</button>
-                     </form> -->
+                    <a [href]="item['uri']" download>右键另存为, 下载视频.<br>{{hisVideoDescribe}}</a>
                 </ng-container>
                 <ng-template #his_err>
                     <p>获取历史视频地址异常: {{item['fail']}}</p>
@@ -77,7 +76,10 @@
                 <br>
             </ng-template>
         </ng-template>
-
+        
+        <label>视频展示时间(可自行选取):</label>
+        <input [(ngModel)]="selectedMoments" [selectMode]="'range'" [owlDateTimeTrigger]="date_range_component" [owlDateTime]="date_range_component" style="width: 60%; color: cornflowerblue" id="daterange" matInput>
+        <owl-date-time (afterPickerClosed)="closedSpy()" #date_range_component></owl-date-time>
 
     </div>
 
