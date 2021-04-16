@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-04 10:04:50
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-10 13:45:52
+ * @LastEditTime: 2021-04-16 13:18:28
  */
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
@@ -19,15 +19,17 @@ const routes: Routes = [{
   // redirectTo: 'stream',
   component: Video_processComponent,
   children: [
-    {
+    { // 视频源信息,作为根目录
       path: 'stream',
       component: Source_pageComponent,
     },
-    {
+    { // 改为视频历史信息
       path: 'stream/:stream_name',
       component: Stream_pageComponent,
     },
-    {
+    { // 这里做两种复用
+      // crop为all的时候,为第一种,当前详情,stream-> current_project_name,默认使用
+      // crop不为all的时候,为第二种,为具体crop详情
       path: 'stream/:stream_name/project/:project_name/:crop_name/models_info',
       component: BhaCropPageComponent,
     },

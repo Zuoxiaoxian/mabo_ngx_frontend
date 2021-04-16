@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-04 10:04:08
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-18 14:22:40
+ * @LastEditTime: 2021-04-16 14:25:44
  */
 import { Component, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
@@ -217,14 +217,14 @@ export class Stream_pageComponent implements OnInit {
               project_hash['bha_crop_name'] = []
               project_hash['bha_permanent_cnt'] = ''
               project_hash['bha_temporary_cnt'] = ''
-              for (var models_key in res["models_info"]) {
+              for (var cropKey in res["models_info"]) {
                 var link_info = {
-                  'linkText': models_key,
-                  'router_link': '/project/' + this.current_project_name + '/' + models_key + '/models_info'
+                  'linkText': cropKey,
+                  'router_link': '/project/' + this.current_project_name + '/' + cropKey + '/models_info'
                 };
                 project_hash['bha_crop_name'].push(link_info)
-                project_hash['bha_permanent_cnt'] += `<li>` + res["models_info"][models_key]["permanent_models_idx_cnt"] + `</li>`
-                project_hash['bha_temporary_cnt'] += `<li>` + res["models_info"][models_key]["temporary_models_idx_cnt"] + `</li>`
+                project_hash['bha_permanent_cnt'] += `<li>` + res["models_info"][cropKey]["permanent_models_idx_cnt"] + `</li>`
+                project_hash['bha_temporary_cnt'] += `<li>` + res["models_info"][cropKey]["temporary_models_idx_cnt"] + `</li>`
               }
             };
             console.log('project_hash: ', project_hash);

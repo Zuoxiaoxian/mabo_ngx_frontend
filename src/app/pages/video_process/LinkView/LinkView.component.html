@@ -1,0 +1,19 @@
+<!--
+ * @Author: Zhang Hengye
+ * @Date: 2021-04-16 13:21:57
+ * @LastEditors: Zhang Hengye
+ * @LastEditTime: 2021-04-16 14:46:57
+-->
+<div *ngIf="value_isArray;else notArray">
+    <div *ngIf="value.length>1;else moreOneRoute">
+        <li *ngFor="let item of value">
+            <a routerLink="./{{item['router_link'] }}">{{ item['linkText'] }}</a>
+        </li>
+    </div>
+    <ng-template #moreOneRoute>
+        <a routerLink="./{{value[0]['router_link'] }}">{{ value[0]['linkText'] }}</a>
+    </ng-template>
+</div>
+<ng-template #notArray>
+    <a>{{value}}</a>
+</ng-template>

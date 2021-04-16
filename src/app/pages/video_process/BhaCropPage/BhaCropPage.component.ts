@@ -4,13 +4,16 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-02 14:44:00
+ * @LastEditTime: 2021-04-16 16:08:44
  */
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 import { ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
 // import { FlatpickrOptions } from 'ng2-flatpickr';
+import { ProcessCtrlButtonComponent } from '../ProcessCtrlButton/ProcessCtrlButton.component';
+import { LinkViewComponent } from "../LinkView/LinkView.component";
+
 
 @Component({
   selector: 'app-BhaCropPage',
@@ -47,11 +50,12 @@ export class BhaCropPageComponent implements OnInit {
       },
       value: {
         title: 'value',
-        type: 'html',
+        type: 'custom',
+        renderComponent: LinkViewComponent,
       }
     }
   };
-  public models_source: LocalDataSource = new LocalDataSource();
+  public detailCardSource: LocalDataSource = new LocalDataSource();
   // 用于展示各个model的详情
   public model_list_setting = {
     mode: 'inline',
@@ -138,12 +142,53 @@ export class BhaCropPageComponent implements OnInit {
   public selectedDate = {};
 
   public ab_his_range = {
-    'past': '30d',
+    'past': '4d',
     'start': 0,
     'end': 0
   };
   public ab_his_selectedMoments = [];
-  public ab_history_setting = {
+  public abHisAllSetting = {
+    mode: 'inline',
+    actions: {
+      columnTitle: '操作',
+      add: false,
+      edit: false,
+      delete: false,
+      position: 'right',
+      custom: [
+        {
+          name: 'getVideoClip',
+          title: `<i class="fa fa-video"></i>`
+        },
+      ]
+    },
+    pager: {
+      display: true,
+      perPage: 6
+    },
+    columns: {
+      time: {
+        title: '出现时间(tz: ' + Intl.DateTimeFormat().resolvedOptions().timeZone + ')',
+        type: 'text',
+        valuePrepareFunction: (value) => {
+          //讲道理啊,这种转换形式,非常吃藕
+          value = new Date(Date.parse(value)).toLocaleString()
+          return value
+        },
+        sort: true,
+        sortDirection: 'desc'
+      },
+      crop_id: {
+        title: '关注区域',
+        type: 'custom',
+        renderComponent: LinkViewComponent,
+        filter: false,
+      },
+    }
+
+  }
+
+  public abHisCropSetting = {
     mode: 'inline',
     actions: {
       columnTitle: '操作',
@@ -182,16 +227,18 @@ export class BhaCropPageComponent implements OnInit {
         title: '动态区域和',
         type: 'text',
       },
-
     }
   };
   public ab_history_source: LocalDataSource = new LocalDataSource();
   public history_video_res = []; // 做成list 以方便ngfor
   public isLoadingHisVideoRes = false;
-  public allVideoUri;
+  public videoSaveUri;
   public hisVideoParam = {};
   public hisVideoDescribe = ''
   public selectedMoments = [];
+  // 复用判断
+  public is_all_crop: boolean;
+  public hisProjectList;
 
 
   @ViewChild('history_vjs') his_vjs: ElementRef;
@@ -203,19 +250,35 @@ export class BhaCropPageComponent implements OnInit {
   ngOnInit() {
     this.stream_name = this.routerInfo.snapshot.params['stream_name']
     this.project_name = this.routerInfo.snapshot.params['project_name']
-    this.crop_name = this.routerInfo.snapshot.params['crop_name']
-    this.getAllVideoIndex()
+    this.hisProjectList = [{
+      'linkText': '视频历史信息',
+      'router_link': '../../../../'
+    }]
+
+    this.getVideoSaveUri();
+    this.getStreamBaseInfo();
     this.need_update_funs();
-    this.timer = setInterval(() => { this.need_update_funs() }, 20000);
+    this.timer = setInterval(() => { this.need_update_funs() }, 30000);
+    this.routerInfo.params.subscribe(() => { this.need_update_funs() })
     setTimeout(() => {
       this.getHlsAddress();
-    }, 1000)
+    }, 10000)
   }
 
   need_update_funs() {
+    this.crop_name = this.routerInfo.snapshot.params['crop_name']
+    if (this.crop_name == 'all') {
+      this.is_all_crop = true
+    } else {
+      this.is_all_crop = false
+    }
     console.log('update page data')
-    this.getStreamBaseInfo();
-    this.getModelsInfo();
+    // 根据是否是关注页详情,重新加载内容
+    if (this.is_all_crop) {
+      this.getAllCropInfo();
+    } else {
+      this.getCropInfo();
+    }
     this.getAbHistory();
     if (this.isShowModelDetail) {
       this.getModelList();
@@ -248,16 +311,45 @@ export class BhaCropPageComponent implements OnInit {
     );
   }
 
-  getModelsInfo() {
+  getAllCropInfo() {
+    this.http.get('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name, null).subscribe(
+      (res) => {
+        this.detailCardSource.empty();
+        this.detailCardSource.append({ 'key': '项目名', 'value': res['project_name'] });
+        this.detailCardSource.append({ 'key': '开始时间', 'value': 'Placeholder' });
+        this.detailCardSource.append({ 'key': '结束时间', 'value': 'Placeholder' });
+        // 各个crop列表
+        if (res["models_info"] !== undefined) {
+          console.log('here');
+          var cropLinks = [];
+          for (var cropKey in res["models_info"]) {
+            var link_info = {
+              'linkText': cropKey,
+              'router_link': '../../' + cropKey + '/models_info'
+            };
+            cropLinks.push(link_info)
+          }
+          this.detailCardSource.append({ 'key': '关注区域详情:', 'value': cropLinks });
+        }
+      }
+    )
+  }
+
+  getCropInfo() {
     this.http.get('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model_info', null).subscribe(
       (res) => {
-        // console.log('getModelsInfo:', res)
-        this.models_source.empty();
-        this.models_source.append({ 'key': '流名', 'value': this.stream_name });
-        this.models_source.append({ 'key': '项目名', 'value': this.project_name });
-        this.models_source.append({ 'key': '裁片名', 'value': this.crop_name });
-        this.models_source.append({ 'key': '长期模型数', 'value': res['permanent_models_idx_cnt'] });
-        this.models_source.append({ 'key': '临时模型数', 'value': res['temporary_models_idx_cnt'] });
+        // console.log('getCropInfo:', res)
+        this.detailCardSource.empty();
+        this.detailCardSource.append({ 'key': '流名', 'value': this.stream_name });
+        this.detailCardSource.append({ 'key': '项目名', 'value': this.project_name });
+        this.detailCardSource.append({ 'key': '裁片名', 'value': this.crop_name });
+        this.detailCardSource.append({ 'key': '长期模型数', 'value': res['permanent_models_idx_cnt'] });
+        this.detailCardSource.append({ 'key': '临时模型数', 'value': res['temporary_models_idx_cnt'] });
+        var link_info = [{
+          'linkText': 'all',
+          'router_link': '../../' + 'all' + '/models_info'
+        }];
+        this.detailCardSource.append({ 'key': '返回all详情', 'value': link_info });
       }
     );
   }
@@ -323,7 +415,7 @@ export class BhaCropPageComponent implements OnInit {
     var end = new Date();
     var unit = past_str.substr(past_str.length - 1);
     var range = parseInt(past_str.substr(0, past_str.length - 1));
-    console.log(past_str)
+    console.log('past_str: ' + past_str)
     switch (unit) {
       case 's':
         start.setDate(end.getSeconds() - range);
@@ -352,6 +444,7 @@ export class BhaCropPageComponent implements OnInit {
       this.getPastRange(this.ab_his_range['past'])
       this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/change_past', param).subscribe(
         (res: {}[]) => {
+          console.log('Got data')
           this.ab_history_source.load(res)
         });
     } else {
@@ -363,6 +456,7 @@ export class BhaCropPageComponent implements OnInit {
       };
       this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/change_range', param).subscribe(
         (res: {}[]) => {
+          console.log('Got data')
           this.ab_history_source.load(res)
         });
     }
@@ -410,10 +504,10 @@ export class BhaCropPageComponent implements OnInit {
     this.selectedMoments = [];
   }
 
-  getAllVideoIndex() {
+  getVideoSaveUri() {
     this.http.get('/api/mongo_api/video_process/stream/' + this.stream_name + '/video_save_addr').subscribe(
       (res) => {
-        this.allVideoUri = res['uri']
+        this.videoSaveUri = res['uri']
       });
 
 

@@ -1,4 +1,11 @@
 {
     "typescript.tsdk": "./node_modules/typescript/lib",
-    "tslint.enable": false
+    "tslint.enable": false,
+    "cSpell.words": [
+        "Flatpickr",
+        "httpservice",
+        "loginurl",
+        "ngfor",
+        "viewrecord"
+    ]
 }

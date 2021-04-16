@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-02 10:45:19
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-16 12:39:31
+ * @LastEditTime: 2021-04-16 13:16:27
  */
 import { Component, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
@@ -105,11 +105,12 @@ export class Source_pageComponent implements OnInit {
       (res) => {
         console.log("got stream, ", stream_name, ", stream_info: ", res);
         stream_name = res['stream_name']
+        var current_project_name = res['current_project_name']
         // https://stackoverflow.com/questions/52522317/how-to-add-hyperlink-in-ng2-smart-table-in-angular6
         // res['stream_name'] = '<a href=stream/' + stream_name + ' >' + stream_name + '</a>'
         res['stream_name'] = [{
           'linkText': stream_name,
-          'router_link': stream_name
+          'router_link': stream_name + '/project/' + current_project_name + '/all/models_info'
         }]
         this.stream_details.push(res);
         this.stream_details_keys.push(stream_name);

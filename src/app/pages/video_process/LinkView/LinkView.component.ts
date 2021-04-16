@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-04 13:10:18
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-10 10:50:24
+ * @LastEditTime: 2021-04-16 14:50:23
  */
 import { Component, OnInit, Input } from
   '@angular/core';
@@ -12,10 +12,8 @@ import { ViewCell } from 'ng2-smart-table';
 
 @Component({
   selector: 'app-LinkView',
-  template: `<li *ngFor="let item of value" >
-    <a routerLink="./{{item['router_link'] }}">{{ item['linkText'] }}</a>
-  </li>`,
-  // styleUrls: ['./LinkView.component.scss']
+  templateUrl: './LinkView.component.html',
+  styleUrls: ['./LinkView.component.scss']
 })
 
 
@@ -25,18 +23,19 @@ export class LinkViewComponent implements ViewCell, OnInit {
 
   @Input()
   public value;
+  public value_isArray;
 
   @Input()
   rowData: any;
 
 
   ngOnInit() {
-    console.log('LinkViewComponent', this.value)
-    // this.linkText = this.value['linkText'];
-    // this.router_link = this.value['router_link'];
-    // this.someId = this.value;
-
+    // console.log('LinkViewComponent', this.value)
+    this.value_isArray = this.isArray()
   }
 
+  isArray(): boolean {
+    return !!this.value && this.value.constructor === Array;
+  }
 
 }

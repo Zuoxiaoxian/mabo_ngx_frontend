@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2020-12-28 12:31:48
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-03-18 16:52:09
+ * @LastEditTime: 2021-04-08 09:48:09
  */
 import { Injectable } from '@angular/core';
 
@@ -65,7 +65,7 @@ export class HttpserviceService {
         },
         error => {
           console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^post^^^^error^^^^^^^^^^^^^^", error, error.status, error.error);
-          alert("post请求失败")
+          // alert("post请求失败")
           var result = {
             msg: error.error,
             status: error.status

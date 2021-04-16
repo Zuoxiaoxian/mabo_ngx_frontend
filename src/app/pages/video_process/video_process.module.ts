@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-02 10:45:19
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-01 16:34:23
+ * @LastEditTime: 2021-04-16 09:29:14
  */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -18,7 +18,8 @@ import { VjsPlayerModule } from '../vjs-player/vjs-player.module'
 // import { Ng2FlatpickrModule } from 'ng2-flatpickr';
 // import { NgxDatetimeRangePickerModule } from "ngx-datetime-range-picker";
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
-import { FormsModule  } from "@angular/forms";
+import { FormsModule } from "@angular/forms";
+import { ProcessCtrlButtonComponent } from './ProcessCtrlButton/ProcessCtrlButton.component'
 
 
 @NgModule({
@@ -33,7 +34,7 @@ import { FormsModule  } from "@angular/forms";
     VjsPlayerModule,
     // Ng2FlatpickrModule,
     // NgxDatetimeRangePickerModule,
-    OwlDateTimeModule, 
+    OwlDateTimeModule,
     OwlNativeDateTimeModule,
     FormsModule,
   ],
@@ -42,6 +43,7 @@ import { FormsModule  } from "@angular/forms";
     LinkViewComponent,
     RunningButtonComponent,
     BhaModelSimpleComponent,
+    ProcessCtrlButtonComponent
   ],
 })
 export class Video_processModule { }
