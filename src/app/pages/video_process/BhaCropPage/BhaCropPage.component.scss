@@ -38,7 +38,7 @@
 // CSS
 // @import "ngx-datetime-range-picker/ngx-datetime-range-picker.theme.css";
 // @import "~ng-pick-datetime/assets/style/picker.min.css";
-@import '~ng-pick-datetime/assets/style/picker.min.css';
+// @import '~ng-pick-datetime/assets/style/picker.min.css';
 :host ::ng-deep tr .ng2-smart-actions {
     display: flex;
 }
@@ -59,6 +59,13 @@
     display: inline-block;
     width: 50px;
     text-align: center;
+}
+
+:host
+/deep/
+ng2-st-tbody-custom
+a.ng2-smart-action.ng2-smart-action-custom-custom:hover {
+color: #5dcfe3;
 }
 
 .order-table {

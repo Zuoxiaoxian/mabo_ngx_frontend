@@ -4,15 +4,17 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-16 16:08:44
+ * @LastEditTime: 2021-04-21 13:47:04
  */
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 import { ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
 // import { FlatpickrOptions } from 'ng2-flatpickr';
 import { ProcessCtrlButtonComponent } from '../ProcessCtrlButton/ProcessCtrlButton.component';
 import { LinkViewComponent } from "../LinkView/LinkView.component";
+import { NbWindowService } from '@nebular/theme';
+import { title } from 'process';
 
 
 @Component({
@@ -120,7 +122,6 @@ export class BhaCropPageComponent implements OnInit {
   // 用于展示模型详情
   public isShowModelDetail = false;
 
-
   // 用于展示历史异常列表
   // public exampleOptions: FlatpickrOptions = {
   //   // defaultDate: '2017-03-15',
@@ -157,6 +158,8 @@ export class BhaCropPageComponent implements OnInit {
       position: 'right',
       custom: [
         {
+
+
           name: 'getVideoClip',
           title: `<i class="fa fa-video"></i>`
         },
@@ -182,7 +185,7 @@ export class BhaCropPageComponent implements OnInit {
         title: '关注区域',
         type: 'custom',
         renderComponent: LinkViewComponent,
-        filter: false,
+        filter: true,
       },
     }
 
@@ -236,22 +239,71 @@ export class BhaCropPageComponent implements OnInit {
   public hisVideoParam = {};
   public hisVideoDescribe = ''
   public selectedMoments = [];
-  // 复用判断
+  // 复用判断abHisCropSetting和abHisAllSetting
   public is_all_crop: boolean;
   public hisProjectList;
+  // stream分析流运行状态
+  public procStatus;
+  public procOutput;
+  public isProcRunning;
+  public isGettingProcStatus = true;
+  public procCtrlSetting = {
+    hideHeader: true,
+    hideSubHeader: true,
+    actions: {
+      add: false,
+      edit: false,
+      delete: false,
+      custom: [
+        {
+          name: 'startProc',
+          title: `<i class="fa fa-play" title="play" style="color: green;"></i>`
+        },
+        {
+          name: 'stopProc',
+          title: `<i class="fa fa-stop" title="stop" style="color: red;"></i>`
+        },
+      ]
 
+    },
+    pager: {
+      display: true,
+      perPage: 10
+    },
+    columns: {
+      // showStopButton: {
+      //   title: '操作',
+      //   type: 'text',
+      // },
+      status: {
+        title: '状况',
+        type: 'text',
+      },
+      Output: {
+        title: '详情',
+        type: 'text',
+      }
+    }
+
+  }
+  public procCtrlSource: LocalDataSource = new LocalDataSource();
+  @ViewChild('contentTemplate') contentTemplate: TemplateRef<any>;
+  // 临近告警
+  public nearlyAbPast = '1m'
+  @ViewChild('nearlyAbTemplate') nearlyAbTemplate: TemplateRef<any>;
 
   @ViewChild('history_vjs') his_vjs: ElementRef;
 
   constructor(
     private routerInfo: ActivatedRoute,
-    private http: HttpserviceService,) { }
+    private http: HttpserviceService,
+    private windowService: NbWindowService) { }
 
   ngOnInit() {
     this.stream_name = this.routerInfo.snapshot.params['stream_name']
     this.project_name = this.routerInfo.snapshot.params['project_name']
     this.hisProjectList = [{
-      'linkText': '视频历史信息',
+      'linkText': '历史项目信息',
       'router_link': '../../../../'
     }]
 
@@ -259,10 +311,20 @@ export class BhaCropPageComponent implements OnInit {
     this.getStreamBaseInfo();
     this.need_update_funs();
     this.timer = setInterval(() => { this.need_update_funs() }, 30000);
-    this.routerInfo.params.subscribe(() => { this.need_update_funs() })
+    this.timer = setInterval(() => { this.getNearlyAb() }, 5000);
+    this.routerInfo.params.subscribe(() => { this.when_router_change() })
     setTimeout(() => {
       this.getHlsAddress();
     }, 10000)
+  }
+
+  when_router_change() {
+    // 清空model列表, 并关闭isShowModelDetail
+    this.model_list = []
+    this.model_list_source.empty()
+    this.isShowModelDetail = false
+    // 其它需要更新的项目
+    this.need_update_funs()
   }
 
   need_update_funs() {
@@ -274,6 +336,7 @@ export class BhaCropPageComponent implements OnInit {
     }
     console.log('update page data')
     // 根据是否是关注页详情,重新加载内容
+    this.getProcStatus()
     if (this.is_all_crop) {
       this.getAllCropInfo();
     } else {
@@ -320,7 +383,6 @@ export class BhaCropPageComponent implements OnInit {
         this.detailCardSource.append({ 'key': '结束时间', 'value': 'Placeholder' });
         // 各个crop列表
         if (res["models_info"] !== undefined) {
-          console.log('here');
           var cropLinks = [];
           for (var cropKey in res["models_info"]) {
             var link_info = {
@@ -525,4 +587,114 @@ export class BhaCropPageComponent implements OnInit {
     this.history_video_res.length = 0;
     this.getVideoClip()
   }
+
+  getProcStatus() {
+    this.isGettingProcStatus = true;
+    this.procCtrlSource.empty()
+    // var param = { 'docker_url': 'tcp://192.168.252.129:4243' }
+    this.http.post('/api/docker_ctrl/video_prc/stream/' + this.stream_name + '/project/' + this.project_name + '/health', null).subscribe(
+      (res: {}) => {
+        if ('success' in res) {
+          this.procStatus = res['status'];
+          this.procOutput = res['output'];
+        } else {
+          this.procStatus = '获取容器信息失败';
+          this.procOutput = res['fail']
+        }
+
+        var data = {
+          'status': this.procStatus,
+          'Output': this.procOutput
+        }
+        if (this.procStatus === 'running') {
+          data['showStopButton'] = true
+        } else {
+          data['showStopButton'] = false
+        }
+        this.procCtrlSource.load([data])
+        this.isGettingProcStatus = false
+      });
+  }
+
+  startProc() {
+    var r = confirm('即将启动视频处理容器')
+    if (!r) {
+      return
+    }
+    console.log('startProc')
+    this.isGettingProcStatus = true;
+    // var param = {
+    //   'docker_url': 'tcp://192.168.252.129:4243',
+    //   "image": "builded_image"
+    // }
+    this.http.post('/api/docker_ctrl/video_prc/stream/' + this.stream_name + '/project/' + this.project_name + '/start', null).subscribe(
+      (res: {}) => {
+        if ('success' in res) {
+          this.alertWithNoBlock('提示', 'Container, ' + res['name'] + ', started, status: ' + res['status'])
+        } else {
+          this.alertWithNoBlock('提示', 'Container,  start fail, message: ' + res['fail'])
+        }
+        this.getProcStatus()
+      });
+  }
+
+  stopProc() {
+    var r = confirm('即将停止视频处理容器')
+    if (!r) {
+      return
+    }
+    console.log('stopProc')
+    this.isGettingProcStatus = true;
+    // var param = { 'docker_url': 'tcp://192.168.252.129:4243' }
+    this.http.post('/api/docker_ctrl/video_prc/stream/' + this.stream_name + '/project/' + this.project_name + '/stop', null).subscribe(
+      (res: {}) => {
+        if ('success' in res) {
+          this.alertWithNoBlock('提示', 'Container stopped, status: ' + res['status'] + ' ,output: ' + res['output'])
+        } else {
+          this.alertWithNoBlock('提示', 'Container,  start fail, message: ' + res['fail'])
+        }
+        this.getProcStatus()
+      });
+
+  }
+
+  onCustomActionProcCtrl(event) {
+    // console.log('onCustomAction, action', event.action)
+    // console.log('onCustomAction, data', event.data)
+    if (event.action == 'startProc') {
+      this.startProc()
+
+    }
+    if (event.action == 'stopProc') {
+      this.stopProc()
+    }
+
+  }
+
+  alertWithNoBlock(title_a: string, message_a: string) {
+    this.windowService.open(
+      this.contentTemplate, {
+      title: title_a,
+      context: { text: message_a }
+    })
+  }
+
+  getNearlyAb() {
+    var param = {
+      'past_range': this.nearlyAbPast
+    };
+    this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/change_past', param).subscribe(
+      (res: {}[]) => {
+        if (res.length >= 1) {
+          console.log('存在超过一个得异常')
+          this.windowService.open(
+            this.nearlyAbTemplate, {
+            title: '异常告警',
+            context: { text: '过去' + this.nearlyAbPast + '存在异常, 请检查.' }
+          })
+        }
+      });
+
+  }
+
 }

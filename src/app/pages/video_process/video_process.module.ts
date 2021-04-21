@@ -4,11 +4,11 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-02 10:45:19
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-16 09:29:14
+ * @LastEditTime: 2021-04-20 11:36:18
  */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbCardModule, NbIconModule, NbInputModule, NbTreeGridModule } from '@nebular/theme';
+import { NbCardModule, NbIconModule, NbInputModule, NbTreeGridModule,NbWindowModule  } from '@nebular/theme';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { Video_processRoutingModule, routedComponents } from './video_process-routing.module';
 import { LinkViewComponent } from './LinkView/LinkView.component'
@@ -29,6 +29,7 @@ import { ProcessCtrlButtonComponent } from './ProcessCtrlButton/ProcessCtrlButto
     NbTreeGridModule,
     NbIconModule,
     NbInputModule,
+    NbWindowModule.forRoot(),
     Ng2SmartTableModule,
     Video_processRoutingModule,
     VjsPlayerModule,

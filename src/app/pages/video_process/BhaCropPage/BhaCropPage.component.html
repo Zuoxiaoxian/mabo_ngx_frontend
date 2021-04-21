@@ -2,25 +2,52 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-16 15:47:06
+ * @LastEditTime: 2021-04-21 13:28:26
 -->
 <h3>{{stream_name}}/{{project_name}}/{{crop_name}} 详情</h3>
-<app-LinkView [value]="hisProjectList"></app-LinkView>
+
+
+
+<!-- <nb-card>
+    <nb-card-header>
+    </nb-card-header>
+    <nb-card-body>
+    </nb-card-body>
+</nb-card> -->
+
 <div class="row">
-    <div class="col-lg-8">
-        <!-- <div *ngIf="vjs_address; else elseBlock">
-            <app-vjs-player [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
-        </div>
-        <ng-template #elseBlock>
-            <p>视频地址： 未获取到视频地址</p>
-            <br>
-            <button (click)="getHlsAddress()">
-                    重新获取视频地址
-                </button>
-        </ng-template> -->
+    <div class="col-lg-12">
+        <nb-card>
+            <nb-card-header>
+                <app-LinkView [value]="hisProjectList"></app-LinkView>
+            </nb-card-header>
+        </nb-card>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <nb-card>
+            <nb-card-header>
+                LIVE
+            </nb-card-header>
+            <nb-card-body>
+                <div *ngIf="vjs_address; else elseBlock">
+                    <app-vjs-player [options]="{ width: '720',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+                </div>
+                <ng-template #elseBlock>
+                    <p>视频地址： 未获取到视频地址</p>
+                    <br>
+                    <button (click)="getHlsAddress()">
+                            重新获取视频地址
+                        </button>
+                </ng-template>
+            </nb-card-body>
+        </nb-card>
+
     </div>
 
-    <div class="col-lg-4">
+    <div class="col-lg-6">
         <nb-card>
             <nb-card-header>
                 {{stream_name}} {{project_name}} {{crop_name}} 关注区详情
@@ -30,24 +57,76 @@
                 </ng2-smart-table>
             </nb-card-body>
         </nb-card>
+
+        <ng-container *ngIf="isGettingProcStatus;else GotStatus">
+            <div class="loading" ng-show="busy"> <i class="fa fa-spin fa-spinner fa-lg"></i> 获取程序运行状态 ...
+            </div>
+        </ng-container>
+        <ng-template #GotStatus>
+            <nb-card>
+                <!-- <nb-card-header>
+                    程序控制
+                </nb-card-header> -->
+                <nb-card-body>
+                    <ng2-smart-table [settings]="procCtrlSetting" [source]="procCtrlSource" (custom)="onCustomActionProcCtrl($event)">
+                    </ng2-smart-table>
+                </nb-card-body>
+            </nb-card>
+        </ng-template>
     </div>
 </div>
 
-<app-ProcessCtrlButton [stream_name]='stream_name' [project_name]='project_name'></app-ProcessCtrlButton>
+<!-- <app-ProcessCtrlButton [stream_name]='stream_name' [project_name]='project_name'></app-ProcessCtrlButton> -->
+
+<!-- 运行状态 -->
+<!-- <div class="col-lg-6">
+    <ng-container *ngIf="isGettingProcStatus;else GotStatus">
+        <div class="loading" ng-show="busy"> <i class="fa fa-spin fa-spinner fa-lg"></i> 获取程序运行状态 ...
+        </div>
+    </ng-container>
+    <ng-template #GotStatus>
+        <div class="row">
+            <ng-container *ngIf="procStatus==='running';else needStartButton">
+                <div class="col-lg-2">stopbutton</div>
+            </ng-container>
+            <ng-template #needStartButton>
+                <div class="col-lg-2">StartButton</div>
+            </ng-template>
+            <div class="col-lg-2">{{procStatus}}</div>
+            <div class="col-lg-2">{{procOutput}}</div>
+        </div>
+    </ng-template>
+</div> -->
+<!-- <i class="fa fa-stop" title="stop" style="color: green;"></i> -->
+<!-- <div class="row">
+    <div class="col-lg-6">
+    </div>
+</div> -->
 
 
+<ng-template #contentTemplate let-data>
+    <p>{{ data.text }}</p>
+</ng-template>
+
+
+<ng-template #nearlyAbTemplate let-data>
+    <p>{{ data.text }}</p>
+</ng-template>
 
 <div class="row">
     <div class="col-lg-6">
-        <a [href]="videoSaveUri" target="_blank">stream视频存储目录(PS: 存储目录中文件名以utc时区命名) </a>
-        <br>
-        <label>历史异常时间(可自行选取):</label>
-        <input [(ngModel)]="ab_his_selectedMoments" [selectMode]="'range'" [owlDateTimeTrigger]="ab_his_date_range" [owlDateTime]="ab_his_date_range" style="width: 60%; color: cornflowerblue" id="ab_his_daterange" matInput>
-        <owl-date-time (afterPickerClosed)="closedAbHisSpy()" #ab_his_date_range></owl-date-time>
         <nb-card>
             <nb-card-header>
                 异常历史
             </nb-card-header>
+            <nb-card-body>
+                <a [href]="videoSaveUri" target="_blank">stream视频存储目录(PS: 存储目录中文件名以utc时区命名) </a>
+            </nb-card-body>
+            <nb-card-body>
+                <label>历史异常时间(可自行选取):</label>
+                <input [(ngModel)]="ab_his_selectedMoments" [selectMode]="'range'" [owlDateTimeTrigger]="ab_his_date_range" [owlDateTime]="ab_his_date_range" style="width: 60%; color: cornflowerblue" id="ab_his_daterange" matInput>
+                <owl-date-time (afterPickerClosed)="closedAbHisSpy()" #ab_his_date_range></owl-date-time>
+            </nb-card-body>
             <nb-card-body>
                 <ng-container *ngIf="is_all_crop;else CropHisTable">
                     <ng2-smart-table [settings]="abHisAllSetting" [source]="ab_history_source" (custom)="onCustomActionHistory($event)">
@@ -62,36 +141,41 @@
         </nb-card>
     </div>
     <div class="col-lg-6">
-        <br>
-        <br>
-        <div *ngIf="!(history_video_res.length===0);else no_his_vjs">
-            <ng-container *ngFor="let item of history_video_res; trackBy:history_video_res.id">
-                <ng-container *ngIf="item['uri'];else his_err">
-                    <app-vjs-player #history_vjs id="history_vjs" [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: item['uri'], type: 'video/mp4' }]}"></app-vjs-player>
-                    <a [href]="item['uri']" download>右键另存为, 下载视频.<br>{{hisVideoDescribe}}</a>
-                </ng-container>
-                <ng-template #his_err>
-                    <p>获取历史视频地址异常, 原视频可能损坏: {{item['fail']}}</p>
-                    <br>
-                </ng-template>
-            </ng-container>
-        </div>
-        <ng-template #no_his_vjs>
-            <ng-container *ngIf="isLoadingHisVideoRes;else no_select">
-                <div class="loading" ng-show="busy"> <i class="fa fa-spin fa-spinner fa-lg"></i> loading ...
+        <nb-card>
+            <nb-card-header>
+                视频回看
+            </nb-card-header>
+            <nb-card-body>
+                <div *ngIf="!(history_video_res.length===0);else no_his_vjs">
+                    <ng-container *ngFor="let item of history_video_res; trackBy:history_video_res.id">
+                        <ng-container *ngIf="item['uri'];else his_err">
+                            <app-vjs-player #history_vjs id="history_vjs" [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: item['uri'], type: 'video/mp4' }]}"></app-vjs-player>
+                            <a [href]="item['uri']" download>右键另存为, 下载视频.<br>{{hisVideoDescribe}}</a>
+                        </ng-container>
+                        <ng-template #his_err>
+                            <p>获取历史视频地址异常, 原视频可能损坏: {{item['fail']}}</p>
+                            <br>
+                        </ng-template>
+                    </ng-container>
                 </div>
-            </ng-container>
-            <ng-template #no_select>
-                <p>未选取历史视频</p>
-                <br>
-            </ng-template>
-        </ng-template>
-
-        <label>视频展示时间(可自行选取):</label>
-        <input [(ngModel)]="selectedMoments" [selectMode]="'range'" [owlDateTimeTrigger]="date_range_component" [owlDateTime]="date_range_component" style="width: 60%; color: cornflowerblue" id="daterange" matInput>
-        <owl-date-time (afterPickerClosed)="closedSpy()" #date_range_component></owl-date-time>
-
+                <ng-template #no_his_vjs>
+                    <ng-container *ngIf="isLoadingHisVideoRes;else no_select">
+                        <div class="loading" ng-show="busy"> <i class="fa fa-spin fa-spinner fa-lg"></i> loading ...
+                        </div>
+                    </ng-container>
+                    <ng-template #no_select>
+                        <p>未选取历史视频</p>
+                    </ng-template>
+                </ng-template>
+            </nb-card-body>
+            <nb-card-body>
+                <label>视频展示时间(可自行选取):  </label>
+                <input [(ngModel)]="selectedMoments" [selectMode]="'range'" [owlDateTimeTrigger]="date_range_component" [owlDateTime]="date_range_component" style="width: 60%; color: cornflowerblue" id="daterange" matInput>
+                <owl-date-time (afterPickerClosed)="closedSpy()" #date_range_component></owl-date-time>
+            </nb-card-body>
+        </nb-card>
     </div>
+
 
 
 </div>
