@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-04 10:04:08
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-16 14:25:44
+ * @LastEditTime: 2021-04-23 11:05:12
  */
 import { Component, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
@@ -77,7 +77,9 @@ export class Stream_pageComponent implements OnInit {
       },
       project_name: {
         title: '项目名',
-        type: 'text',
+        // type: 'text',
+        type: 'custom',
+        renderComponent: LinkViewComponent,
       },
       consumer_str: {
         title: '加载插件',
@@ -205,7 +207,11 @@ export class Stream_pageComponent implements OnInit {
               consumer_str += ', '
             }
             project_hash['consumer_str'] = consumer_str
-            project_hash['project_name'] = res['project_name']
+            project_hash['project_name'] = [{
+              'linkText': project_name,
+              'router_link': '/project/' + project_name + '/' + 'all' + '/models_info'
+            }]
+
             var is_running = false;
             if (res['project_name'] == this.current_project_name) {
               is_running = true
@@ -220,7 +226,7 @@ export class Stream_pageComponent implements OnInit {
               for (var cropKey in res["models_info"]) {
                 var link_info = {
                   'linkText': cropKey,
-                  'router_link': '/project/' + this.current_project_name + '/' + cropKey + '/models_info'
+                  'router_link': '/project/' + project_name + '/' + cropKey + '/models_info'
                 };
                 project_hash['bha_crop_name'].push(link_info)
                 project_hash['bha_permanent_cnt'] += `<li>` + res["models_info"][cropKey]["permanent_models_idx_cnt"] + `</li>`

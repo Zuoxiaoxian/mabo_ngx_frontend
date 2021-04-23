@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-21 13:47:04
+ * @LastEditTime: 2021-04-22 16:59:29
  */
 import { Component, ElementRef, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
@@ -158,8 +158,6 @@ export class BhaCropPageComponent implements OnInit {
       position: 'right',
       custom: [
         {
-
-
           name: 'getVideoClip',
           title: `<i class="fa fa-video"></i>`
         },
@@ -592,7 +590,8 @@ export class BhaCropPageComponent implements OnInit {
     this.isGettingProcStatus = true;
     this.procCtrlSource.empty()
     // var param = { 'docker_url': 'tcp://192.168.252.129:4243' }
-    this.http.post('/api/docker_ctrl/video_prc/stream/' + this.stream_name + '/project/' + this.project_name + '/health', null).subscribe(
+    var param = { 'just_empty': 'None' }
+    this.http.post('/api/docker_ctrl/video_prc/stream/' + this.stream_name + '/project/' + this.project_name + '/health', param).subscribe(
       (res: {}) => {
         if ('success' in res) {
           this.procStatus = res['status'];
@@ -627,7 +626,8 @@ export class BhaCropPageComponent implements OnInit {
     //   'docker_url': 'tcp://192.168.252.129:4243',
     //   "image": "builded_image"
     // }
-    this.http.post('/api/docker_ctrl/video_prc/stream/' + this.stream_name + '/project/' + this.project_name + '/start', null).subscribe(
+    var param = { 'just_empty': 'None' }
+    this.http.post('/api/docker_ctrl/video_prc/stream/' + this.stream_name + '/project/' + this.project_name + '/start', param).subscribe(
       (res: {}) => {
         if ('success' in res) {
           this.alertWithNoBlock('提示', 'Container, ' + res['name'] + ', started, status: ' + res['status'])
@@ -646,7 +646,8 @@ export class BhaCropPageComponent implements OnInit {
     console.log('stopProc')
     this.isGettingProcStatus = true;
     // var param = { 'docker_url': 'tcp://192.168.252.129:4243' }
-    this.http.post('/api/docker_ctrl/video_prc/stream/' + this.stream_name + '/project/' + this.project_name + '/stop', null).subscribe(
+    var param = { 'just_empty': 'None' }
+    this.http.post('/api/docker_ctrl/video_prc/stream/' + this.stream_name + '/project/' + this.project_name + '/stop', param).subscribe(
       (res: {}) => {
         if ('success' in res) {
           this.alertWithNoBlock('提示', 'Container stopped, status: ' + res['status'] + ' ,output: ' + res['output'])
