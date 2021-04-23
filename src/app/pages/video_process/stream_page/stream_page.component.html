@@ -2,22 +2,29 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-04 10:04:08
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-16 10:59:13
+ * @LastEditTime: 2021-04-23 11:56:36
 -->
 
 <h1>{{stream_name}} 视频流历史项目列表</h1>
 <div class="row">
     <div class="col-lg-8">
-        <div *ngIf="vjs_address; else elseBlock" class="col-md">
-            <app-vjs-player [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
-        </div>
-        <ng-template #elseBlock>
-            <p>视频地址： 未获取到视频地址</p>
-            <br>
-            <button (click)="get_hls_address()">
+        <nb-card>
+            <nb-card-header>
+                LIVE
+            </nb-card-header>
+            <nb-card-body>
+                <div *ngIf="vjs_address; else elseBlock" class="col-md">
+                    <app-vjs-player [options]="{ width: '720',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+                </div>
+                <ng-template #elseBlock>
+                    <p>视频地址： 未获取到视频地址</p>
+                    <br>
+                    <button (click)="get_hls_address()">
                     重新获取视频地址
                 </button>
-        </ng-template>
+                </ng-template>
+            </nb-card-body>
+        </nb-card>
     </div>
 
     <div class="col-lg-4">

@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-04 10:04:08
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-23 11:05:12
+ * @LastEditTime: 2021-04-23 11:55:28
  */
 import { Component, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
@@ -12,6 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
 import { LinkViewComponent } from '../LinkView/LinkView.component'
 import { RunningButtonComponent } from "../RunningButton/RunningButton.component";
+import { filter } from 'rxjs/operators';
 // import { BhaModelSimpleComponent } from "../BhaModelSimple/BhaModelSimple.component";
 
 
@@ -80,6 +81,13 @@ export class Stream_pageComponent implements OnInit {
         // type: 'text',
         type: 'custom',
         renderComponent: LinkViewComponent,
+        filterFunction(projectLinkData?: any, search?: string): boolean {
+          if (projectLinkData[0]['linkText'].includes(search)) {
+            return true;
+          } else {
+            return false;
+          }
+        }
       },
       consumer_str: {
         title: '加载插件',
@@ -141,6 +149,7 @@ export class Stream_pageComponent implements OnInit {
       this.getHlsAddress();
     }, 1000)
   }
+
 
   need_update_funs() {
     this.get_stream_base_info();

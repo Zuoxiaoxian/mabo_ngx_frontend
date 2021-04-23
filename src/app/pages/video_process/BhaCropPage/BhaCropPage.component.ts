@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-22 16:59:29
+ * @LastEditTime: 2021-04-23 11:30:01
  */
 import { Component, ElementRef, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
@@ -287,7 +287,7 @@ export class BhaCropPageComponent implements OnInit {
   public procCtrlSource: LocalDataSource = new LocalDataSource();
   @ViewChild('contentTemplate') contentTemplate: TemplateRef<any>;
   // 临近告警
-  public nearlyAbPast = '1m'
+  public nearlyAbPast = '10s'
   @ViewChild('nearlyAbTemplate') nearlyAbTemplate: TemplateRef<any>;
 
   @ViewChild('history_vjs') his_vjs: ElementRef;
