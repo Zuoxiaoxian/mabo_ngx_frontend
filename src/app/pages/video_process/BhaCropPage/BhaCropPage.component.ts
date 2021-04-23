@@ -4,7 +4,7 @@
  * @Author: Zhang Hengye
  * @Date: 2021-03-10 12:57:54
  * @LastEditors: Zhang Hengye
- * @LastEditTime: 2021-04-23 11:30:01
+ * @LastEditTime: 2021-04-23 14:44:38
  */
 import { Component, ElementRef, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
@@ -530,8 +530,8 @@ export class BhaCropPageComponent implements OnInit {
       var appearTime: string = data['time'];
       var appear_stamp = Date.parse(appearTime) / 1000
       this.hisVideoParam = {
-        'start_stamp': appear_stamp - 60,
-        'end_stamp': appear_stamp + 60,
+        'start_stamp': appear_stamp - 5,
+        'end_stamp': appear_stamp + 5,
       }
       this.isLoadingHisVideoRes = true;
       this.history_video_res.length = 0;
