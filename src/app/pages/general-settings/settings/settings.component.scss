@@ -1,0 +1,32 @@
+table{
+    width: 100%;
+}
+.title{
+    text-align: center;
+    border: 1px solid;
+    font-weight: 400;
+    font-size: medium;
+    padding: 10px 20px;
+}
+.td_content{
+    width: 89%;
+    border: 1px solid;
+    font-weight: 400;
+    font-size: medium;
+    padding: 10px 20px;
+}
+input{
+    width: 90%;
+    min-height: 35px;
+}
+textarea{
+    padding: 6px 10px;
+    width: 90%;
+    min-height: 100px;
+}
+p{
+    margin: 0px;
+    text-align: center;
+}
+tr:nth-of-type(7) { background-color: #edf1f7; }
+tr:nth-of-type(8) { background-color: #edf1f7; }

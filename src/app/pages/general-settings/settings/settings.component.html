@@ -1,0 +1,35 @@
+<!-- 
+    /*
+     * @Author: xiaoxian.zuo 
+     * @Date: 2021-04-26 13:07:08 
+ * @Last Modified by: xiaoxian.zuo
+ * @Last Modified time: 2021-04-26 13:20:03
+     */
+ -->
+
+
+ <h1 style="margin: 0 10% 0 5%;">
+    通用设置
+</h1>
+<nb-card style="margin: 0 10% 0 5%;height: 90%;">
+    <nb-card-body>
+        <table>
+            <tr *ngFor="let item of message">
+                <td class="title">{{item.title}}</td>
+                <td class="td_content" [ngSwitch]="item.element">
+                    <input *ngSwitchCase="'input'" [type]="item.type" [name]="item.name">
+                    <textarea *ngSwitchCase="'textarea'"></textarea>
+                    <p *ngSwitchDefault [id]="item.id">{{item.value}}</p>
+                </td>
+            </tr>
+        </table>
+
+        <div class="row" style="margin-top: 2%;">
+            <div class="col-md-2">
+                <button nbButton fullWidth outline status="success" size="small" (click)="complet()">完成</button>
+            </div>
+            <div class="col-md-10"></div>
+        </div>
+
+    </nb-card-body>
+</nb-card>
