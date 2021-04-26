@@ -23,5 +23,38 @@ export const MENU_ITEMS: NbMenuItem[] = [
     title: 'video_process',
     icon: 'film-outline',
     link: '/pages/video_process/stream',
+    children:[
+      {
+        title: '视频配置',
+        icon: 'film-outline',
+        link: '/pages/video-config',
+      },
+     
+    ]
   },
+  {
+    title: '工作台',
+    icon: 'film-outline',
+    link: '/pages/work-bench',
+  },
+  
+  {
+    title: '检测设置',
+    icon: 'film-outline',
+    link: '/pages/test-process',
+  },
+  {
+    title: '通用设置',
+    icon: 'film-outline',
+    link: '',
+    children:[
+      {
+        title: '摄像头',
+        icon: 'film-outline',
+        link: '',
+      }
+    ]
+  },
+  
+  
 ];

@@ -2,7 +2,7 @@ var HttpsProxyAgent = require('https-proxy-agent');
 var proxyConfig = [{
     context: '/api',
     // target: 'http://10.7.0.117:9096',
-    target: 'http://127.0.0.1:5000',
+    target: 'http://192.168.3.110:5000',
     pathRewrite: { "^/api": "" },
     secure: false,
     changeOrigin: true

@@ -6,7 +6,7 @@
  * @LastEditors: Zhang Hengye
  * @LastEditTime: 2021-04-16 13:16:27
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 import { LocalDataSource } from 'ng2-smart-table';
 import { LinkViewComponent } from '../LinkView/LinkView.component'
@@ -16,7 +16,7 @@ import { LinkViewComponent } from '../LinkView/LinkView.component'
   templateUrl: './source_page.component.html',
   styleUrls: ['./source_page.component.scss']
 })
-export class Source_pageComponent implements OnInit {
+export class Source_pageComponent implements OnInit,OnDestroy {
 
 
   public stream_list: string[];
@@ -117,5 +117,9 @@ export class Source_pageComponent implements OnInit {
         this.source.load(this.stream_details);
       }
     );
+  }
+
+  ngOnDestroy(){
+    clearInterval(this.timer);
   }
 }

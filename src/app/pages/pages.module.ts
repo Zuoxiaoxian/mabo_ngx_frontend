@@ -15,6 +15,7 @@ import { PagesComponent } from './pages.component';
 // import { ECommerceModule } from './e-commerce/e-commerce.module';
 import { PagesRoutingModule } from './pages-routing.module';
 import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
+import { TestProcessModule } from './test-process/test-process.module';
 
 @NgModule({
   imports: [
@@ -24,6 +25,7 @@ import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
     // DashboardModule,
     // ECommerceModule,
     MiscellaneousModule,
+    TestProcessModule
   ],
   declarations: [
     PagesComponent,

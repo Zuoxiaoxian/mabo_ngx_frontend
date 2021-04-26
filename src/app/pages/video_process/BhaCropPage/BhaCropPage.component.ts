@@ -28,6 +28,7 @@ export class BhaCropPageComponent implements OnInit {
   public project_name: string;
   public crop_name: string;
   public timer;
+  public timer_2;
   public org_address = "";
   public org_type = ""
   public vjs_address = "";
@@ -309,7 +310,7 @@ export class BhaCropPageComponent implements OnInit {
     this.getStreamBaseInfo();
     this.need_update_funs();
     this.timer = setInterval(() => { this.need_update_funs() }, 30000);
-    this.timer = setInterval(() => { this.getNearlyAb() }, 5000);
+    this.timer_2 = setInterval(() => { this.getNearlyAb() }, 5000);
     this.routerInfo.params.subscribe(() => { this.when_router_change() })
     setTimeout(() => {
       this.getHlsAddress();
@@ -696,6 +697,12 @@ export class BhaCropPageComponent implements OnInit {
         }
       });
 
+  }
+
+
+  ngOnDestroy(){
+    clearInterval(this.timer);
+    clearInterval(this.timer_2);
   }
 
 }

@@ -252,6 +252,8 @@ export class Stream_pageComponent implements OnInit {
     });
   }
 
-
+  ngOnDestroy(){
+    clearInterval(this.timer);
+  }
 
 }
