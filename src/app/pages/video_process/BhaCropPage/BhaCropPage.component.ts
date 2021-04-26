@@ -498,29 +498,34 @@ export class BhaCropPageComponent implements OnInit {
 
   getAbHistory() {
     var param = {}
-    if (this.ab_his_range['past']) {
+    // if (this.ab_his_range['past']) {
       param = {
         'past_range': this.ab_his_range['past']
       };
-      this.getPastRange(this.ab_his_range['past'])
-      this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/change_past', param).subscribe(
-        (res: {}[]) => {
-          console.log('Got data')
-          this.ab_history_source.load(res)
-        });
-    } else {
-      param = {
-        "time_range": {
-          'start': this.ab_his_range['start'],
-          'end': this.ab_his_range['end'],
-        }
-      };
-      this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/change_range', param).subscribe(
-        (res: {}[]) => {
-          console.log('Got data')
-          this.ab_history_source.load(res)
-        });
-    }
+    //   this.getPastRange(this.ab_his_range['past'])
+    //   this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/change_past', param).subscribe(
+    //     (res: {}[]) => {
+    //       console.log('Got data')
+    //       this.ab_history_source.load(res)
+    //     });
+    // } else {
+    //   param = {
+    //     "time_range": {
+    //       'start': this.ab_his_range['start'],
+    //       'end': this.ab_his_range['end'],
+    //     }
+    //   };
+    //   this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/change_range', param).subscribe(
+    //     (res: {}[]) => {
+    //       console.log('Got data')
+    //       this.ab_history_source.load(res)
+    //     });
+    // }
+    this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/project/' + this.project_name + '/' + this.crop_name + '/model/all', param).subscribe(
+      (res: {}[]) => {
+        console.log('Got data')
+        this.ab_history_source.load(res)
+      });
   }
 
   onCustomActionHistory(event) {

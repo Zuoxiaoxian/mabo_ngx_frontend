@@ -1,0 +1,88 @@
+<nb-card>
+  <nb-card-body >
+    <div class="row">
+      <div class="col-md-6">
+        <nb-card>
+          <nb-card-header style="display: flex;font-size: 1.5rem;justify-content: space-between;">
+            <span>
+              实时视频
+             ( 摄像头({{_.stream}}))
+            </span>
+            <span style="display: flex;">
+              状态
+              <span class="cl" [ngStyle]="{background:_.status == 'running'?'green':'yellow'}"></span>
+            </span>
+          </nb-card-header>
+          <nb-card-body>
+            <div class="row">
+              <div class="col-md-12">
+                <div *ngIf="vjs_address;else elseBlock" class="vido">
+                  <app-vjs-player [options]="{ width: getwidth(),height: getheight(),autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+                </div>
+              </div>
+              <div class="col-md-12 bt_row">
+                <div class="bottom">启动侦测
+                  <i class="fa fa-play" title="play" (click)="startProc()"></i>
+                </div>
+                <div class="bottom">暂停侦测
+                  <i class="ion-ios-pause"  ></i>
+                </div>
+                <div class="bottom">停止侦测
+                  <i class="fa fa-stop" title="stop" (click)="stopProc()"></i>
+                </div>
+              </div>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+      <div class="col-md-6">
+        <nb-card>
+          <nb-card-header >
+            实验信息
+          </nb-card-header>
+          <nb-card-body>
+            <div class="r">
+              <div>项目名称</div>
+              <div>{{_.name}}</div>
+              <div>项目编号</div>
+              <div>{{_.no}}</div>
+              <div>试验室</div>
+              <div>{{_.laboratory}}</div>
+              <div>试验人员</div>
+              <div>{{_.taskpeople}}</div>
+              <div>试验设备</div>
+              <div>{{_.taskequip}}</div>
+              <div>开始时间</div>
+              <div>{{_.starttime}}</div>
+              <div>结束时间</div>
+              <div>{{_.endtime}}</div>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+      <div class="col-md-12">
+        <nb-card>
+          <nb-card-header>
+            异常历史
+          </nb-card-header>
+          <nb-card-body>
+            <ng2-smart-table style="width: 100%;" [settings]="setting" [source]="source">
+            </ng2-smart-table>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>
+
+
+<ng-template #elseBlock>
+  <div class="notfond">
+    <div>
+      <p>视频地址： 未获取到视频地址</p>
+      <button nbButton hero status="warning" (click)="get_hls_address()">
+        重新获取视频地址
+      </button>
+    </div>
+  </div>
+</ng-template>

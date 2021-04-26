@@ -4,10 +4,15 @@
       <div class="col-md-12 col-lg-12">
         <div class="col-md-12">
           <nb-card>
-            <nb-card-header style="font-size: 1.9375rem;padding: 1rem 0rem;">试验信息</nb-card-header>
+            <nb-card-header style="font-size: 1.5375rem;">
+              任务信息
+              <button nbButton hero status="success" (click)="back()" style="float: right;">
+              返回  
+              </button>
+            </nb-card-header>
             <nb-card-body>
               <div class="row_dis">
-                <div>项目编号</div>
+                <div>任务单编号(LWT)</div>
                 <div>
                   <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.number"/>
                 </div>
@@ -15,11 +20,12 @@
                 <div>
                   <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.peopel">
                 </div>
-                <div>项目名称</div>
+                <div>任务名称(project_name)</div>
                 <div>
-                  <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.name">
+                  <!-- 下划线字母数字 -->
+                  <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.project_name">
                 </div>
-                <div>试验设备</div>
+                <div>样件编号</div>
                 <div>
                   <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.equipment">
                 </div>
@@ -36,44 +42,53 @@
                 </div>
                 <div>摄像头</div>
                 <div>
-                  <nb-select style="width: 80%;" [(ngModel)]="test_info.webcam">
-                    <nb-option value="摄像头1">
-                      摄像头1
-                    </nb-option>
-                    <nb-option value="摄像头2">
-                      摄像头2
+                  <nb-select style="width: 80%;" [selected]="test_info.webcam" (selectedChange)="changeWebcam($event)">
+                    <nb-option *ngFor="let item of webcamList" [value]="item">
+                      {{item}}
                     </nb-option>
                   </nb-select>
                 </div>
+                <div>检验方式</div>
+                <div>
+                  <nb-select style="width: 80%;" [(ngModel)]="test_info.check_model" >
+                    <nb-option value="BaseCheck">
+                      默认
+                    </nb-option>
+                    <nb-option value="image_check">
+                      图像
+                    </nb-option>
+                    <nb-option value = "encoder_check">
+                      encoder
+                    </nb-option>
+                  </nb-select>
+                </div>
+                <div></div>
+                <div></div>
               </div>
             </nb-card-body>
           </nb-card>
         </div>
         <div class="col-md-12">
           <nb-card>
-            <nb-card-header style="font-size: 1.9375rem;padding: 1rem 0rem;">侦测区域定义</nb-card-header>
+            <nb-card-header style="font-size: 1.5375rem;">侦测区域定义</nb-card-header>
             <nb-card-body>
               <div *ngIf="vjs_address; else elseBlock" class="row_vido">
-                <app-vjs-player [options]="{ width: '720',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
-              </div>
-              <div class="row">
-                <div class="row_table">
-                  <div class="tabel_line_2"  *ngFor="let item of headerlist" [ngStyle]="{width:(item.key == 'description'?'60%':'')}">{{item.name}}</div>
-                  <div class="row_table" *ngFor="let item of bodylist">
-                    <div class="tabel_line_2" >
-                      <input style="width: 80%;" nbInput type="text" [(ngModel)]="item.no">
-                    </div>
-                    <div class="tabel_line_2" >
-                      <input style="width: 80%;" nbInput type="text" [(ngModel)]="item.address">
-                    </div>
-                    <div class="tabel_line_2" style="width: 60%;" >
-                      <input style="width: 80%;" nbInput type="text" [(ngModel)]="item.description">
-                    </div>
+                <app-vjs-player [options]="{ width: getwidth(),height: getheight(),autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+                <ng-container *ngFor="let item of getarr()">
+                  <div class="fang" *ngIf="true">
+  
                   </div>
-                </div>
+                </ng-container>
+              </div>
+              <div class="row" style="width: 100%;">
+                <button nbButton hero status="success" (click)="add()">新增</button>
+                <ng2-smart-table style="width: 100%;" [settings]="setting" [source]="source" ></ng2-smart-table>
               </div>
             </nb-card-body>
           </nb-card>
+        </div>
+        <div class="col-md-12" style="text-align: center;">
+          <button nbButton hero status = "success" (click)="save()">完成</button>
         </div>
       </div>
     </div>
