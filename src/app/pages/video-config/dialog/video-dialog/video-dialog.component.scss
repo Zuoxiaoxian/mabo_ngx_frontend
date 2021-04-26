@@ -1,0 +1,11 @@
+.right{
+    display: flex;
+    justify-content: end;
+}
+/* 去掉number类型自带的加减按钮 */
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+}
+input[type="number"]{
+    -moz-appearance: textfield; 
+}

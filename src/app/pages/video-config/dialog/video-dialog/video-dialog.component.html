@@ -1,0 +1,32 @@
+<nb-card>
+  <nb-card-header>{{ title }}</nb-card-header>
+  <nb-card-body>
+    <div class="row">
+      <div class="col-md-2">key：</div>
+      <div class="col-md-3">
+        <input style="width: 160px;"  nbInput [(ngModel)]="_content.key" (ngModelChange)="inputchange($event)">
+        <span [ngStyle]="{color:msg?'red':''}"> {{ msg }}</span>
+      </div>
+      
+    </div>
+    <div class="row">
+      <div class="col-md-2">value：</div>
+      <div class="col-md-2">
+        <input type="number" style="width: 80px;"  nbInput [(ngModel)]="_content.value[0]" >
+      </div>
+      <div class="col-md-2">
+        <input type="number" style="width: 80px;"  nbInput [(ngModel)]="_content.value[1]" >
+      </div>
+      <div class="col-md-2">
+        <input type="number" style="width: 80px;" nbInput [(ngModel)]="_content.value[2]" >
+      </div>
+      <div class="col-md-2">
+        <input type="number" style="width: 80px;" nbInput [(ngModel)]="_content.value[3]" >
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="right">
+    <button nbButton hero status="success" disabled = "{{msg?'':'disabled'}}" (click)="close({code:1})">确认</button>
+    <button style="margin-left: 20px;" nbButton hero status="primary" (click)="close({code:0})">取消</button>
+  </nb-card-footer>
+</nb-card>

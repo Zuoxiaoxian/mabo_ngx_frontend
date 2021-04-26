@@ -1,0 +1,63 @@
+<div class="row_c" style="position: relative;">
+  <div class="col-lg-3">
+    <button nbButton status="success" hero (click)="send()">发送</button>
+  </div>
+</div>
+<div class="row_c">
+  <ng-container *ngFor="let item of ['','two','three','four','five','six'];">
+    <div class="col-lg-4" *ngIf="object.keys(_[item+'_json'])?.length">
+      <nb-card>
+        <nb-card-body class="keys">
+          <ng-container *ngFor="let key of object.keys(_[item+'_json'])">
+            <div *ngIf="config[key]" [ngClass]="{'select-now':getSelect(key,item)}">
+              <ng-container
+              [ngTemplateOutlet]="getTemp(key,_[item+'_json']) || notkown" 
+              [ngTemplateOutletContext]="{ $implicit: {key:key,json:_[item+'_json'],item:item} }">
+              </ng-container>
+            </div>
+          </ng-container>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </ng-container>
+  <!-- <div id="canvas_re" style="position: absolute;width: 100%;height: 100%;">
+    <canvas id="c" width="900" height="800" style=" border:'1px solid #ccc'"></canvas>
+  </div> -->
+</div>
+
+
+<ng-template #input let-data>
+  {{ config[data.key] || data.key }}
+  <input  nbInput [(ngModel)]="data.json[data.key]">
+</ng-template>
+
+
+<ng-template #a let-data>
+  {{ config[data.key] || data.key }}
+  <a (click)="configClick(data.key,data.item)">配置</a>
+</ng-template>
+
+<ng-template #select let-data>
+  {{ config[data.key] || data.key }}
+  <nb-select [(ngModel)]="data.json[data.key]" (ngModelChange)="selectChange($event,data)" style="min-width: 13.5rem;max-width: 20rem;">
+    <nb-option *ngFor="let item of select_config[data.key]" [value]="item">
+      {{item}}
+    </nb-option>
+  </nb-select>
+</ng-template>
+
+<ng-template #array let-data>
+  <input style="width: 35%;" disabled nbInput [(ngModel)]="data.key" >
+  <div style="width: 10%;" *ngFor="let item of data.json[data.key];let i = index">
+      <div style="width: 100%;">{{ array_config.onetype[i] }}</div>
+      <input type="number" disabled style="padding: 0.4375rem 0.4rem;width: 100%;" nbInput  
+      [ngModel]="item" (ngModelChange)="change($event,data,i)">
+  </div>
+  <nb-icon icon="plus" pack="eva" (click)="add(data)"></nb-icon>
+  <nb-icon icon="minus" pack="eva" (click)="del(data)"></nb-icon>
+  <nb-icon icon="edit-2" pack="eva" (click)="edit(data)"></nb-icon>
+</ng-template>
+
+
+<ng-template #notkown>
+</ng-template>

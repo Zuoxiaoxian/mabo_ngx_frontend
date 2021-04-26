@@ -1,0 +1,49 @@
+.keys{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    white-space:pre-wrap;
+    word-break:break-all;
+    div{
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 0;
+        a{
+            color: #3366ff;
+            text-decoration: underline;
+            cursor:pointer;
+        }
+    }
+}
+input{
+    padding: 0.4375rem 0.4rem;
+}
+/* 去掉number类型自带的加减按钮 */
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+}
+input[type="number"]{
+    -moz-appearance: textfield; 
+}
+nb-icon{
+    cursor:pointer;
+}
+.row_c{
+    display: flex;
+    flex-wrap: wrap;
+}
+.col-lg-3{
+    width: cal(100%/4);
+}
+.col-lg-4{
+    width: cal(100%/3);
+}
+
+.select-now{
+    background: rgba(1, 1, 1 , 0.1);
+}
