@@ -8,27 +8,12 @@
               实时视频
              ( 摄像头({{_.stream}}))
             </span>
-            <span style="display: flex;">
-              状态
-              <span class="cl" [ngStyle]="{background:_.status == 'running'?'green':'yellow'}"></span>
-            </span>
           </nb-card-header>
           <nb-card-body>
             <div class="row">
               <div class="col-md-12">
                 <div *ngIf="vjs_address;else elseBlock" class="vido">
                   <app-vjs-player [options]="{ width: getwidth(),height: getheight(),autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
-                </div>
-              </div>
-              <div class="col-md-12 bt_row">
-                <div class="bottom">启动侦测
-                  <i class="fa fa-play" title="play" (click)="startProc()"></i>
-                </div>
-                <div class="bottom">暂停侦测
-                  <i class="ion-ios-pause" (click)="stopProc()" ></i>
-                </div>
-                <div class="bottom">停止侦测
-                  <i class="fa fa-stop" title="stop" (click)="stopProc()"></i>
                 </div>
               </div>
             </div>
@@ -62,7 +47,7 @@
           </nb-card-body>
         </nb-card>
       </div>
-      <div class="col-md-12" >
+      <div class="col-md-12">
         <nb-card>
           <nb-card-header>
             异常历史
@@ -80,11 +65,19 @@
 
 <ng-template #elseBlock>
   <div class="notfond">
-    <div>
+    <div style="text-align: center;" *ngIf="video_status;else elseNoClick">
       <p>视频地址： 未获取到视频地址</p>
       <button nbButton hero status="warning" (click)="get_hls_address()">
         重新获取视频地址
       </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #elseNoClick>
+  <div class="notfond">
+    <div style="text-align: center;">
+      <p>请点击下方表格播放</p>
     </div>
   </div>
 </ng-template>

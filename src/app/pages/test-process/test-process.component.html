@@ -23,7 +23,7 @@
                 <div>任务名称(project_name)</div>
                 <div>
                   <!-- 下划线字母数字 -->
-                  <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.project_name">
+                  <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.project_name" (keyup)="keyup($event,test_info.project_name)">
                 </div>
                 <div>样件编号</div>
                 <div>
@@ -48,7 +48,7 @@
                     </nb-option>
                   </nb-select>
                 </div>
-                <div>检验方式</div>
+                <div>检查方式</div>
                 <div>
                   <nb-select style="width: 80%;" [(ngModel)]="test_info.check_model" >
                     <nb-option value="BaseCheck">

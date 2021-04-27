@@ -1,26 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NbDialogService } from '@nebular/theme';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 import { LocalDataSource } from 'ng2-smart-table';
-import { DialogTipComponent } from './dialog-tip/dialog-tip.component';
-import { DialogVideoComponent } from './dialog-video/dialog-video.component';
-import { TableBottonComponent } from './table-botton/table-botton.component';
+import { TableBottonComponent } from '../real-time/table-botton/table-botton.component';
 
-/**
- * 实时观看
- */
 @Component({
-  selector: 'app-real-time',
-  templateUrl: './real-time.component.html',
-  styleUrls: ['./real-time.component.scss']
+  selector: 'app-his-time',
+  templateUrl: './his-time.component.html',
+  styleUrls: ['./his-time.component.scss']
 })
-export class RealTimeComponent implements OnInit {
-
+export class HisTimeComponent implements OnInit {
+  @ViewChild('video')video:any;
   public org_address = "";
   public org_type = ""
   public vjs_address = "";
   public current_project_name;
+  hisVideoParam;
+  row;
   _ = {
     stream:'c1',//摄像头编号
     status:'',//当前实验状态
@@ -67,21 +64,10 @@ export class RealTimeComponent implements OnInit {
         onComponentInitFunction:(instance)=>{
           // 播放
           instance.playEvent.subscribe(row => {
-            console.log('弹窗播放')
-            this.dialogService.open(
-              DialogVideoComponent,
-              {
-                context:{
-                  body:row,
-                  title:row.time,
-                  _:this._
-                }
-              }
-            );
+           this.get_hls_address(row);
           });
           // 下载
           instance.downEvent.subscribe(row => {
-            
             console.log('下载')
             var appearTime: string = row['time'];
             var appear_stamp = Date.parse(appearTime) / 1000
@@ -103,10 +89,16 @@ export class RealTimeComponent implements OnInit {
                 }
               });
           });
+          // 暂停
+          instance.stopEvent.subscribe(row => {
+            console.log(this.video)
+            this.video?.player?.pause()
+          })
         }
       },
     }
   }
+  video_status = '';//当前video状态
   source : LocalDataSource = new LocalDataSource();
   ab_his_range = {
     'past': '4d',
@@ -117,37 +109,26 @@ export class RealTimeComponent implements OnInit {
     private activateInfo:ActivatedRoute,
     private dialogService:NbDialogService ) { }
 
-  ngOnInit() {
-    /**
+
+  ngOnInit(): void {
+     /**
      * errornum: "-"
         taskname: "camera_test_202012"
         taskstatus: "-"
         webcam: "camera_test"
      */
-    this.activateInfo.queryParams.subscribe(queryParams => {
-      console.log(queryParams);
-      this._.name = queryParams.taskname||'';
-      this._.statusName = queryParams.taskstatus||'';
-      this._.stream = queryParams.stream||'';
-      this.getHis();
-      this.getStreamBaseInfo();
-      this.getStatus();
-      this.getTask();
-    })
+        this.activateInfo.queryParams.subscribe(queryParams => {
+          console.log(queryParams);
+          this._.name = queryParams.taskname||'';
+          this._.statusName = queryParams.taskstatus||'';
+          this._.stream = queryParams.stream||'';
+          this.getHis();
+          // this.getStreamBaseInfo();
+          this.getTask();
+        })
   }
 
-  getStatus(){
-    let param = { 
-      'just_empty': 'None'
-      // "docker_url":"tcp://192.168.252.129:4243"
-     }
-    this.http.post(`/api/docker_ctrl/video_prc/stream/${this._.stream}/project/${this._.name}/health`,param
-    ).subscribe((h:any)=>{
-      this._.status = h.status
-    });
-  }
-
-  /**
+ /**
    * 获取视频历史
    */
   getHis(){
@@ -159,7 +140,7 @@ export class RealTimeComponent implements OnInit {
       (res:any[]) => {
         console.log(res);
         if(Array.isArray(res)){
-          this.source.load(res);
+          this.source.load(res.map(m => ({_s:'his',...m})));
         }else{
           this.source.load([]);
         }
@@ -167,8 +148,34 @@ export class RealTimeComponent implements OnInit {
 
   }
 
+    /**
+   * 视频流地址
+   */
+     getStreamBaseInfo() {
+      this.http.get('/api/mongo_api/video_process/stream/' + this._.stream, null).subscribe(
+        (res) => {
+          this.org_address = res['origin_url'];
+          this.org_type = res['stream_transform']
+          this.current_project_name = res['current_project_name'];
+          if (this.org_address) {
+            if (this.org_type == 'hls') {
+              this.vjs_address = this.org_address;
+            } else {
+              this.http.post('/api/rtsp2hls', { 'rtsp_url': this.org_address }, null).subscribe(
+                (res) => {
+                  // console.log("test: ", res);
+                  this.vjs_address = res['value'];
+                }
+              );
+            }
+      
+          }
+        }
+      );
+    }
+    
 
-  /**
+    /**
    * 获取任务信息
    */
   getTask(){
@@ -191,106 +198,29 @@ export class RealTimeComponent implements OnInit {
     })
   }
 
-  /**
-   * 视频流地址
-   */
-  getStreamBaseInfo() {
-    this.http.get('/api/mongo_api/video_process/stream/' + this._.stream, null).subscribe(
-      (res) => {
-        this.org_address = res['origin_url'];
-        this.org_type = res['stream_transform']
-        this.current_project_name = res['current_project_name'];
-        if (this.org_address) {
-          if (this.org_type == 'hls') {
-            this.vjs_address = this.org_address;
-          } else {
-            this.http.post('/api/rtsp2hls', { 'rtsp_url': this.org_address }, null).subscribe(
-              (res) => {
-                // console.log("test: ", res);
-                this.vjs_address = res['value'];
-              }
-            );
-          }
-    
-        }
-      }
-    );
-  }
-
-
-  /**
-   * 启动视频容器
-   * @returns 
-   */
-  startProc() {
-    var r = confirm('即将启动视频处理容器')
-    if (!r) {
-      return
+  get_hls_address(row?){
+    console.log('播放')
+    var appearTime: string =  null;
+    if(row){
+      appearTime = row['time'];
+      this.row = row;
+    }else{
+      appearTime = this.row['time'];
     }
-    console.log('startProc')
-    // var param = {
-    //   'docker_url': 'tcp://192.168.252.129:4243',
-    //   "image": "builded_image"
-    // }
-    var param = { 'just_empty': 'None' }
-    this.http.post('/api/docker_ctrl/video_prc/stream/' + this._.stream + '/project/' + this._.name + '/start', param).subscribe(
-      (res: {}) => {
-        let context = {};
-        if ('success' in res) {
-          context = {
-            title:'启动成功',
-            body:'容器启动成功'
-          }
-        } else {
-          context = {
-            title:'启动失败',
-            body:'容器启动失败',
-          }
-        }
-        this.dialogService.open(DialogTipComponent, {
-          context: context,
-        });
-      });
-  }
-
-
-  /**
-   * 关闭视频容器
-   * @returns 
-   */
-  stopProc() {
-    var r = confirm('即将停止视频处理容器')
-    if (!r) {
-      return
+    var appear_stamp = Date.parse(appearTime) / 1000
+    this.hisVideoParam = {
+      'start_stamp': appear_stamp - 5,
+      'end_stamp': appear_stamp + 5,
     }
-    console.log('stopProc')
-    // this.isGettingProcStatus = true;
-    // var param = { 'docker_url': 'tcp://192.168.252.129:4243' }
-    var param = { 'just_empty': 'None' }
-    this.http.post('/api/docker_ctrl/video_prc/stream/' + this._.stream + '/project/' + this._.name + '/stop', param).subscribe(
-      (res: {}) => {
-        let context = {};
-        if ('success' in res) {
-          context = {
-            title:'关闭成功',
-            body:'容器关闭成功'
-          }
-        } else {
-          context = {
-            title:'关闭成功',
-            body:'容器关闭成功'
-          }
+
+    this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', this.hisVideoParam).subscribe(
+      (res: any) => {
+        console.log('video_clip:', res)
+        if(res.fail){
+          this.video_status = res.fail;
         }
-        this.dialogService.open(DialogTipComponent, {
-          context: context,
-        });
+        this.vjs_address  = res['uri'] || '';
       });
-
-  }
-
-
-  get_hls_address(){
-    this.getStreamBaseInfo();
   }
 
   getwidth(){
@@ -303,6 +233,5 @@ export class RealTimeComponent implements OnInit {
     return vido[0].scrollHeight - 20;
 
   }
-
 
 }

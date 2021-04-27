@@ -1,15 +1,15 @@
-<nb-card>
-  <nb-card-header>{{ title }}</nb-card-header>
+<nb-card style="width: 48rem;height: 33rem;">
+  <nb-card-header>{{ _title }}</nb-card-header>
   <nb-card-body>
     <div *ngIf="vjs_address;else elseBlock" class="vido">
       <app-vjs-player [options]="{ width: getwidth(),height: getheight(),autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
     </div>
-    <div>
-      <input nbInput type="text" placeholder="备注内容" [(ngModel)]="body.remarks">
+    <div style="width: 100%;height: 10%;">
+      <input nbInput type="text" placeholder="备注内容" disabled [(ngModel)]="body.remarks" style="width: 100%;max-width: 100%;">
     </div>
   </nb-card-body>
-  <nb-card-footer>
-    <button nbButton hero status="success" (click)="save()">保存</button>
+  <nb-card-footer style="display: flex;justify-content: space-around;">
+    <button nbButton hero status="success" (click)="save()" title="该功能暂时未开发" disabled>保存备注并保存</button>
     <button nbButton hero status="primary" (click)="dismiss()">关闭</button>
   </nb-card-footer>
 </nb-card>
@@ -17,10 +17,10 @@
 
 <ng-template #elseBlock>
   <div class="notfond">
-    <div>
-      <p>视频地址： 未获取到视频地址</p>
+    <div style="text-align: center;">
+      <p>视频地址： 未获取到视频地址,或视频已损坏</p>
       <button nbButton hero status="warning" (click)="get_hls_address()">
-        重新获取视频地址
+        重新获取视频
       </button>
     </div>
   </div>

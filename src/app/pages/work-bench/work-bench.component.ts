@@ -27,7 +27,7 @@ export class WorkBenchComponent implements OnInit {
     },
     columns: {
       taskname:{
-        title: '试验名称',
+        title: '任务名称',
         filter: true,
         type: 'custom',
         renderComponent: LinkComponent,
@@ -64,8 +64,14 @@ export class WorkBenchComponent implements OnInit {
       perPage: 10
     },
     columns: {
+      id:{
+        title: '任务单编号',
+        filter: true,
+        type: 'custom',
+        renderComponent: LinkComponent,
+      },
       name:{
-        title: '试验名称',
+        title: '任务名称',
         filter: true,
       },
       laboratory:{
@@ -76,22 +82,27 @@ export class WorkBenchComponent implements OnInit {
         title: '试验人员',
         filter: true,
       },
-      taskequipement:{
-        title: '试验设备',
-        filter: true,
-      },
-      webcam:{
-        title: '试验设备',
-        filter: true,
-      },
-      starttime:{
-        title: '开始时间',
+      stream:{
+        title: '摄像头',
         filter: true,
       },
       endtime:{
         title: '结束时间',
         filter: true,
       },
+      errornum:{
+        title: '异常数量',
+        filter: true,
+      },
+      errorstr:{
+        title: '异常描述',
+        filter: true,
+      },
+      report:{
+        title: '报告',
+        filter: true,
+      },
+      
     }
   }
 
@@ -127,9 +138,19 @@ export class WorkBenchComponent implements OnInit {
                   stream:stream,
                   taskname:ei,
                   taskstatus:this.getTaskStatus(h.status) || '-',
-                  errornum:'-'
+                  errornum:'-',
+                  _s:'real'
                 };
                 this.now_source.append(arr);
+
+                this.his_source.append({
+                  id:ei,
+                  stream:stream,
+                  taskname:ei,
+                  taskstatus:this.getTaskStatus(h.status) || '-',
+                  errornum:'-',
+                  _s:'his'
+                })
               })
             });
           });

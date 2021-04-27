@@ -52,8 +52,8 @@ const routes: Routes = [
       .then(m => m.WorkBenchModule)
     },
     {
-      //实时视频
-      path:'real-video',
+      //实时、历史视频
+      path:'video',
       loadChildren:()=>import('./real-time/real-time.module')
       .then(m => m.RealTimeModule)
     },

@@ -1,0 +1,5 @@
+<div class="f">
+  <button nbButton hero status="success"  (click)="play()" >播放</button>
+  <button nbButton hero status="info"  (click)="stop()" *ngIf="rowData?._s == 'his'">暂停</button>
+  <button  nbButton hero status="warning" (click)="download()">下载</button>
+</div>
