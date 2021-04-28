@@ -15,9 +15,12 @@
         align-items: center;
     }
 }
+.red{
+    color: red;
+}
 .notfond{
     width: 100%;
-    height: 100%;
+    height: 30rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -76,4 +79,9 @@
     top: 3rem;
     position: absolute;
     overflow:auto;
+}
+
+#canvas{
+    position: absolute;
+    // z-index: -1;
 }

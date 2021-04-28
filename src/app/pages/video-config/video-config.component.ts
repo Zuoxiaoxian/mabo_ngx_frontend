@@ -11,313 +11,313 @@ import { fabric } from "fabric";
 export class VideoConfigComponent implements OnInit {
   object = Object;
   arrayObject = Array;
+//   _json:any = {
+//     "video_sources": { // ※ 视频源信息 
+//         "stream_name": "camera_test", // ※ 视频源名城
+//         "init_timeout": 30, // 初始化超时
+//         "origin_url": "http://localhost:80/playlist.m3u8", // ※ 视频源地址
+//         "stream_transform": "hls", // ※ 视频源类型, 选择: rtsp_direct、hls、rtmp、LocalFile
+//         "eqpt_no": "camera_test", // ※ 视频源地址
+//         "current_project_name": "camera_test_202012", // ※ 项目名
+//     },
+//     "log": { // 日志配置, 无须前端配置
+//         "log_file": null,
+//         "console": true,
+//         "_level": "DEBUG,INFO,WARNING,ERROR,CRITICAL",
+//         "console_level": "DEBUG",
+//         "file": true,
+//         "file_level": "INFO",
+//         "enable_debug_log": true,
+//         "backup_count": 5,
+//         "max_size": 1024000,
+//         "format_string": "(%(asctime)s), %(levelname)s, <%(threadName)s>, %(module)s, %(funcName)s, [%(lineno)d]: %(message)s"
+//     },
+//     "mongodb": { // 数据库保存, 无须前端配置
+//         "db_addr": "192.168.252.129:27017",
+//         "usr": "mabo",
+//         "password": "testpass",
+//         "db": "video_process",
+//         "source_col": "source_table_test",
+//     },
+//     "rtsp2hls": { // 视频转换地址, 无须前端配置
+//         "host": "http://10.7.0.117:9094",
+//         "proxies": {
+//             "http": "http://10.7.0.117:2379",
+//             "https": "http://10.7.0.117:2379",
+//         }
+//     },
+//     // 根据实时效率, 进行一定数量的drop, 无须前端配置
+//     "drop_setting": {
+//         // 初始值, 间隔x帧, 分析1帧,  0标示分析所有 
+//         "initial_drop_interval": 2,
+//         // 间隔多久更新一次drop,0 表示不进行drop检查
+//         "recheck_time_interval": 50,
+//     },
+//     "crop_setting": { // ※ 关注区域设置
+//         "crop_mode": "manual", // ※ 默认为None, manual时需要配置 manual_box
+//         "manual_box": { // ※ manual_box为列表形式, 可以任意添加（有个参数可以设定上限）
+//             "crop_id_main": [ // ※ 四个int类型参数, 分别为 (x_min, y_min, x_max, y_max)
+//                 381,
+//                 92,
+//                 675,
+//                 391
+//             ],
+//             "crop_id_second": [
+//                 675,
+//                 92,
+//                 975,
+//                 491
+//             ],
+//         }
+//         // (x_min, y_min, x_max, y_max), img[y_min:y_max, x_min:x_max]
+//     },
+//     "stream_adjust": { // ※ 待机画面调整
+//         "standby": {
+//             "no_signal_wait": 60, // ※ 无信号超时, 默认60
+//             /*
+//             ※ 检查方式：
+//                 BaseCheck: 默认, 无其它额外判定
+//                 image_check: 通过对比图像来判断是否开启, （暂不开放, 注释掉. ）
+//                 encoder_check: 通过获取encoder的参数判断是否开启
+//             */
+//             "check_model": "BaseCheck",
+//             // image_check 模式时配置 配置：通过图像进行的配置
+//             "standby_screen": "status_img/compare_running_screen_2.png",
+//             // 9, 27,
+//             "resize_width": 27,
+//             // 8, 24,
+//             "resize_height": 24,
+//             "check_interval": 1,
+//             // 8*8下推荐10, 27*24下为108. . . 308？
+//             "dhash_same_threshold": 308,
+//             // ※ encoder_check 模式时配置
+//             "api_addr": "http://10.7.94.203:2379", // ※ encoder http的配置
+//             "proxies": { // proxy 测试用项目, 前端不配置
+//                 "http": "http://10.7.0.117:2379",
+//                 "https": "http://10.7.0.117:2379"
+//             },
+//             "auth": { // ※ encoder 登陆信息
+//                 "user": "admin",
+//                 "pass": "admin"
+//             }
+//         },
+//         "time": { // 当前帧时间校准, 暂时不配置
+//             "enable": false,
+//             // (x_min, y_min, x_max, y_max), img[y_min:y_max, x_min:x_max]
+//             "time_position": [
+//                 96,
+//                 15,
+//                 403,
+//                 42
+//             ],
+//             "tesseract_config": {
+//                 "lang": "chi_sim",
+//                 "config": "--psm 8"
+//             },
+//             // 因识别存在一定误差, 主要存在与标点上, 因此对字符格式进行矫正
+//             "text_adjust_reg": "(\\d{4})\\W{0,3}(\\d{2})\\W{0,3}(\\d{2})\\s?(\\d{2})\\W{0,2}(\\d{2})\\W{0,2}(\\d{2})",
+//             // 视频中的时间格式
+//             "time_format": "%Y-%m-%d %H:%M:%S",
+//             // second
+//             "update_interval": 10
+//         }
+//     },
+//     "consumer_plugin": { // ※ 图像分析插件配置, 字典型, 暂时开发了两种子模块：save、screen_abnormal
+//         "save": { // ※ 不进行具体配置, 只做enable、disable的判断. enable传递save键值的空{}, disable 时consumer_plugin中没save键值
+//             "plugin_file": "save_consumer_plugin", // 不配置, 与save对应, 固定
+//             "plugin_class": "SaveConsumerPlugin",
+//             // 存储相关配置
+//             "storage_setting": {
+//                 // 存储位置, 默认：cache
+//                 "output_path": null,
+//                 // 最大轮转数
+//                 "rotation_number": 5,
+//                 // 所有文件, 最大存储空间：G
+//                 "max_storage_size": 10,
+//                 // 单文件最大存储长度, 单位：min
+//                 "one_file_max_interval": 1,
+//                 // 超限删除检查间隔：min
+//                 "rm_check_interval": 3
+//             }
+//         },
+//         "screen_abnormal": { // ※ 视频异常配置项目
+//             "plugin_file": "EMC_consumer_plugin",
+//             "plugin_class": "EMCConsumerPlugin",
+//             "detect_setting": { // ※ bha模型检测. 
+//                 // bha模型检测, 使用bha距离, 判断帧是否属于已有模型
+//                 // 可能存在多个子项目, 按照添加的形式添加.
+//                 "bha_dist_setting": { // bha距离模型配置.
+//                     "debug_save_model": false,
+//                     "reload_model": true, // 重载模型, 前端无需配置
+//                     "reload_method": "mongodb", // 加载&存储模型的模式：local, mongodb. 后续都使用mongodb, 前端无需配置
+//                     "reload_path": "local_save",
+//                     // 参考：0.4 (不带更新), 带更新的话是, 0.2
+//                     "new_model_threshold": 0.2, // ※ 新模型阈值, 默认0.2
+//                     // 多线程下画图有问题
+//                     "draw_hist_jpg": false,
+//                     // hist of color model
+//                     // standard_gray: 标准灰度模式
+//                     // tricolor: 三色比较模式
+//                     "hist_mode": "tricolor", // ※ 模型比较模式,可选: standard_gray, tricolor
+//                     "add_first_frame_as_model": true, // 首帧是否为正常模型
+//                     "is_first_frame_normal": true, // 首帧默认为正常
+//                     // 是否使用新帧更新距离此帧最近model的hist
+//                     "update_nearest_model": false,
+//                     "update_rate": 0.2, // 新帧更新占比
+//                     // 可以预设一些模型
+//                     // 若保留完整图片, 注意添加crop
+//                     "default_model": [],
+//                     "tmp_model_setting": { // ※ 临时模型设置,默认开启
+//                         "enable": true,
+//                         // 如果有n帧都归属于此, 则升级为 per model
+//                         "tmp_trans_per_thresh": 30, // ※ 临时模型升级阈值,默认30
+//                         // n帧后无更新, 则从tmp中删除
+//                         "timeout_delete_frame_cnt": 100, // ※ 临时模型超时阈值,默认100
+//                     }
+//                 },
+//                 // 动态检测, 判断前几帧与当前帧的帧间差值, 判断是否存在改变
+//                 "dynamic_setting": { // ※ 动态检测
+//                     "dynamic_thresh": 25, // ※ 动态阈值, 默认 25
+//                     "min_area": 15000 // ※ 检测变化后最小面积, 默认 15000
+//                 },
+//                 "report_setting": { // ※ 异常上报配置
+//                     "measurement": "camera_test", // ※ 异常表格
+//                     "eqpt_no": "local_camera", // ※ eqpt_no
+//                     "multi_report_enable": true, // 多方式上报,API填充
+//                     "multi_report_setting": {
+//                         // "heartbeat_measurement": "camera_test_heartbeat",
+//                         // "change_measurement": "camera_test_change",
+//                         "heartbeat_interval": 5,
+//                         "field_change_check": [
+//                             "bha_model_idx",
+//                             "dynamic_sum_area"
+//                         ],
+//                         "multi_filter_fields": [
+//                             "dynamic_c_area",
+//                             "dynamic_c_boundingRect"
+//                         ],
+//                         // 使用类似eval(f'data["{eval_key}"] {eval_value}')的表达式,过滤满足条件的判断
+//                         // 若满足上eval表达式, 则此改变视为无改变 
+//                         "multi_filter_eval": {
+//                             "bha_model_idx": "==-1"
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     },
+//     "sender_plugin": { // 将consumer信息传递出去的插件, 前端无需配置, API配置
+//         "influx_test_send": {
+//             // 必填
+//             "plugin_file": "influx_sender",
+//             "plugin_class": "InfluxSenderPlugin",
+//             "influx_setting": {
+//                 "host": "192.168.252.129",
+//                 "port": 8086,
+//                 "username": null,
+//                 "password": null,
+//                 "database": "test",
+//                 "timeout": 10,
+//                 "time_precision": "ms",
+//             }
+//         },
+//         // "kafka_test_sender": {
+//         //     // 必填
+//         //     "plugin_file": "kafka_sender",
+//         //     "plugin_class": "KafkaSenderPlugin",
+//         //     "kafka_setting": {
+//         //         "bootstrap_servers": "10.203.80.155:9092",
+//         //         "topic": "custom_collector_json",
+//         //         "org": 3101,
+//         //         "dataid": 3502,
+//         //         "ip": "${DEPLOY_IP}",
+//         //         "timeout": 10,
+//         //         "time_precision": "ms",
+//         //     }
+//         // }
+//     }
+// }
   _json:any = {
     "video_sources": { // ※ 视频源信息 
-        "stream_name": "camera_test", // ※ 视频源名城
-        "init_timeout": 30, // 初始化超时
-        "origin_url": "http://localhost:80/playlist.m3u8", // ※ 视频源地址
-        "stream_transform": "hls", // ※ 视频源类型, 选择: rtsp_direct、hls、rtmp、LocalFile
-        "eqpt_no": "camera_test", // ※ 视频源地址
-        "current_project_name": "camera_test_202012", // ※ 项目名
-    },
-    "log": { // 日志配置, 无须前端配置
-        "log_file": null,
-        "console": true,
-        "_level": "DEBUG,INFO,WARNING,ERROR,CRITICAL",
-        "console_level": "DEBUG",
-        "file": true,
-        "file_level": "INFO",
-        "enable_debug_log": true,
-        "backup_count": 5,
-        "max_size": 1024000,
-        "format_string": "(%(asctime)s), %(levelname)s, <%(threadName)s>, %(module)s, %(funcName)s, [%(lineno)d]: %(message)s"
-    },
-    "mongodb": { // 数据库保存, 无须前端配置
-        "db_addr": "192.168.252.129:27017",
-        "usr": "mabo",
-        "password": "testpass",
-        "db": "video_process",
-        "source_col": "source_table_test",
-    },
-    "rtsp2hls": { // 视频转换地址, 无须前端配置
-        "host": "http://10.7.0.117:9094",
-        "proxies": {
-            "http": "http://10.7.0.117:2379",
-            "https": "http://10.7.0.117:2379",
-        }
-    },
-    // 根据实时效率, 进行一定数量的drop, 无须前端配置
-    "drop_setting": {
-        // 初始值, 间隔x帧, 分析1帧,  0标示分析所有 
-        "initial_drop_interval": 2,
-        // 间隔多久更新一次drop,0 表示不进行drop检查
-        "recheck_time_interval": 50,
+      "stream_name": "camera_test", // ※ 视频源名城
+      "init_timeout": 30, // 初始化超时
+      "origin_url": "http://localhost:80/playlist.m3u8", // ※ 视频源地址
+      "stream_transform": "hls", // ※ 视频源类型, 选择: rtsp_direct、hls、rtmp、LocalFile
+      "eqpt_no": "camera_test", // ※ 视频源地址
+      "current_project_name": "camera_test_202012", // ※ 项目名
     },
     "crop_setting": { // ※ 关注区域设置
-        "crop_mode": "manual", // ※ 默认为None, manual时需要配置 manual_box
-        "manual_box": { // ※ manual_box为列表形式, 可以任意添加（有个参数可以设定上限）
-            "crop_id_main": [ // ※ 四个int类型参数, 分别为 (x_min, y_min, x_max, y_max)
-                381,
-                92,
-                675,
-                391
-            ],
-            "crop_id_second": [
-                675,
-                92,
-                975,
-                491
-            ],
-        }
-        // (x_min, y_min, x_max, y_max), img[y_min:y_max, x_min:x_max]
-    },
+      "crop_mode": "manual", // ※ 剪裁模式,默认为None, manual时需要配置 manual_box
+      "manual_box": { // ※ 剪裁范围,manual_box为列表形式, 可以任意添加（有个参数可以设定上限）
+          "crop_id_main": [ // ※ [用户自己定义的名字],四个int类型参数, 分别为 (x_min, y_min, x_max, y_max)
+              381,
+              92,
+              675,
+              391
+          ],
+          "crop_id_second": [
+              675,
+              92,
+              975,
+              491
+          ],
+      }
+      // (x_min, y_min, x_max, y_max), img[y_min:y_max, x_min:x_max]
+  },
     "stream_adjust": { // ※ 待机画面调整
-        "standby": {
-            "no_signal_wait": 60, // ※ 无信号超时, 默认60
-            /*
-            ※ 检查方式：
-                BaseCheck: 默认, 无其它额外判定
-                image_check: 通过对比图像来判断是否开启, （暂不开放, 注释掉. ）
-                encoder_check: 通过获取encoder的参数判断是否开启
-            */
-            "check_model": "BaseCheck",
-            // image_check 模式时配置 配置：通过图像进行的配置
-            "standby_screen": "status_img/compare_running_screen_2.png",
-            // 9, 27,
-            "resize_width": 27,
-            // 8, 24,
-            "resize_height": 24,
-            "check_interval": 1,
-            // 8*8下推荐10, 27*24下为108. . . 308？
-            "dhash_same_threshold": 308,
-            // ※ encoder_check 模式时配置
-            "api_addr": "http://10.7.94.203:2379", // ※ encoder http的配置
-            "proxies": { // proxy 测试用项目, 前端不配置
-                "http": "http://10.7.0.117:2379",
-                "https": "http://10.7.0.117:2379"
-            },
-            "auth": { // ※ encoder 登陆信息
-                "user": "admin",
-                "pass": "admin"
-            }
-        },
-        "time": { // 当前帧时间校准, 暂时不配置
-            "enable": false,
-            // (x_min, y_min, x_max, y_max), img[y_min:y_max, x_min:x_max]
-            "time_position": [
-                96,
-                15,
-                403,
-                42
-            ],
-            "tesseract_config": {
-                "lang": "chi_sim",
-                "config": "--psm 8"
-            },
-            // 因识别存在一定误差, 主要存在与标点上, 因此对字符格式进行矫正
-            "text_adjust_reg": "(\\d{4})\\W{0,3}(\\d{2})\\W{0,3}(\\d{2})\\s?(\\d{2})\\W{0,2}(\\d{2})\\W{0,2}(\\d{2})",
-            // 视频中的时间格式
-            "time_format": "%Y-%m-%d %H:%M:%S",
-            // second
-            "update_interval": 10
-        }
+      "standby": {
+          "no_signal_wait": 60, // ※ 无信号超时, 默认60
+          /*
+          ※ 检查方式：
+              BaseCheck: 默认, 无其它额外判定f
+              image_check: 通过对比图像来判断是否开启, （暂不开放, 注释掉. ）
+              encoder_check: 通过获取encoder的参数判断是否开启
+          */
+          "check_model": "BaseCheck",
+          // ※ encoder_check 模式时配置
+          "api_addr": "http://10.7.94.203:2379", // ※ encoder http的配置
+          "proxies": { // proxy 测试用项目, 前端不配置
+              "http": "http://10.7.0.117:2379",
+              "https": "http://10.7.0.117:2379"
+          },
+          "auth": { // ※ encoder 登陆信息
+              "user": "admin",
+              "pass": "admin"
+          }
+      },
     },
     "consumer_plugin": { // ※ 图像分析插件配置, 字典型, 暂时开发了两种子模块：save、screen_abnormal
-        "save": { // ※ 不进行具体配置, 只做enable、disable的判断. enable传递save键值的空{}, disable 时consumer_plugin中没save键值
-            "plugin_file": "save_consumer_plugin", // 不配置, 与save对应, 固定
-            "plugin_class": "SaveConsumerPlugin",
-            // 存储相关配置
-            "storage_setting": {
-                // 存储位置, 默认：cache
-                "output_path": null,
-                // 最大轮转数
-                "rotation_number": 5,
-                // 所有文件, 最大存储空间：G
-                "max_storage_size": 10,
-                // 单文件最大存储长度, 单位：min
-                "one_file_max_interval": 1,
-                // 超限删除检查间隔：min
-                "rm_check_interval": 3
-            }
-        },
-        "screen_abnormal": { // ※ 视频异常配置项目
-            "plugin_file": "EMC_consumer_plugin",
-            "plugin_class": "EMCConsumerPlugin",
-            "detect_setting": { // ※ bha模型检测. 
-                // bha模型检测, 使用bha距离, 判断帧是否属于已有模型
-                // 可能存在多个子项目, 按照添加的形式添加.
-                "bha_dist_setting": { // bha距离模型配置.
-                    "debug_save_model": false,
-                    "reload_model": true, // 重载模型, 前端无需配置
-                    "reload_method": "mongodb", // 加载&存储模型的模式：local, mongodb. 后续都使用mongodb, 前端无需配置
-                    "reload_path": "local_save",
-                    // 参考：0.4 (不带更新), 带更新的话是, 0.2
-                    "new_model_threshold": 0.2, // ※ 新模型阈值, 默认0.2
-                    // 多线程下画图有问题
-                    "draw_hist_jpg": false,
-                    // hist of color model
-                    // standard_gray: 标准灰度模式
-                    // tricolor: 三色比较模式
-                    "hist_mode": "tricolor", // ※ 模型比较模式,可选: standard_gray, tricolor
-                    "add_first_frame_as_model": true, // 首帧是否为正常模型
-                    "is_first_frame_normal": true, // 首帧默认为正常
-                    // 是否使用新帧更新距离此帧最近model的hist
-                    "update_nearest_model": false,
-                    "update_rate": 0.2, // 新帧更新占比
-                    // 可以预设一些模型
-                    // 若保留完整图片, 注意添加crop
-                    "default_model": [],
-                    "tmp_model_setting": { // ※ 临时模型设置,默认开启
-                        "enable": true,
-                        // 如果有n帧都归属于此, 则升级为 per model
-                        "tmp_trans_per_thresh": 30, // ※ 临时模型升级阈值,默认30
-                        // n帧后无更新, 则从tmp中删除
-                        "timeout_delete_frame_cnt": 100, // ※ 临时模型超时阈值,默认100
-                    }
-                },
-                // 动态检测, 判断前几帧与当前帧的帧间差值, 判断是否存在改变
-                "dynamic_setting": { // ※ 动态检测
-                    "dynamic_thresh": 25, // ※ 动态阈值, 默认 25
-                    "min_area": 15000 // ※ 检测变化后最小面积, 默认 15000
-                },
-                "report_setting": { // ※ 异常上报配置
-                    "measurement": "camera_test", // ※ 异常表格
-                    "eqpt_no": "local_camera", // ※ eqpt_no
-                    "multi_report_enable": true, // 多方式上报,API填充
-                    "multi_report_setting": {
-                        // "heartbeat_measurement": "camera_test_heartbeat",
-                        // "change_measurement": "camera_test_change",
-                        "heartbeat_interval": 5,
-                        "field_change_check": [
-                            "bha_model_idx",
-                            "dynamic_sum_area"
-                        ],
-                        "multi_filter_fields": [
-                            "dynamic_c_area",
-                            "dynamic_c_boundingRect"
-                        ],
-                        // 使用类似eval(f'data["{eval_key}"] {eval_value}')的表达式,过滤满足条件的判断
-                        // 若满足上eval表达式, 则此改变视为无改变 
-                        "multi_filter_eval": {
-                            "bha_model_idx": "==-1"
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "sender_plugin": { // 将consumer信息传递出去的插件, 前端无需配置, API配置
-        "influx_test_send": {
-            // 必填
-            "plugin_file": "influx_sender",
-            "plugin_class": "InfluxSenderPlugin",
-            "influx_setting": {
-                "host": "192.168.252.129",
-                "port": 8086,
-                "username": null,
-                "password": null,
-                "database": "test",
-                "timeout": 10,
-                "time_precision": "ms",
-            }
-        },
-        // "kafka_test_sender": {
-        //     // 必填
-        //     "plugin_file": "kafka_sender",
-        //     "plugin_class": "KafkaSenderPlugin",
-        //     "kafka_setting": {
-        //         "bootstrap_servers": "10.203.80.155:9092",
-        //         "topic": "custom_collector_json",
-        //         "org": 3101,
-        //         "dataid": 3502,
-        //         "ip": "${DEPLOY_IP}",
-        //         "timeout": 10,
-        //         "time_precision": "ms",
-        //     }
-        // }
-    }
-}
-  // _json:any = {
-  //   "video_sources": { // ※ 视频源信息 
-  //     "stream_name": "camera_test", // ※ 视频源名城
-  //     "init_timeout": 30, // 初始化超时
-  //     "origin_url": "http://localhost:80/playlist.m3u8", // ※ 视频源地址
-  //     "stream_transform": "hls", // ※ 视频源类型, 选择: rtsp_direct、hls、rtmp、LocalFile
-  //     "eqpt_no": "camera_test", // ※ 视频源地址
-  //     "current_project_name": "camera_test_202012", // ※ 项目名
-  //   },
-  //   "crop_setting": { // ※ 关注区域设置
-  //     "crop_mode": "manual", // ※ 剪裁模式,默认为None, manual时需要配置 manual_box
-  //     "manual_box": { // ※ 剪裁范围,manual_box为列表形式, 可以任意添加（有个参数可以设定上限）
-  //         "crop_id_main": [ // ※ [用户自己定义的名字],四个int类型参数, 分别为 (x_min, y_min, x_max, y_max)
-  //             381,
-  //             92,
-  //             675,
-  //             391
-  //         ],
-  //         "crop_id_second": [
-  //             675,
-  //             92,
-  //             975,
-  //             491
-  //         ],
-  //     }
-  //     // (x_min, y_min, x_max, y_max), img[y_min:y_max, x_min:x_max]
-  // },
-  //   "stream_adjust": { // ※ 待机画面调整
-  //     "standby": {
-  //         "no_signal_wait": 60, // ※ 无信号超时, 默认60
-  //         /*
-  //         ※ 检查方式：
-  //             BaseCheck: 默认, 无其它额外判定f
-  //             image_check: 通过对比图像来判断是否开启, （暂不开放, 注释掉. ）
-  //             encoder_check: 通过获取encoder的参数判断是否开启
-  //         */
-  //         "check_model": "BaseCheck",
-  //         // ※ encoder_check 模式时配置
-  //         "api_addr": "http://10.7.94.203:2379", // ※ encoder http的配置
-  //         "proxies": { // proxy 测试用项目, 前端不配置
-  //             "http": "http://10.7.0.117:2379",
-  //             "https": "http://10.7.0.117:2379"
-  //         },
-  //         "auth": { // ※ encoder 登陆信息
-  //             "user": "admin",
-  //             "pass": "admin"
-  //         }
-  //     },
-  //   },
-  //   "consumer_plugin": { // ※ 图像分析插件配置, 字典型, 暂时开发了两种子模块：save、screen_abnormal
-  //     // "save": { // ※ 不进行具体配置, 只做enable、disable的判断. enable传递save键值的空{}, disable 时consumer_plugin中没save键值
-  //     // },
-  //     "screen_abnormal": { // ※ 视频异常配置项目
-  //         "detect_setting": { // ※ bha模型检测. 
-  //             // bha模型检测, 使用bha距离, 判断帧是否属于已有模型
-  //             // 可能存在多个子项目, 按照添加的形式添加.
-  //             "bha_dist_setting": { // bha距离模型配置.
-  //                 // 参考：0.4 (不带更新), 带更新的话是, 0.2
-  //                 "new_model_threshold": 0.2, // ※ 新模型阈值, 默认0.2
-  //                 "hist_mode": "tricolor", // ※ 模型比较模式,可选: standard_gray, tricolor
-  //                 "tmp_model_setting": { // ※ 临时模型设置,默认开启
-  //                     // 如果有n帧都归属于此, 则升级为 per model
-  //                     "tmp_trans_per_thresh": 30, // ※ 临时模型升级阈值,默认30
-  //                     // n帧后无更新, 则从tmp中删除
-  //                     "timeout_delete_frame_cnt": 100, // ※ 临时模型超时阈值,默认100
-  //                 }
-  //             },
-  //             // 动态检测, 判断前几帧与当前帧的帧间差值, 判断是否存在改变
-  //             "dynamic_setting": { // ※ 动态检测
-  //                 "dynamic_thresh": 25, // ※ 动态阈值, 默认 25
-  //                 "min_area": 15000 // ※ 检测变化后最小面积, 默认 15000
-  //             },
-  //             "report_setting": { // ※ 异常上报配置
-  //                 "measurement": "camera_test", // ※ 异常表格
-  //                 "eqpt_no": "local_camera", // ※ eqpt_no
+      // "save": { // ※ 不进行具体配置, 只做enable、disable的判断. enable传递save键值的空{}, disable 时consumer_plugin中没save键值
+      // },
+      "screen_abnormal": { // ※ 视频异常配置项目
+          "detect_setting": { // ※ bha模型检测. 
+              // bha模型检测, 使用bha距离, 判断帧是否属于已有模型
+              // 可能存在多个子项目, 按照添加的形式添加.
+              "bha_dist_setting": { // bha距离模型配置.
+                  // 参考：0.4 (不带更新), 带更新的话是, 0.2
+                  "new_model_threshold": 0.2, // ※ 新模型阈值, 默认0.2
+                  "hist_mode": "tricolor", // ※ 模型比较模式,可选: standard_gray, tricolor
+                  "tmp_model_setting": { // ※ 临时模型设置,默认开启
+                      // 如果有n帧都归属于此, 则升级为 per model
+                      "tmp_trans_per_thresh": 30, // ※ 临时模型升级阈值,默认30
+                      // n帧后无更新, 则从tmp中删除
+                      "timeout_delete_frame_cnt": 100, // ※ 临时模型超时阈值,默认100
+                  }
+              },
+              // 动态检测, 判断前几帧与当前帧的帧间差值, 判断是否存在改变
+              "dynamic_setting": { // ※ 动态检测
+                  "dynamic_thresh": 25, // ※ 动态阈值, 默认 25
+                  "min_area": 15000 // ※ 检测变化后最小面积, 默认 15000
+              },
+              "report_setting": { // ※ 异常上报配置
+                  "measurement": "camera_test", // ※ 异常表格
+                  "eqpt_no": "local_camera", // ※ eqpt_no
                   
-  //             }
-  //         }
-  //     }
-  //   },
-  // }
+              }
+          }
+      }
+    },
+  }
 
 
   //翻译

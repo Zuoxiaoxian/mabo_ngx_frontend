@@ -10,6 +10,7 @@ import { DialogVideoComponent } from './dialog-video/dialog-video.component';
 import { FormsModule } from '@angular/forms';
 import { HisTimeComponent } from '../his-time/his-time.component';
 import { TableBottonComponent } from './table-botton/table-botton.component';
+import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
 
 const ROUTES: Routes = [
   {
@@ -32,7 +33,7 @@ const ROUTES: Routes = [
     FormsModule,
     RouterModule.forChild(ROUTES),
   ],
-  declarations: [RealTimeComponent,DialogTipComponent,DialogVideoComponent,HisTimeComponent,TableBottonComponent],
+  declarations: [RealTimeComponent,DialogTipComponent,DialogVideoComponent,HisTimeComponent,TableBottonComponent,DialogConfirmComponent],
   exports:[
     DialogTipComponent,DialogVideoComponent,RealTimeComponent
   ]

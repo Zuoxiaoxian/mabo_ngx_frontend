@@ -12,8 +12,8 @@
           <nb-card-body>
             <div class="row">
               <div class="col-md-12">
-                <div *ngIf="vjs_address;else elseBlock" class="vido">
-                  <app-vjs-player [options]="{ width: getwidth(),height: getheight(),autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+                <div  class="vido" *ngIf="vjs_address;else elseBlock;">
+                  <app-vjs-player [options]="{ width: '604',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
                 </div>
               </div>
             </div>
@@ -66,7 +66,7 @@
 <ng-template #elseBlock>
   <div class="notfond">
     <div style="text-align: center;" *ngIf="video_status;else elseNoClick">
-      <p>视频地址： 未获取到视频地址</p>
+      <p>视频地址： 未获取到视频地址或文件已存坏</p>
       <button nbButton hero status="warning" (click)="get_hls_address()">
         重新获取视频地址
       </button>

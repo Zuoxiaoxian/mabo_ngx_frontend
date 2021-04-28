@@ -3,23 +3,23 @@
     
     <div class="col-md-8">
         <h1 style="margin: 0 10% 0 0%;">
-            新增/编辑
+            {{ type == 'add'?'新增':'编辑' }}
         </h1>
     </div>
     <div class="col-md-4"  style="text-align: right;padding: 10px 12px 0px 0px;">
         <nb-icon icon="close-outline" style="cursor: pointer;" (click)="closedialog()"></nb-icon>
     </div>
     
-    <nb-card style="width: 100%;height: 100%;">
+    <nb-card style="width: 100%;height: 100%;" >
 
         <nb-card-body>
             <table>
                 <tr *ngFor="let item of message">
                     <td class="title">{{item.title}}</td>
                     <td class="td_content" [ngSwitch]="item.element">
-                        <input *ngSwitchCase="'input'" [type]="item.type" [name]="item.name">
+                        <input *ngSwitchCase="'input'" [type]="item.type" [name]="item.name" [(ngModel)]="item.value">
                         <button nbButton status="info" size="tiny" *ngIf="item.name === 'ip_port'" style="    margin-left: 5px;" (click)="test_ip_port()"> 测试 </button>
-                        <textarea *ngSwitchCase="'textarea'"></textarea>
+                        <textarea *ngSwitchCase="'textarea'" [(ngModel)]="item.value"></textarea>
                         <p *ngSwitchDefault [id]="item.id">{{item.value}}</p>
                     </td>
                 </tr>

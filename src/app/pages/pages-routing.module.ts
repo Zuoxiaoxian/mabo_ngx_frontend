@@ -57,9 +57,14 @@ const routes: Routes = [
       loadChildren:()=>import('./real-time/real-time.module')
       .then(m => m.RealTimeModule)
     },
+    // {
+    //   path: "",
+    //   redirectTo: "video_process/stream",
+    //   pathMatch: "full",
+    // },
     {
       path: "",
-      redirectTo: "video_process/stream",
+      redirectTo: "work-bench",
       pathMatch: "full",
     },
     // 通用设置

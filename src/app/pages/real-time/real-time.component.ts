@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NbDialogService } from '@nebular/theme';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 import { LocalDataSource } from 'ng2-smart-table';
+import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
 import { DialogTipComponent } from './dialog-tip/dialog-tip.component';
 import { DialogVideoComponent } from './dialog-video/dialog-video.component';
 import { TableBottonComponent } from './table-botton/table-botton.component';
-
+declare var $
 /**
  * 实时观看
  */
@@ -82,26 +83,16 @@ export class RealTimeComponent implements OnInit {
           // 下载
           instance.downEvent.subscribe(row => {
             
-            console.log('下载')
-            var appearTime: string = row['time'];
-            var appear_stamp = Date.parse(appearTime) / 1000
-            let hisVideoParam = {
-              'start_stamp': appear_stamp - 5,
-              'end_stamp': appear_stamp + 5,
-            }
-
-            this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', hisVideoParam).subscribe(
-              (res: {}[]) => {
-                if(res['uri']){
-                  // window.open(res['uri']);
-                  let a = document.createElement('a');
-                  a.setAttribute("download", res['uri']);
-                  a.setAttribute("href", "");
-                  a.click();
-                }else{
-                  alert('文件找不到了或者已损坏！');
-                }
-              });
+           
+            // downloadMp3("http://192.168.3.110:81/edited_cache/camera_test_1616480095.954_1616480215.954.mp4");
+            // this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', hisVideoParam).subscribe(
+              // (res: {}[]) => {
+                // if(res['uri']){
+                 
+                // }else{
+                  // alert('文件找不到了或者已损坏！');
+                // }
+              // });
           });
         }
       },
@@ -113,9 +104,13 @@ export class RealTimeComponent implements OnInit {
     'start': 0,
     'end': 0
   }
+
+  timer;
   constructor(private http:HttpserviceService,
     private activateInfo:ActivatedRoute,
-    private dialogService:NbDialogService ) { }
+    private dialogService:NbDialogService,
+    private router :Router ) { }
+// 下载服务器的MP3文件
 
   ngOnInit() {
     /**
@@ -133,6 +128,16 @@ export class RealTimeComponent implements OnInit {
       this.getStreamBaseInfo();
       this.getStatus();
       this.getTask();
+      let i = 0;
+      this.timer = setInterval(()=>{
+        if(i%3 == 0){
+          this.getHis();
+        }
+        this.getStreamBaseInfo();
+        this.getStatus();
+        this.getTask();
+        i++;
+      },5000)
     })
   }
 
@@ -159,7 +164,27 @@ export class RealTimeComponent implements OnInit {
       (res:any[]) => {
         console.log(res);
         if(Array.isArray(res)){
+          res = res.map(f=>({stream:this._.stream,...f}));
           this.source.load(res);
+          res.forEach((f,i)=>{
+              var appearTime: string = f['time'];
+              var appear_stamp = Date.parse(appearTime) / 1000
+              let hisVideoParam = {
+                'start_stamp': appear_stamp - 5,
+                'end_stamp': appear_stamp + 5,
+              }
+              let href = '';
+              this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', hisVideoParam).subscribe(
+                  (g: {}[]) => {
+                    if(g['uri']){
+                      href = g['uri'];
+                    }else{
+                      href  = "";
+                    }
+                    f.href = href;
+                    this.source.load(res);
+              });
+          })
         }else{
           this.source.load([]);
         }
@@ -174,7 +199,7 @@ export class RealTimeComponent implements OnInit {
   getTask(){
     this.http.get(`/api//mongo_api/video_process/stream/${ this._.stream}/project/${this._.name}`
     ,null).subscribe((f:any)=>{
-      console.log(f)
+      // console.log(f)
       if(f.task){
         let task = f.task;
         this._.stream = task.webcam||'';//
@@ -258,33 +283,39 @@ export class RealTimeComponent implements OnInit {
    * 关闭视频容器
    * @returns 
    */
-  stopProc() {
-    var r = confirm('即将停止视频处理容器')
-    if (!r) {
-      return
-    }
-    console.log('stopProc')
+  stopProc(s) {
+
+    this.dialogService.open(DialogConfirmComponent, {
+      context: {
+        body:`是否${s}容器？`
+      },
+    }).onClose.subscribe(f=>{
+      console.log(f)
+      if(f.code == 1){
+        var param = { 'just_empty': 'None' }
+        this.http.post('/api/docker_ctrl/video_prc/stream/' + this._.stream + '/project/' + this._.name + '/stop', param).subscribe(
+          (res: {}) => {
+            let context = {};
+            if ('success' in res) {
+              context = {
+                title:'关闭成功',
+                body:'容器关闭成功'
+              }
+            } else {
+              context = {
+                title:'关闭成功',
+                body:'容器关闭成功'
+              }
+            }
+            this.dialogService.open(DialogTipComponent, {
+              context: context,
+            });
+          });
+      }
+    })
     // this.isGettingProcStatus = true;
     // var param = { 'docker_url': 'tcp://192.168.252.129:4243' }
-    var param = { 'just_empty': 'None' }
-    this.http.post('/api/docker_ctrl/video_prc/stream/' + this._.stream + '/project/' + this._.name + '/stop', param).subscribe(
-      (res: {}) => {
-        let context = {};
-        if ('success' in res) {
-          context = {
-            title:'关闭成功',
-            body:'容器关闭成功'
-          }
-        } else {
-          context = {
-            title:'关闭成功',
-            body:'容器关闭成功'
-          }
-        }
-        this.dialogService.open(DialogTipComponent, {
-          context: context,
-        });
-      });
+    
 
   }
 
@@ -304,5 +335,12 @@ export class RealTimeComponent implements OnInit {
 
   }
 
+  go_back(){
+    this.router.navigate(['/pages/work-bench'])
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.timer); 
+  }
 
 }

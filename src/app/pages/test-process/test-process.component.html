@@ -7,29 +7,29 @@
             <nb-card-header style="font-size: 1.5375rem;">
               任务信息
               <button nbButton hero status="success" (click)="back()" style="float: right;">
-              返回  
+              返回工作台
               </button>
             </nb-card-header>
             <nb-card-body>
               <div class="row_dis">
-                <div>任务单编号(LWT)</div>
+                <div><span class="red">*</span>任务单编号(LWT)</div>
                 <div>
-                  <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.number"/>
+                  <input style="width: 80%;" nbInput type="text" [status]="number_status?'':'danger'" [(ngModel)]="test_info.number" (keyup)="keyup_number()"/>
                 </div>
-                <div>试验人员</div>
+                <div><span class="red">*</span>试验人员</div>
                 <div>
                   <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.peopel">
                 </div>
-                <div>任务名称(project_name)</div>
+                <div><span class="red">*</span>任务名称(project_name)</div>
                 <div>
                   <!-- 下划线字母数字 -->
                   <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.project_name" (keyup)="keyup($event,test_info.project_name)">
                 </div>
-                <div>样件编号</div>
+                <div><span class="red">*</span>样件编号</div>
                 <div>
                   <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.equipment">
                 </div>
-                <div>试验室</div>
+                <div><span class="red">*</span>试验室</div>
                 <div>
                   <nb-select  style="width: 80%;" [(ngModel)]="test_info.laboratory">
                     <nb-option value="实验室1">
@@ -40,7 +40,7 @@
                     </nb-option>
                   </nb-select>
                 </div>
-                <div>摄像头</div>
+                <div><span class="red">*</span>摄像头</div>
                 <div>
                   <nb-select style="width: 80%;" [selected]="test_info.webcam" (selectedChange)="changeWebcam($event)">
                     <nb-option *ngFor="let item of webcamList" [value]="item">
@@ -48,7 +48,7 @@
                     </nb-option>
                   </nb-select>
                 </div>
-                <div>检查方式</div>
+                <div><span class="red">*</span>检查方式</div>
                 <div>
                   <nb-select style="width: 80%;" [(ngModel)]="test_info.check_model" >
                     <nb-option value="BaseCheck">
@@ -73,15 +73,11 @@
             <nb-card-header style="font-size: 1.5375rem;">侦测区域定义</nb-card-header>
             <nb-card-body>
               <div *ngIf="vjs_address; else elseBlock" class="row_vido">
-                <app-vjs-player [options]="{ width: getwidth(),height: getheight(),autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
-                <ng-container *ngFor="let item of getarr()">
-                  <div class="fang" *ngIf="true">
-  
-                  </div>
-                </ng-container>
+                <app-vjs-player [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+                <canvas id="canvas" width="800" height="420" style="border: 1px solid white;"></canvas>
               </div>
               <div class="row" style="width: 100%;">
-                <button nbButton hero status="success" (click)="add()">新增</button>
+                <button nbButton hero status="success" (click)="add_fang()">新增</button>
                 <ng2-smart-table style="width: 100%;" [settings]="setting" [source]="source" ></ng2-smart-table>
               </div>
             </nb-card-body>

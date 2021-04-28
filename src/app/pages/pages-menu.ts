@@ -18,40 +18,43 @@ export const MENU_ITEMS: NbMenuItem[] = [
   //   link: '/pages/tv_mat_espec_video_crop_1',
   // },
   {
-    title: 'video_process',
+    title: '视觉辅助系统',
     icon: 'film-outline',
-    link: '/pages/video_process/stream',
+    // link: '/pages/video_process/stream',
+    link: '',
     children:[
+      // {
+      //   title: '视频配置',
+      //   icon: 'film-outline',
+      //   link: '/pages/video-config',
+      // },
       {
-        title: '视频配置',
+        title: '工作台',
         icon: 'film-outline',
-        link: '/pages/video-config',
+        link: '/pages/work-bench',
+      },
+      
+      {
+        title: '检测设置',
+        icon: 'film-outline',
+        link: '/pages/test-process',
+      },
+      {
+        title: '通用设置',
+        icon: 'film-outline',
+        link:'',
+        // link: '/pages/general_settings',
+        children:[
+          {
+            title: '摄像头',
+            icon: 'film-outline',
+            link: '/pages/general_settings/camera',
+          }
+        ]
       },
     ],
   },
-  {
-    title: '工作台',
-    icon: 'film-outline',
-    link: '/pages/work-bench',
-  },
   
-  {
-    title: '检测设置',
-    icon: 'film-outline',
-    link: '/pages/test-process',
-  },
-  {
-    title: '通用设置',
-    icon: 'film-outline',
-    link: '/pages/general_settings',
-    children:[
-      {
-        title: '摄像头',
-        icon: 'film-outline',
-        link: '/pages/general_settings/camera',
-      }
-    ]
-  },
   
   
 ];

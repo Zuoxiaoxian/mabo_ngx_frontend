@@ -1,5 +1,12 @@
 <div class="f">
   <button nbButton hero status="success"  (click)="play()" >播放</button>
   <button nbButton hero status="info"  (click)="stop()" *ngIf="rowData?._s == 'his'">暂停</button>
-  <button  nbButton hero status="warning" (click)="download()">下载</button>
+  <a download [href]="rowData.href" disabled *ngIf="rowData.href;else nofile;" (click)="(false)">
+    右键另存为
+    <!-- <button  nbButton hero status="warning" >右键另存为</button> -->
+  </a>
 </div>
+
+<ng-template #nofile>
+  <div>未获取到视频地址或文件已存坏</div>
+</ng-template>

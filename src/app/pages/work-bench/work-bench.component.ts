@@ -23,7 +23,7 @@ export class WorkBenchComponent implements OnInit {
     },
     pager: {
       display: true,
-      perPage: 10
+      perPage: 5
     },
     columns: {
       taskname:{
@@ -61,7 +61,7 @@ export class WorkBenchComponent implements OnInit {
     },
     pager: {
       display: true,
-      perPage: 10
+      perPage: 5
     },
     columns: {
       id:{
@@ -108,21 +108,25 @@ export class WorkBenchComponent implements OnInit {
 
    his_source: LocalDataSource = new LocalDataSource();
 
-
+   timer;//定时器
   constructor(private http:HttpserviceService,private router:Router) { }
 
   ngOnInit() {
     this.getData();
+    this.timer = setInterval(()=>{
+      this.getData();
+    },5000)
   }
 
   getData(){
-    this.now_source.empty();
+    // this.now_source.empty();
     let param = { 
       'just_empty': 'None'
       // "docker_url":"tcp://192.168.252.129:4243"
      }
     this.http.get('/api/mongo_api/video_process/stream',null).subscribe((f:any)=>{
-      let arr = {};
+      let item = {};
+      let list = [];
       if(f && f.length >0){
         f.forEach(el => {
           let stream = el;
@@ -130,27 +134,29 @@ export class WorkBenchComponent implements OnInit {
             // return;//TODO
           }
           this.http.get(`/api//mongo_api/video_process/stream/${stream}/project`,null).subscribe((g:any)=>{
-            g.forEach(ei => {
+            this.now_source.load( g);
+            g.forEach((ei,i) => {
               this.http.post(`/api/docker_ctrl/video_prc/stream/${stream}/project/${ei}/health`,param
               ).subscribe((h:any)=>{
                 console.log(h)
-                arr =  {
+                item =  {
                   stream:stream,
                   taskname:ei,
                   taskstatus:this.getTaskStatus(h.status) || '-',
                   errornum:'-',
                   _s:'real'
                 };
-                this.now_source.append(arr);
+                list.push(item);
+                this.now_source.load(list);
 
-                this.his_source.append({
-                  id:ei,
-                  stream:stream,
-                  taskname:ei,
-                  taskstatus:this.getTaskStatus(h.status) || '-',
-                  errornum:'-',
-                  _s:'his'
-                })
+                // this.his_source.append({
+                //   id:ei,
+                //   stream:stream,
+                //   taskname:ei,
+                //   taskstatus:this.getTaskStatus(h.status) || '-',
+                //   errornum:'-',
+                //   _s:'his'
+                // })
               })
             });
           });
@@ -180,6 +186,10 @@ export class WorkBenchComponent implements OnInit {
    */
   createTask(){
     this.router.navigate(['/pages/test-process'])
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.timer); 
   }
 
 }

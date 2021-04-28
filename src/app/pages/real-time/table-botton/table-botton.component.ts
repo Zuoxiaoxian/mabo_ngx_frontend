@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { HttpserviceService } from 'app/services/http/httpservice.service';
 
 @Component({
   selector: 'app-table-botton',
@@ -11,10 +12,14 @@ export class TableBottonComponent implements OnInit {
   @Output() playEvent:EventEmitter<any> = new EventEmitter();
   @Output() downEvent:EventEmitter<any> = new EventEmitter();
   @Output() stopEvent:EventEmitter<any> = new EventEmitter();
-  constructor() { }
+  constructor(private http:HttpserviceService) { }
+  
 
   ngOnInit() {
+    
   }
+
+
 
   play(){
     this.playEvent.emit(this.rowData);

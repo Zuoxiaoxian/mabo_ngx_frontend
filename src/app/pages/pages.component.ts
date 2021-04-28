@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NbMenuService } from '@nebular/theme';
+import { NbMenuService, NbSidebarService } from '@nebular/theme';
+import { LayoutService } from 'app/@core/utils';
 
 import { MENU_ITEMS } from './pages-menu';
 
@@ -21,7 +22,8 @@ export class PagesComponent implements OnInit {
 
   constructor(
     private menuservice: NbMenuService,
-    private router:Router
+    private router:Router,
+    private sidebarService:NbSidebarService,
   ){
   }
 
@@ -32,6 +34,10 @@ export class PagesComponent implements OnInit {
       if(f?.item?.link)
         this.router.navigate([f.item.link]);
     })
+    setTimeout(() => {
+      this.sidebarService.toggle(true, 'menu-sidebar');
+    }, 10);
+
   }
 
 

@@ -1,0 +1,10 @@
+<nb-card style="width: 20rem;">
+  <nb-card-header>提示</nb-card-header>
+  <nb-card-body>
+    {{body}}
+  </nb-card-body>
+  <nb-card-footer style="display: flex;justify-content: flex-end;">
+    <button nbButton hero status="success" (click)="save()">确定</button>
+    <button nbButton hero status="primary" (click)="dismiss()" style="margin-left: 1rem;">关闭</button>
+  </nb-card-footer>
+</nb-card>

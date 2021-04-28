@@ -5,6 +5,7 @@ import { LocalDataSource } from "ng2-smart-table";
 
 import { NbDialogService } from "@nebular/theme";
 import { CameraNewaddComponent } from "app/pages-popus/pages-popus/camera-newadd/camera-newadd.component";
+import { ConfigTableEditComponent } from "../temp/table-edit/config-table-edit.component";
 
 @Component({
   selector: "ngx-camera",
@@ -35,7 +36,7 @@ export class CameraComponent implements OnInit {
     },
     pager: {
       display: true,
-      perPage: 10,
+      perPage: 6,
     },
     columns: {
       camera_no: {
@@ -71,6 +72,12 @@ export class CameraComponent implements OnInit {
         title: "记录更新时间",
         type: "update_time",
       },
+      update: {
+        title: "修改",
+        filter:false,
+        type: 'custom',
+        renderComponent:ConfigTableEditComponent
+      },
     },
   };
 
@@ -84,44 +91,73 @@ export class CameraComponent implements OnInit {
   ngOnInit(): void {}
 
   ngAfterViewInit() {
-    this.fill_table();
+    this.getData();
   }
 
   ngOnDestroy() {}
 
-  // 填充 table
-  fill_table() {
-    var message = [
-      {
-        camera_no: "ABC",
-        test_room: "EMC-1",
-        ip_port: "10.2.3.4:6721",
-        communication_protocol: "RTSP",
-        model: null,
-        status: "离线/监测中Idle",
-        create_time: "2021-4-22 09:40:50",
-        update_time: "2021-4-22 09:40:50",
-      },
-      {
-        camera_no: "ABD",
-        test_room: "EMC-1",
-        ip_port: "10.2.3.4:6721",
-        communication_protocol: "RTSP",
-        model: null,
-        status: "离线/监测中Idle",
-        create_time: "2021-4-22 09:40:50",
-        update_time: "2021-4-22 09:40:50",
-      },
-    ];
-
-    this.source.load(message);
-  }
 
   // 新建
   add() {
     this.dialogService.open(CameraNewaddComponent, {
       closeOnBackdropClick: false,
-      context: { rowdata: [] },
+      context: { rowdata: JSON.stringify({}),type:'add' },
+    }).onClose.subscribe(f=>{
+      if(f.code == 1){  
+        this.getData();
+      }
+    })
+  }
+
+  getData(){
+    this.source.empty();
+    let param = { 
+      'just_empty': 'None'
+      // "docker_url":"tcp://192.168.252.129:4243"
+     }
+    this.http.get('/api/mongo_api/video_process/stream',null).subscribe((f:any)=>{
+      console.log(f)
+      f = f.map(m=>(
+        {
+          camera_no: m,
+          test_room: "",
+          ip_port: "",
+          communication_protocol: "",
+          model: null,
+          status: "",
+          create_time: "",
+          update_time: "",
+          stream_name:'',//唯一 保存
+        }
+        ));
+      this.source.load(f);
+      /**
+       *  "_id": "601279292d77c23703eb4b57",    # mongodb的_id
+    "current_project_name": "camera_test_202012",    # 当前运行中的项目
+    "eqpt_no": "camera_test",    # 设备编号
+    "init_timeout": 30,            # 初始化超时
+    "origin_url": "http://localhost:80/playlist.m3u8",    # 源地址
+    "project_list": [        # 此流运行过的所有项目
+        "camera_test_202012"
+    ],
+    "stream_name": "camera_test",    # 流名, 唯一
+    "stream_transform": "hls"    # 流源格式
+       */
+      f.forEach(el => {
+        this.http.get(`/api/mongo_api/video_process/stream/${el.camera_no}`,null).subscribe((g:any)=>{
+          console.log(g)
+          el.ip_port = g.origin_url;
+          el.communication_protocol = g.stream_transform;
+          el.stream_name = g.stream_name;
+          //TODO 实验室 厂家 状态 创建事件 记录时间
+          this.source.load(f);
+        })
+      });
+      
+
     });
   }
+  
+
+  
 }

@@ -17,18 +17,18 @@
             <div class="row">
               <div class="col-md-12">
                 <div *ngIf="vjs_address;else elseBlock" class="vido">
-                  <app-vjs-player [options]="{ width: getwidth(),height: getheight(),autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+                  <app-vjs-player [options]="{ width: '500',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
                 </div>
               </div>
               <div class="col-md-12 bt_row">
-                <div class="bottom">启动侦测
-                  <i class="fa fa-play" title="play" (click)="startProc()"></i>
+                <div class="bottom" (click)="startProc()">启动侦测
+                  <i class="fa fa-play" title="play" ></i>
                 </div>
-                <div class="bottom">暂停侦测
-                  <i class="ion-ios-pause" (click)="stopProc()" ></i>
+                <div class="bottom" (click)="stopProc('暂停')">暂停侦测
+                  <i class="ion-ios-pause"  ></i>
                 </div>
-                <div class="bottom">停止侦测
-                  <i class="fa fa-stop" title="stop" (click)="stopProc()"></i>
+                <div class="bottom" (click)="stopProc('停止')">停止侦测
+                  <i class="fa fa-stop" title="stop" ></i>
                 </div>
               </div>
             </div>
@@ -37,8 +37,9 @@
       </div>
       <div class="col-md-6">
         <nb-card>
-          <nb-card-header >
+          <nb-card-header style="display: flex;font-size: 1.5rem;justify-content: space-between;">
             实验信息
+            <button nbButton hero status="success" (click)="go_back()">返回工作台</button>
           </nb-card-header>
           <nb-card-body>
             <div class="r">

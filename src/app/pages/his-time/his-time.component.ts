@@ -140,7 +140,26 @@ export class HisTimeComponent implements OnInit {
       (res:any[]) => {
         console.log(res);
         if(Array.isArray(res)){
-          this.source.load(res.map(m => ({_s:'his',...m})));
+          res = res.map(m => ({_s:'his',stream:this._.stream,...m}));
+          res.forEach((f,i)=>{
+            var appearTime: string = f['time'];
+            var appear_stamp = Date.parse(appearTime) / 1000
+            let hisVideoParam = {
+              'start_stamp': appear_stamp - 5,
+              'end_stamp': appear_stamp + 5,
+            }
+            let href = '';
+            this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', hisVideoParam).subscribe(
+                (g: {}[]) => {
+                  if(g['uri']){
+                    href = g['uri'];
+                  }else{
+                    href  = "";
+                  }
+                  f.href = href;
+                  this.source.load(res);
+            });
+        })
         }else{
           this.source.load([]);
         }

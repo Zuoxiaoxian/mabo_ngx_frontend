@@ -12,7 +12,7 @@
   "scripts": {
     "ng": "ng",
     "conventional-changelog": "conventional-changelog",
-    "start": "ng serve --proxy-config proxy.js",
+    "start": "ng serve --proxy-config proxy.js --host 0.0.0.0 --port 4200",
     "start local": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "build:prod": "npm run build -- --prod --aot",

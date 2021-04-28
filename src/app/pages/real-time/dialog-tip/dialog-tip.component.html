@@ -1,9 +1,9 @@
-<nb-card>
+<nb-card style="width: 20rem;">
   <nb-card-header>{{ title }}</nb-card-header>
   <nb-card-body>
     {{body}}
   </nb-card-body>
-  <nb-card-footer>
+  <nb-card-footer style="display: flex;justify-content: flex-end;">
     <button nbButton hero status="primary" (click)="dismiss()">关闭</button>
   </nb-card-footer>
 </nb-card>

@@ -2,12 +2,12 @@
   <nb-card-body >
     <div class="row">
       <div class="col-md-12 ">
-        <nb-card>
-          <nb-card-header >
+        <nb-card >
+          <nb-card-header style="font-size: 1.5rem;">
             我的未完工试验
             <button nbButton hero status="success" (click)="createTask()" style="float: right;">新建</button>
           </nb-card-header>
-          <nb-card-body >
+          <nb-card-body style="min-height: 24rem;">
             <ng2-smart-table [settings]="project_now" [source]="now_source">
             </ng2-smart-table>
           </nb-card-body>
@@ -15,8 +15,8 @@
       </div>
       <div class="col-md-12 ">
         <nb-card>
-          <nb-card-header >历史</nb-card-header>
-          <nb-card-body >
+          <nb-card-header style="font-size: 1.5rem;">历史</nb-card-header>
+          <nb-card-body style="min-height: 24rem;">
             <ng2-smart-table [settings]="project_his" [source]="his_source">
             </ng2-smart-table>
           </nb-card-body>
