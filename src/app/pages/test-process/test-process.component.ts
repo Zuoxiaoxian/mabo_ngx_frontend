@@ -9,8 +9,6 @@ import { fabric } from "fabric";
 import { renderIcon, deleteIcon } from "./temp/test-process";
 // import { deleteObject, renderIcon, deleteIcon, Add } from "./temp/test-process";
 
-const z_canvas = require("../../../assets/canvas/z_canvas.js");
-
 /**
  * 试验配置与新增
  */
@@ -83,10 +81,9 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         renderComponent: TableInputComponent,
         onComponentInitFunction: (instance) => {
           instance.edit.subscribe((value) => {
-
             // TODO 进行图像画框
           });
-        }
+        },
       },
       address: {
         title: "位置",
@@ -247,9 +244,24 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     // 监听鼠标 ‘松开’
     this.canvas.on("mouse:up", function (options) {
       var select_item = that.canvas.getActiveObject();
+      var rect_list = that.rects;
       if (select_item) {
         var polygonCenter = select_item.getCenterPoint();
         console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
+        var translatedPoints = canvas.getActiveObject().get("aCoords");
+        console.error("得到 顶点坐标>>>", translatedPoints);
+        // 要得到对角线的坐标点， 左上---右下
+        var tl_br = [
+          translatedPoints["tl"]["x"],
+          translatedPoints["tl"]["y"],
+          translatedPoints["br"]["x"],
+          translatedPoints["br"]["y"],
+        ];
+        console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+
+        var rect_index = rect_list.indexOf(select_item);
+        var item = that.row_item_list[rect_index];
+        console.error("rect_index , item>>", rect_index, item);
       }
     });
   }
@@ -602,9 +614,9 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
       var r_list = canvas.getObjects();
 
-      console.error("r_list>>>>>>", r_list);
-      console.error("text_item", text_item);
-      console.error("target", target);
+      // console.error("r_list>>>>>>", r_list);
+      // console.error("text_item", text_item);
+      // console.error("target", target);
 
       console.error(
         "planetLabel_list, rect_list",
@@ -618,6 +630,10 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         }
       });
 
+      console.error(
+        "删除的table的row数据：>>>>>>",
+        that.row_item_list[rect_index]
+      );
       canvas.remove(target);
       that.row_item_list.splice(rect_index, 1);
       that.planetLabel_list.splice(rect_index, 1);
@@ -627,11 +643,12 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         that.planetLabel_list,
         rect_list
       );
-      console.error("r_list>>>>>>", canvas.getObjects());
+      // console.error("r_list>>>>>>", canvas.getObjects());
       canvas.requestRenderAll();
     };
   }
 
+  // 新增 矩形
   AddRect(item) {
     this.row_item_list.push(item);
     // item 0:名称、1:位置("100,100,200,200")、2:说明
@@ -683,6 +700,8 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
     // ------监听 鼠标移出矩形
   }
+  // 更新 矩形
+  updaterect(position, index) {}
 
   // -------------------------------------
 }
