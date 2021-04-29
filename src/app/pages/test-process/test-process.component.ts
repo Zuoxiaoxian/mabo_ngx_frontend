@@ -6,7 +6,8 @@ import { TableDelComponent } from "./temp/table-del/table-del.component";
 import { TableEditComponent } from "./temp/table-edit/table-edit.component";
 import { TableInputComponent } from "./temp/table-input/table-input.component";
 import { fabric } from "fabric";
-import { deleteObject, renderIcon, deleteIcon, Add } from "./temp/test-process";
+import { renderIcon, deleteIcon } from "./temp/test-process";
+// import { deleteObject, renderIcon, deleteIcon, Add } from "./temp/test-process";
 
 const z_canvas = require("../../../assets/canvas/z_canvas.js");
 
@@ -133,83 +134,118 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     // this.getStream();
     this.canvas = new fabric.Canvas("canvas");
     var canvas = this.canvas;
-    console.error(
-      "************************************************************\n"
-    );
 
     var that = this;
 
     // 鼠标 进入矩形
-    var hoverTarget;
-    that.canvas.on("mouse:over", function (options) {
-      hoverTarget = options.target;
-      // var rect_list = that.canvas.getObjects();
-      var rect_list = that.rects;
-      if (options.target && options.target.type === "rect") {
-        var rect_index = rect_list.indexOf(options.target);
-        var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
+    // var hoverTarget;
+    // that.canvas.on("mouse:over", function (options) {
+    //   hoverTarget = options.target;
+    //   // var rect_list = that.canvas.getObjects();
+    //   var rect_list = that.rects;
+    //   if (options.target && options.target.type === "rect") {
+    //     var rect_index = rect_list.indexOf(options.target);
+    //     var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
 
-        // var polygonCenter = that.canvas.getActiveObject().getCenterPoint();
-        var polygonCenter = options.target.getCenterPoint();
-        // console.error("mouse:over", options.target, options.target.left);
-        var translatedPoints = options.target.get("aCoords");
-        // console.error("mouse:over", translatedPoints);
-        // 得到 左上--右下点的坐标， tl、 br
-        var tl = translatedPoints["tl"]; // 左上 {x: 100, y: 100}
-        var br = translatedPoints["br"]; // 右下 {x: 100, y: 100}
-        // console.error("mouse:over--tl,br", tl, br);
-        var item = that.row_item_list[rect_index];
-        // console.error("text_item, item", text_item, item, that.canvas);
-        text_item.set({
-          left: tl.x + 10,
-          top: tl.y - 20,
-          text: item[0],
-        });
-        canvas.add(text_item);
+    //     // var polygonCenter = that.canvas.getActiveObject().getCenterPoint();
+    //     var polygonCenter = options.target.getCenterPoint();
+    //     // console.error("mouse:over", options.target, options.target.left);
+    //     var translatedPoints = options.target.get("aCoords");
+    //     // console.error("mouse:over", translatedPoints);
+    //     // 得到 左上--右下点的坐标， tl、 br
+    //     var tl = translatedPoints["tl"]; // 左上 {x: 100, y: 100}
+    //     var br = translatedPoints["br"]; // 右下 {x: 100, y: 100}
+    //     // console.error("mouse:over--tl,br", tl, br);
+    //     var item = that.row_item_list[rect_index];
+    //     console.error("text_item, item", text_item, item, that.canvas);
+    //     text_item.set({
+    //       left: tl.x + 10,
+    //       top: tl.y - 20,
+    //       text: item[0],
+    //     });
+    //     canvas.add(text_item);
+    //   }
+    // });
+
+    // 鼠标 移出矩形
+    // that.canvas.on("mouse:out", function (options) {
+    //   var rect_list = that.rects;
+    //   var rect_index = rect_list.indexOf(options.target);
+    //   var text_item = that.planetLabel_list[rect_index];
+    //   that.canvas.remove(text_item);
+    //   that.canvas.requestRenderAll();
+    // });
+
+    // // 监听移动
+    // that.canvas.on("mouse:down", function (options) {
+    //   if (options.target) {
+    //     console.log("选中的", options.target);
+    //     var target = options.target;
+    //     if (options.target.type === "rect") {
+    //       var rect_list = that.rects;
+    //       var rect_index = rect_list.indexOf(target);
+    //       var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
+    //       options.target.on("moving", function (options) {
+    //         var translatedPoints = target.get("aCoords");
+    //         // 得到 左上--右下点的坐标， tl、 br
+    //         var tl = translatedPoints["tl"]; // 左上 {x: 100, y: 100}
+    //         var br = translatedPoints["br"]; // 右下 {x: 100, y: 100}
+    //         // console.error("mouse:over--tl,br", tl, br);
+    //         var item = that.row_item_list[rect_index];
+    //         text_item.set({
+    //           left: tl.x + 10,
+    //           top: tl.y - 20,
+    //           text: item[0],
+    //         });
+    //         that.canvas.add(text_item);
+    //         var r_list = that.canvas.getObjects();
+    //         console.error("r_list>>>>>>", r_list);
+    //       });
+    //     }
+    //   }
+    // });
+
+    // 监听移动
+    that.canvas.on("mouse:down", function (options) {
+      if (options.target) {
+        console.log("选中的", options.target);
+        var target = options.target;
+        if (options.target.type === "rect") {
+          options.target.on("moving", function (options) {
+            var rect_list = that.rects;
+            var rect_index = rect_list.indexOf(target);
+            var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
+            var translatedPoints = target.get("aCoords");
+            // 得到 左上--右下点的坐标， tl、 br
+            var tl = translatedPoints["tl"]; // 左上 {x: 100, y: 100}
+            var br = translatedPoints["br"]; // 右下 {x: 100, y: 100}
+            // console.error("mouse:over--tl,br", tl, br);
+            var item = that.row_item_list[rect_index];
+            text_item.set({
+              left: tl.x + 10,
+              top: tl.y - 20,
+              text: item[0],
+            });
+            that.canvas.add(text_item);
+            var r_list = that.canvas.getObjects();
+            r_list.forEach((element, index) => {
+              if (element == text_item && index < r_list.length - 1) {
+                that.canvas.remove(element); // 删除提示
+              }
+            });
+          });
+        }
       }
     });
 
-    // 鼠标 移出矩形
-    that.canvas.on("mouse:out", function (options) {
-      var rect_list = that.rects;
-      var rect_index = rect_list.indexOf(options.target);
-      var text_item = that.planetLabel_list[rect_index];
-      that.canvas.remove(text_item);
-      that.canvas.requestRenderAll();
+    // 监听鼠标 ‘松开’
+    this.canvas.on("mouse:up", function (options) {
+      var select_item = that.canvas.getActiveObject();
+      if (select_item) {
+        var polygonCenter = select_item.getCenterPoint();
+        console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
+      }
     });
-
-    // setTimeout(() => {
-    //   this._canvas = new fabric.Canvas('canvas');
-    //   // fabric.Object.prototype.transparentCorners = false;
-    //   // fabric.Object.prototype.cornerColor = 'blue';
-    //   // fabric.Object.prototype.cornerStyle = 'circle';
-    //   this._canvas.setBackgroundImage(
-    //     "",
-    //     this._canvas.renderAll.bind( this._canvas),
-    //     {
-    //       // canvas 的位置是在画布哪里
-    //       originX: "left",
-    //       originY: "top",
-    //       width:  this._canvas.width,
-    //       height:  this._canvas.height,
-    //     }
-    //   );
-    //   // 渲染图标
-    //   var deleteImg = document.createElement("img");
-    //   deleteImg.src = deleteIcon;
-    //   // @ts-ignore  添加的 删除的icon
-    //   fabric.Object.prototype.controls.deleteControl = new fabric.Control({
-    //     x: 0.5,
-    //     y: -0.5,
-    //     offsetY: 10,
-    //     offsetX: 16,
-    //     cursorStyle: "pointer",
-    //     mouseUpHandler: deleteObject,
-    //     render: renderIcon(deleteImg),
-    //     cornerSize: 26,
-    //   });
-    //   Add(['1', "100,100,200,200", ""],this._canvas);
-    // }, 10);
   }
 
   // 新增 名称-位置-说明后，同时新建canas的矩形
@@ -234,13 +270,15 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       var deleteImg = document.createElement("img");
       deleteImg.src = deleteIcon;
       // @ts-ignore  添加的 删除的icon
+      var that = this;
       fabric.Object.prototype.controls.deleteControl = new fabric.Control({
         x: 0.5,
         y: -0.5,
         offsetY: 10,
         offsetX: 16,
         cursorStyle: "pointer",
-        mouseUpHandler: deleteObject,
+        // mouseUpHandler: this.deleteObject,
+        mouseUpHandler: this.deleteObject(that),
         render: renderIcon(deleteImg),
         cornerSize: 26,
       });
@@ -546,6 +584,48 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     };
   }
   // -------------------------------------
+
+  deleteObject(that) {
+    return function deleteObject(eventData, transform) {
+      var target = transform.target;
+      var canvas = target.canvas;
+
+      var rect_list = that.rects;
+      var rect_index = rect_list.indexOf(target);
+      var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
+
+      var r_list = canvas.getObjects();
+
+      console.error("r_list>>>>>>", r_list);
+      console.error("text_item", text_item);
+      console.error("target", target);
+
+      console.error(
+        "planetLabel_list, rect_list",
+        that.planetLabel_list,
+        rect_list
+      );
+
+      r_list.forEach((element, index) => {
+        if (element == text_item) {
+          canvas.remove(element); // 删除提示
+        }
+      });
+
+      canvas.remove(target);
+      that.row_item_list.splice(rect_index, 1);
+      that.planetLabel_list.splice(rect_index, 1);
+      rect_list.splice(rect_index, 1);
+      console.error(
+        "planetLabel_list, rect_list",
+        that.planetLabel_list,
+        rect_list
+      );
+      console.error("r_list>>>>>>", canvas.getObjects());
+      canvas.requestRenderAll();
+    };
+  }
+
   AddRect(item) {
     this.row_item_list.push(item);
     // item 0:名称、1:位置("100,100,200,200")、2:说明
@@ -585,7 +665,15 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       fontFamily: "Open Sans",
       textBackgroundColor: "#002244",
     });
+
+    planetLabel.set({
+      left: Number(item[1].split(",")[1]) + 10,
+      top: Number(item[1].split(",")[0]) - 20,
+      text: item[0],
+    });
     this.planetLabel_list.push(planetLabel);
+
+    this.canvas.add(planetLabel);
 
     // ------监听 鼠标移出矩形
   }

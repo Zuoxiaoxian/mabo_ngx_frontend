@@ -78,7 +78,9 @@
               </div> -->
               <div *ngIf="true; else elseBlock" class="row_vido">
                 <app-vjs-player [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
-                <canvas id="canvas" width="800" height="420" style="border: 1px solid rgb(253, 15, 15);"></canvas>
+                <div style="position: absolute;z-index: 200;">
+                  <canvas id="canvas" width="800" height="420" style="border: 1px solid rgb(253, 15, 15);"></canvas>
+                </div>
               </div>
 
               <div class="row" style="width: 100%;">
