@@ -166,25 +166,25 @@ export class RealTimeComponent implements OnInit {
         if(Array.isArray(res)){
           res = res.map(f=>({stream:this._.stream,...f}));
           this.source.load(res);
-          res.forEach((f,i)=>{
-              var appearTime: string = f['time'];
-              var appear_stamp = Date.parse(appearTime) / 1000
-              let hisVideoParam = {
-                'start_stamp': appear_stamp - 5,
-                'end_stamp': appear_stamp + 5,
-              }
-              let href = '';
-              this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', hisVideoParam).subscribe(
-                  (g: {}[]) => {
-                    if(g['uri']){
-                      href = g['uri'];
-                    }else{
-                      href  = "";
-                    }
-                    f.href = href;
-                    this.source.load(res);
-              });
-          })
+          // res.forEach((f,i)=>{
+          //     var appearTime: string = f['time'];
+          //     var appear_stamp = Date.parse(appearTime) / 1000
+          //     let hisVideoParam = {
+          //       'start_stamp': appear_stamp - 5,
+          //       'end_stamp': appear_stamp + 5,
+          //     }
+          //     let href = '';
+          //     this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', hisVideoParam).subscribe(
+          //         (g: {}[]) => {
+          //           if(g['uri']){
+          //             href = g['uri'];
+          //           }else{
+          //             href  = "";
+          //           }
+          //           f.href = href;
+          //           this.source.load(res);
+          //     });
+          // })
         }else{
           this.source.load([]);
         }
@@ -291,7 +291,7 @@ export class RealTimeComponent implements OnInit {
       },
     }).onClose.subscribe(f=>{
       console.log(f)
-      if(f.code == 1){
+      if(f && f.code == 1){
         var param = { 'just_empty': 'None' }
         this.http.post('/api/docker_ctrl/video_prc/stream/' + this._.stream + '/project/' + this._.name + '/stop', param).subscribe(
           (res: {}) => {

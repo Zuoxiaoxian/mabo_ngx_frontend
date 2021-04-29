@@ -18,7 +18,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
   //   link: '/pages/tv_mat_espec_video_crop_1',
   // },
   {
-    title: '视觉辅助系统',
+    title: '视觉辅助',
     icon: 'film-outline',
     // link: '/pages/video_process/stream',
     link: '',

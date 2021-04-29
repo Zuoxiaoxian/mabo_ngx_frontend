@@ -76,7 +76,15 @@ export class CameraComponent implements OnInit {
         title: "修改",
         filter:false,
         type: 'custom',
-        renderComponent:ConfigTableEditComponent
+        renderComponent:ConfigTableEditComponent,
+        onComponentInitFunction:(instance)=>{
+          instance.saveEvent.subscribe((f:any) => {
+            if(f.code == 1){
+              this.getData();
+              alert(f.title);
+            }
+          }); 
+        } 
       },
     },
   };
@@ -103,8 +111,9 @@ export class CameraComponent implements OnInit {
       closeOnBackdropClick: false,
       context: { rowdata: JSON.stringify({}),type:'add' },
     }).onClose.subscribe(f=>{
-      if(f.code == 1){  
+      if(f && f.code == 1){  
         this.getData();
+        alert(f.title);
       }
     })
   }
@@ -119,7 +128,7 @@ export class CameraComponent implements OnInit {
       console.log(f)
       f = f.map(m=>(
         {
-          camera_no: m,
+          camera_no: '',
           test_room: "",
           ip_port: "",
           communication_protocol: "",
@@ -127,7 +136,7 @@ export class CameraComponent implements OnInit {
           status: "",
           create_time: "",
           update_time: "",
-          stream_name:'',//唯一 保存
+          stream_name:m,//唯一 保存
         }
         ));
       this.source.load(f);
@@ -144,10 +153,13 @@ export class CameraComponent implements OnInit {
     "stream_transform": "hls"    # 流源格式
        */
       f.forEach(el => {
-        this.http.get(`/api/mongo_api/video_process/stream/${el.camera_no}`,null).subscribe((g:any)=>{
+        this.http.get(`/api/mongo_api/video_process/stream/${el.stream_name}`,null).subscribe((g:any)=>{
           console.log(g)
           el.ip_port = g.origin_url;
           el.communication_protocol = g.stream_transform;
+          el.camera_no = g.eqpt_no;
+
+
           el.stream_name = g.stream_name;
           //TODO 实验室 厂家 状态 创建事件 记录时间
           this.source.load(f);

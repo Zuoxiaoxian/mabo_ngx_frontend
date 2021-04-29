@@ -587,7 +587,7 @@ export class VideoConfigComponent implements OnInit {
           })
           .onClose.subscribe((res) => {
             console.log(res)
-            if(res.code == 1){
+            if(res && res.code == 1){
               // delete this.config[res.oldData.key];
               this.config[res.data.key] = res.data.key;
 

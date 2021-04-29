@@ -1,0 +1,24 @@
+.video-js .vjs-big-play-button{
+    z-index: 10000 ;
+}
+.video-js .vjs-progress-control{
+    z-index: 10000  !important;
+}
+.video-js .vjs-play-control{
+    z-index: 10000  !important;
+}
+.video-js .vjs-volume-panel{
+    z-index: 10000  !important;
+    
+}
+.video-js .vjs-time-control{
+    z-index: 10000  !important;
+
+}
+.video-js .vjs-picture-in-picture-control{
+    z-index: 10000  !important;
+}
+.video-js .vjs-fullscreen-control{
+    z-index: 10000  !important;
+
+}

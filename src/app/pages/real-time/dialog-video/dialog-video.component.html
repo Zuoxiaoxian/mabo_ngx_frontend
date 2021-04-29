@@ -9,11 +9,16 @@
     </div>
   </nb-card-body>
   <nb-card-footer style="display: flex;justify-content: space-around;">
+    <a download [href]="vjs_address" disabled *ngIf="vjs_address;else nofile;" (click)="(false)">
+      右键另存为
+    </a>
     <button nbButton hero status="success" (click)="save()" title="该功能暂时未开发" disabled>保存备注并保存</button>
     <button nbButton hero status="primary" (click)="dismiss()">关闭</button>
   </nb-card-footer>
 </nb-card>
-
+<ng-template #nofile>
+  <div>未获取到视频地址或文件已存坏</div>
+</ng-template>
 
 <ng-template #elseBlock>
   <div class="notfond">

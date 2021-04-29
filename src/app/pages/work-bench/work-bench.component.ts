@@ -126,6 +126,7 @@ export class WorkBenchComponent implements OnInit {
      }
     this.http.get('/api/mongo_api/video_process/stream',null).subscribe((f:any)=>{
       let item = {};
+      let items = {};
       let list = [];
       if(f && f.length >0){
         f.forEach(el => {
@@ -136,27 +137,17 @@ export class WorkBenchComponent implements OnInit {
           this.http.get(`/api//mongo_api/video_process/stream/${stream}/project`,null).subscribe((g:any)=>{
             this.now_source.load( g);
             g.forEach((ei,i) => {
+              items[ei] = {};
               this.http.post(`/api/docker_ctrl/video_prc/stream/${stream}/project/${ei}/health`,param
               ).subscribe((h:any)=>{
-                console.log(h)
-                item =  {
+                items[ei] = {
                   stream:stream,
                   taskname:ei,
                   taskstatus:this.getTaskStatus(h.status) || '-',
                   errornum:'-',
                   _s:'real'
                 };
-                list.push(item);
-                this.now_source.load(list);
-
-                // this.his_source.append({
-                //   id:ei,
-                //   stream:stream,
-                //   taskname:ei,
-                //   taskstatus:this.getTaskStatus(h.status) || '-',
-                //   errornum:'-',
-                //   _s:'his'
-                // })
+                this.now_source.load(Object.values(items));
               })
             });
           });

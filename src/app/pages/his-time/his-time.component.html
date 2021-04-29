@@ -12,6 +12,9 @@
           <nb-card-body>
             <div class="row">
               <div class="col-md-12">
+                <a download [href]="vjs_address" disabled *ngIf="vjs_address;else nofile;" (click)="(false)">
+                  右键另存为
+                </a> 
                 <div  class="vido" *ngIf="vjs_address;else elseBlock;">
                   <app-vjs-player [options]="{ width: '604',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
                 </div>
@@ -80,4 +83,8 @@
       <p>请点击下方表格播放</p>
     </div>
   </div>
+</ng-template>
+
+<ng-template #nofile>
+  <div>未获取到视频地址或文件已存坏</div>
 </ng-template>

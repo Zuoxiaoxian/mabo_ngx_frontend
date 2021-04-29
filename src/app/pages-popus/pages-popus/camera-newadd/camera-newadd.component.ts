@@ -160,20 +160,28 @@ export class CameraNewaddComponent implements OnInit {
   }
 
   add(){
-    // this.http.post('/api/mongo_api/video_process/stream/config',{
-    //   "eqpt_no": this.message[0].value,
-    //   "origin_url": this.message[1].value,
-    //   "stream_name": this._rowData.stream_name,
-    //   "stream_transform": this.message[3].value
-    // }).subscribe(f=>{
-    //   console.log(f);
-    // })
-    this.dialogRef.close({code:1});
+    this.http.post('/api/mongo_api/video_process/stream/config',{
+      "eqpt_no": this.message[0].value,
+      "origin_url": this.message[1].value,
+      "stream_name": this._rowData.stream_name,
+      "stream_transform": this.message[3].value
+    }).subscribe(f=>{
+      this.dialogRef.close({code:1,title:'新增成功'});
+    })
 
   }
 
   edit(){
-    this.dialogRef.close({code:1});
-    
+    // this.http.get(`/api/mongo_api/video_process/stream/${this._rowData.stream_name}`,null).subscribe((g:any)=>{
+      this.http.post('/api/mongo_api/video_process/stream/change',{
+        "eqpt_no": this.message[0].value,
+        "origin_url": this.message[1].value,
+        "stream_name": this._rowData.stream_name,
+        "stream_transform": this.message[3].value
+      }).subscribe(f=>{
+        console.log(f);
+        this.dialogRef.close({code:1,title:'编辑成功'});
+      })
+    // })
   }
 }
