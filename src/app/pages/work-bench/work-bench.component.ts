@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 import { LocalDataSource } from 'ng2-smart-table';
+import { Observable } from 'rxjs';
 import { BackFontComponent } from './temp/back-font/back-font.component';
 import { LinkComponent } from './temp/link/link.component';
 
@@ -109,13 +110,14 @@ export class WorkBenchComponent implements OnInit {
    his_source: LocalDataSource = new LocalDataSource();
 
    timer;//定时器
+   streamChange:any = {};
   constructor(private http:HttpserviceService,private router:Router) { }
 
   ngOnInit() {
     this.getData();
     this.timer = setInterval(()=>{
       this.getData();
-    },5000)
+    },8000)
   }
 
   getData(){
@@ -125,34 +127,59 @@ export class WorkBenchComponent implements OnInit {
       // "docker_url":"tcp://192.168.252.129:4243"
      }
     this.http.get('/api/mongo_api/video_process/stream',null).subscribe((f:any)=>{
-      let item = {};
       let items = {};
-      let list = [];
       if(f && f.length >0){
         f.forEach(el => {
           let stream = el;
           if(stream.includes('test')){
             // return;//TODO
           }
-          this.http.get(`/api//mongo_api/video_process/stream/${stream}/project`,null).subscribe((g:any)=>{
-            this.now_source.load( g);
-            g.forEach((ei,i) => {
-              items[ei] = {};
-              this.http.post(`/api/docker_ctrl/video_prc/stream/${stream}/project/${ei}/health`,param
-              ).subscribe((h:any)=>{
+          // this.getStreamChange(el).subscribe(()=>{
+            this.http.get(`/api/mongo_api/video_process/stream/${stream}/project`,null).subscribe((g:any)=>{
+              g.forEach((ei,i) => {
                 items[ei] = {
+                  // stream:this.streamChange[stream]||'-',
                   stream:stream,
                   taskname:ei,
-                  taskstatus:this.getTaskStatus(h.status) || '-',
                   errornum:'-',
-                  _s:'real'
+                    _s:'real'
                 };
-                this.now_source.load(Object.values(items));
-              })
+                this.http.post(`/api/docker_ctrl/video_prc/stream/${stream}/project/${ei}/health`,param
+                ).subscribe((h:any)=>{
+                  items[ei] = {
+                    // stream:this.streamChange[stream]||'-',
+                    stream:stream,
+                    taskname:ei,
+                    taskstatus:this.getTaskStatus(h.status) || '-',
+                    errornum:'-',
+                    _s:'real'
+                  };
+                  this.now_source.load(Object.values(items));
+                })
+              });
             });
-          });
+          // })
         });
       }
+    })
+  }
+
+  /**
+   * 获取流名转换后的名字
+   * @param el 
+   */
+   getStreamChange(el){
+     return  new Observable(res =>{
+       if(this.streamChange[el]){
+        res.next();
+       }else{
+         this.http.get(`/api/mongo_api/video_process/stream/${el}`,null).subscribe(f=>{
+          if(f['eqpt_no']){
+            this.streamChange[el] = f['eqpt_no'];
+            res.next(f['eqpt_no']);
+          }
+        })
+       }
     })
   }
 

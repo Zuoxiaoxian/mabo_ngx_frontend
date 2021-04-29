@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-table-input',
@@ -7,7 +7,8 @@ import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 })
 export class TableInputComponent implements OnInit,AfterViewInit {
   @Input() value;
-
+  @Input() rowData;
+  @Output() edit: EventEmitter<any> = new EventEmitter();
   constructor() { }
   
 
@@ -17,4 +18,7 @@ export class TableInputComponent implements OnInit,AfterViewInit {
   ngAfterViewInit(): void {
   }
 
+  edit_event(){
+    this.edit.emit(this.value);
+  }
 }
