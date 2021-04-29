@@ -19,6 +19,7 @@ export class TableInputComponent implements OnInit,AfterViewInit {
   }
 
   edit_event(){
+    this.rowData.no = this.value
     this.edit.emit(this.value);
   }
 }

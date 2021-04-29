@@ -12,15 +12,19 @@
             </nb-card-header>
             <nb-card-body>
               <div class="row_dis">
-                <div><span class="red">*</span>任务单编号(LWT)</div>
+                <div><span class="red">*</span>任务单编号
+                  <!-- (LWT) -->
+                </div>
                 <div>
                   <input style="width: 80%;" nbInput type="text" [status]="number_status?'':'danger'" [(ngModel)]="test_info.number" (keyup)="keyup_number()"/>
                 </div>
-                <div><span class="red">*</span>试验人员</div>
+                <div><span class="red">*</span>试验人员</div>  
                 <div>
                   <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.peopel">
                 </div>
-                <div><span class="red">*</span>任务名称(project_name)</div>
+                <div><span class="red">*</span>任务名称
+                  <!-- (project_name) -->
+                </div>
                 <div>
                   <!-- 下划线字母数字 -->
                   <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.project_name" (keyup)="keyup($event,test_info.project_name)">

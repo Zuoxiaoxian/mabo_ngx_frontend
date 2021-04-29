@@ -9,7 +9,7 @@ var proxyConfig = [{
 }, {
     context: '/cache',
     // target: 'http://10.7.0.117:9096',
-    target: 'http://localhost:81',
+    target: 'http://192.168.3.110:81',
     secure: false,
     changeOrigin: true,
     // pathRewrite: { "^/api": "" }

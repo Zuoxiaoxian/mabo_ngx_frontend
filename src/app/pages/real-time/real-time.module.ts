@@ -7,10 +7,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { VjsPlayerModule } from '../vjs-player/vjs-player.module';
 import { DialogTipComponent } from './dialog-tip/dialog-tip.component';
 import { DialogVideoComponent } from './dialog-video/dialog-video.component';
-import { FormsModule } from '@angular/forms';
 import { HisTimeComponent } from '../his-time/his-time.component';
 import { TableBottonComponent } from './table-botton/table-botton.component';
 import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
+import { FormsModule, FormsModule as ngFormsModule } from '@angular/forms';
+
 
 const ROUTES: Routes = [
   {
@@ -30,8 +31,9 @@ const ROUTES: Routes = [
     VjsPlayerModule,
     NbButtonModule,
     NbInputModule,
-    FormsModule,
     RouterModule.forChild(ROUTES),
+    ngFormsModule,
+    FormsModule
   ],
   declarations: [RealTimeComponent,DialogTipComponent,DialogVideoComponent,HisTimeComponent,TableBottonComponent,DialogConfirmComponent],
   exports:[

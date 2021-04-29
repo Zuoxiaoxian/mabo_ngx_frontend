@@ -50,7 +50,9 @@ export class HisTimeComponent implements OnInit {
         valuePrepareFunction:(value) => {
           let str = new Date(Date.parse(value)).toLocaleString()
           return str;
-        }
+        },
+        sort: true,
+        sortDirection: 'desc'
       },
       crop_id:{
         title: '发生区域',

@@ -2,7 +2,10 @@
   <nb-card-header>{{ _title }}</nb-card-header>
   <nb-card-body>
     <div *ngIf="vjs_address;else elseBlock" class="vido">
-      <app-vjs-player [options]="{ width: getwidth(),height: getheight(),autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+      <video style="width: 100%;" controls>
+        <source [src]="vjs_address" type="video/mp4">
+      </video>
+      <!-- <app-vjs-player [options]="{ width: '550',height: 'auto',autoplay: true, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player> -->
     </div>
     <div style="width: 100%;height: 10%;">
       <input nbInput type="text" placeholder="备注内容" disabled [(ngModel)]="body.remarks" style="width: 100%;max-width: 100%;">
