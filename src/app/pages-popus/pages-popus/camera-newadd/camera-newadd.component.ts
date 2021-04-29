@@ -34,13 +34,14 @@ export class CameraNewaddComponent implements OnInit {
   
   @Input() type:any;
   message = [
-    { title: "编号", element: "input", type: "text", name: "number",value:'' },
+    { title: "编号", element: "input", type: "text", name: "number",value:'',mustRecord:true },
     {
       title: "IP地址和端口",
       element: "input",
       type: "text",
       name: "ip_port",
-      value:'' 
+      value:'' ,
+      mustRecord:true 
     },
     { title: "试验室", element: "input", type: "text", name: "test_room" ,value:'' },
     {
@@ -49,6 +50,7 @@ export class CameraNewaddComponent implements OnInit {
       type: "text",
       name: "communication_protocol",
       value:'',
+      mustRecord:true 
     },
     {
       title: "厂家及型号",
@@ -74,6 +76,8 @@ export class CameraNewaddComponent implements OnInit {
   load = true;
 
   table_element = [];
+
+  stream_name ;//流号
 
   constructor(
     private dialogRef: NbDialogRef<CameraNewaddComponent>,
@@ -137,6 +141,10 @@ export class CameraNewaddComponent implements OnInit {
 
   // 完成
   complet() {
+    if(this.isMustRecord()){
+      alert('有必录项未填')
+      return;
+    }
     // var table_element_val = [];
     // this.table_element.forEach((item, index) => {
     //   if (index < 5) {
@@ -159,14 +167,34 @@ export class CameraNewaddComponent implements OnInit {
     
   }
 
+
+  /**
+   * 检查必录项
+   */
+  isMustRecord(){
+    if(!this.stream_name){
+      return true;
+    }
+    for(let item of this.message){
+      if(item.mustRecord && !item.value){
+        return true;
+      }
+    }
+    return false;
+  }
+
   add(){
     this.http.post('/api/mongo_api/video_process/stream/config',{
       "eqpt_no": this.message[0].value,
       "origin_url": this.message[1].value,
-      "stream_name": this._rowData.stream_name,
+      "stream_name": this.stream_name,
       "stream_transform": this.message[3].value
     }).subscribe(f=>{
-      this.dialogRef.close({code:1,title:'新增成功'});
+      if(f['success']){
+        this.dialogRef.close({code:1,title:'新增成功'});
+      }else{
+        alert(f['error']||'');
+      }
     })
 
   }
@@ -180,7 +208,11 @@ export class CameraNewaddComponent implements OnInit {
         "stream_transform": this.message[3].value
       }).subscribe(f=>{
         console.log(f);
-        this.dialogRef.close({code:1,title:'编辑成功'});
+        if(f['success']){
+          this.dialogRef.close({code:1,title:'编辑成功'});
+        }else{
+          alert(f['error']||'');
+        }
       })
     // })
   }

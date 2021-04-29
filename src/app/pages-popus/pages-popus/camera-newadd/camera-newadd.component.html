@@ -1,5 +1,5 @@
 
-<div class="row" style="min-width: 800px;height: 600px;background: cornflowerblue;">
+<div class="row" style="min-width: 800px;height: 637px;background: cornflowerblue;">
     
     <div class="col-md-8">
         <h1 style="margin: 0 10% 0 0%;">
@@ -14,8 +14,12 @@
 
         <nb-card-body>
             <table>
+                <tr *ngIf="type == 'add'">
+                    <td class="title"><span class="red">*</span>流号</td>
+                    <td class="td_content"><input  type="text" [(ngModel)]="stream_name"></td>
+                </tr>
                 <tr *ngFor="let item of message">
-                    <td class="title">{{item.title}}</td>
+                    <td class="title"><span class="red" *ngIf="item.mustRecord">*</span>{{item.title}}</td>
                     <td class="td_content" [ngSwitch]="item.element">
                         <input *ngSwitchCase="'input'" [type]="item.type" [name]="item.name" [(ngModel)]="item.value">
                         <button nbButton status="info" size="tiny" *ngIf="item.name === 'ip_port'" style="    margin-left: 5px;" (click)="test_ip_port()"> 测试 </button>

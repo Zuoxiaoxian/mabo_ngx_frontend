@@ -15,6 +15,6 @@ export class TableDelComponent implements OnInit {
   }
 
   del_event(){
-    this.del.emit(this.rowData);
+    this.del.emit(this.value);
   }
 }

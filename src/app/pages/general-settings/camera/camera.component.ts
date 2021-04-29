@@ -39,6 +39,11 @@ export class CameraComponent implements OnInit {
       perPage: 6,
     },
     columns: {
+      stream_name: {
+        //與data中的欄位一定要對應
+        title: "流号",
+        type: "stream_name",
+      },
       camera_no: {
         //與data中的欄位一定要對應
         title: "编号",
@@ -158,6 +163,7 @@ export class CameraComponent implements OnInit {
           el.ip_port = g.origin_url;
           el.communication_protocol = g.stream_transform;
           el.camera_no = g.eqpt_no;
+          // el.camera_no = g.stream_name;
 
 
           el.stream_name = g.stream_name;

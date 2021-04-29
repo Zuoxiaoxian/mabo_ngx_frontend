@@ -81,6 +81,12 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         width: "20%",
         type: "custom",
         renderComponent: TableInputComponent,
+        onComponentInitFunction: (instance) => {
+          instance.edit.subscribe((value) => {
+
+            // TODO 进行图像画框
+          });
+        }
       },
       address: {
         title: "位置",
@@ -89,7 +95,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         type: "custom",
         renderComponent: TableEditComponent,
         onComponentInitFunction: (instance) => {
-          instance.edit.subscribe((row) => {
+          instance.edit.subscribe((value) => {
             // TODO 进行图像画框
           });
         },
