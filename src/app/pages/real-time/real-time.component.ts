@@ -54,7 +54,9 @@ export class RealTimeComponent implements OnInit {
         valuePrepareFunction:(value) => {
           let str = new Date(Date.parse(value)).toLocaleString()
           return str;
-        }
+        },
+        sort: true,
+        sortDirection: 'desc'
       },
       crop_id:{
         title: '发生区域',
@@ -166,25 +168,6 @@ export class RealTimeComponent implements OnInit {
         if(Array.isArray(res)){
           res = res.map(f=>({stream:this._.stream,...f}));
           this.source.load(res);
-          // res.forEach((f,i)=>{
-          //     var appearTime: string = f['time'];
-          //     var appear_stamp = Date.parse(appearTime) / 1000
-          //     let hisVideoParam = {
-          //       'start_stamp': appear_stamp - 5,
-          //       'end_stamp': appear_stamp + 5,
-          //     }
-          //     let href = '';
-          //     this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', hisVideoParam).subscribe(
-          //         (g: {}[]) => {
-          //           if(g['uri']){
-          //             href = g['uri'];
-          //           }else{
-          //             href  = "";
-          //           }
-          //           f.href = href;
-          //           this.source.load(res);
-          //     });
-          // })
         }else{
           this.source.load([]);
         }

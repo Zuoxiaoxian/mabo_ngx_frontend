@@ -40,8 +40,8 @@ export class DialogVideoComponent implements OnInit {
 
     this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', this.hisVideoParam).subscribe(
       (res: {}[]) => {
-        console.log('video_clip:', res)
         this.vjs_address  = res['uri'] || '';
+        console.log('video_clip:', this.vjs_address)
       });
   }
 

@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import { NavigationExtras, Router } from "@angular/router";
 import { HttpserviceService } from "app/services/http/httpservice.service";
 import { LocalDataSource } from "ng2-smart-table";
 import { TableDelComponent } from "./temp/table-del/table-del.component";
@@ -134,7 +134,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 
   ngAfterViewInit(): void {
-    // this.getStream();
+    this.getStream();
     this.canvas = new fabric.Canvas("canvas");
     var canvas = this.canvas;
 
@@ -313,7 +313,24 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       this.test_info.crop_mode = "manual";
       new Array(this.source).forEach((el: any) => {
         el.data.forEach((f) => {
-          this.test_info.crop_mode_arr[f.no] = f.address;
+          console.log(f.no,f.address)
+          let address = [0,0,0,0];
+          if(Array.isArray(f.address)){
+            f.address.forEach((el,i) => {
+              address[i] = parseFloat(el);
+            });
+          }else {
+            let arr = address.toString().split(',');
+            address.forEach((f,i)=>{
+              if(arr && arr[i])f = parseFloat(arr[i]);
+            })
+          }
+          this.test_info.crop_mode_arr[f.no] = [
+            800*address[0]/this.video.w,
+            450*address[1]/this.video.h,
+            800*address[2]/this.video.w,
+            450*address[3]/this.video.h,
+          ];
           this.test_info.crop_mode_description[f.no] = f.description;
         });
       });
@@ -337,7 +354,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         null
       )
       .subscribe((f: any) => {
-        let str = `/api/mongo_api/video_process/stream/{this.test_info.webcam}/config`;
+        let str = `/api/mongo_api/video_process/stream/${this.test_info.webcam}/config`;
         let json = this.getparam();
         console.log(f);
         if (f._id) {
@@ -358,16 +375,21 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     console.log(JSON.stringify(json));
     this.http.post(str, json).subscribe((f: any) => {
       if (f.success) {
-        this.router.navigate([
-          "/pages/video/real",
-          {
+        let navigationExtras: NavigationExtras = {
+          queryParams: {
             stream: this.test_info.webcam,
             taskname: this.test_info.project_name,
-            taskstatus: "",
-            errornum: "",
+            // taskstatus: "",
+            // errornum: "",
             _s: "real",
           },
-        ]);
+          fragment: 'anchor'
+        };
+        this.router.navigate([
+          "/pages/video/real"
+          
+          // camera_test&taskname=123_test&taskstatus=-&errornum=-&_s=real
+        ],navigationExtras);
       } else {
         alert("保存失败！" + f.msg);
       }
