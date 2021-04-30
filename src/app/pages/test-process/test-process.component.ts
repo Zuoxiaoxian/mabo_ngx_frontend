@@ -82,6 +82,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         onComponentInitFunction: (instance) => {
           instance.edit.subscribe((value) => {
             // TODO 进行图像画框
+            this.edit_name_tochange_recttitle(value);
           });
         },
       },
@@ -94,6 +95,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         onComponentInitFunction: (instance) => {
           instance.edit.subscribe((value) => {
             // TODO 进行图像画框
+            this.edit_position_tochange_rect(value);
           });
         },
       },
@@ -134,7 +136,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 
   ngAfterViewInit(): void {
-    this.getStream();
+    // this.getStream();
     this.canvas = new fabric.Canvas("canvas");
     var canvas = this.canvas;
 
@@ -227,7 +229,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
             text_item.set({
               left: tl.x + 10,
               top: tl.y - 20,
-              text: item[0],
+              // text: item[0],
             });
             that.canvas.add(text_item);
             var r_list = that.canvas.getObjects();
@@ -261,7 +263,8 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
         var rect_index = rect_list.indexOf(select_item);
         var item = that.row_item_list[rect_index];
-        console.error("rect_index , item>>", rect_index, item);
+        // console.error("rect_index , item>>", rect_index, item);
+        // this.source.update()
       }
     });
   }
@@ -269,7 +272,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   // 新增 名称-位置-说明后，同时新建canas的矩形
   after_add_fang_add_canas(data) {
     // {no: this.source.count(),address: [100, 100, 200, 200],description: "beizhu",}
-    var data_ = [data.no, data.address.join(","), data.description];
+    var data_ = [data.no, data.address.join(","), data.description, data.rid];
     console.error("新建canas的矩形--------------->", data);
     setTimeout(() => {
       this.canvas.setBackgroundImage(
@@ -313,23 +316,23 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       this.test_info.crop_mode = "manual";
       new Array(this.source).forEach((el: any) => {
         el.data.forEach((f) => {
-          console.log(f.no,f.address)
-          let address = [0,0,0,0];
-          if(Array.isArray(f.address)){
-            f.address.forEach((el,i) => {
+          console.log(f.no, f.address);
+          let address = [0, 0, 0, 0];
+          if (Array.isArray(f.address)) {
+            f.address.forEach((el, i) => {
               address[i] = parseFloat(el);
             });
-          }else {
-            let arr = address.toString().split(',');
-            address.forEach((f,i)=>{
-              if(arr && arr[i])f = parseFloat(arr[i]);
-            })
+          } else {
+            let arr = address.toString().split(",");
+            address.forEach((f, i) => {
+              if (arr && arr[i]) f = parseFloat(arr[i]);
+            });
           }
           this.test_info.crop_mode_arr[f.no] = [
-            800*address[0]/this.video.w,
-            450*address[1]/this.video.h,
-            800*address[2]/this.video.w,
-            450*address[3]/this.video.h,
+            (800 * address[0]) / this.video.w,
+            (450 * address[1]) / this.video.h,
+            (800 * address[2]) / this.video.w,
+            (450 * address[3]) / this.video.h,
           ];
           this.test_info.crop_mode_description[f.no] = f.description;
         });
@@ -383,13 +386,16 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
             // errornum: "",
             _s: "real",
           },
-          fragment: 'anchor'
+          fragment: "anchor",
         };
-        this.router.navigate([
-          "/pages/video/real"
-          
-          // camera_test&taskname=123_test&taskstatus=-&errornum=-&_s=real
-        ],navigationExtras);
+        this.router.navigate(
+          [
+            "/pages/video/real",
+
+            // camera_test&taskname=123_test&taskstatus=-&errornum=-&_s=real
+          ],
+          navigationExtras
+        );
       } else {
         alert("保存失败！" + f.msg);
       }
@@ -536,10 +542,12 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
    * 添加裁剪的数据
    */
   add_fang() {
+    var no = this.source.count();
     var data = {
-      no: String(this.source.count()),
+      no: String(no),
       address: [100, 100, 200, 200],
       description: "beizhu",
+      rid: no,
     };
     this.source.prepend(data);
     console.log(this.source);
@@ -625,6 +633,89 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   }
   // -------------------------------------
 
+  // 编辑位置时---改变矩形位置
+  edit_position_tochange_rect(data) {
+    console.error("编辑位置时---改变矩形位置>>>", data);
+    var no = data["no"],
+      rid = data["rid"],
+      address = data["address"],
+      rect_list = this.rects,
+      planetLabel_list = this.planetLabel_list,
+      rect_index = null,
+      row_item_list = this.row_item_list;
+    row_item_list.forEach((row, index) => {
+      if (row[row.length - 1] === rid) {
+        rect_index = index;
+      }
+    });
+    // -------矩形移动
+    var rect_list_item = rect_list[rect_index];
+    rect_list_item.animate("left", Number(address.split(",")[0]), {
+      duration: 1000,
+      onChange: this.canvas.renderAll.bind(this.canvas),
+    });
+    rect_list_item.animate("top", Number(address.split(",")[1]), {
+      duration: 1000,
+      onChange: this.canvas.renderAll.bind(this.canvas),
+    });
+    var width = Number(address.split(",")[2] - address.split(",")[0]),
+      height = Number(address.split(",")[3] - address.split(",")[1]);
+    rect_list_item.set({
+      width: width,
+      height: height,
+    });
+    rect_list[rect_index] = rect_list_item;
+    this.canvas.add(rect_list_item);
+
+    // ---------矩形对应的title移动
+    var planetLabel_list_item = planetLabel_list[rect_index];
+    planetLabel_list_item.animate("left", Number(address.split(",")[0]) + 10, {
+      duration: 1000,
+      onChange: this.canvas.renderAll.bind(this.canvas),
+    });
+    planetLabel_list_item.animate("top", Number(address.split(",")[1]) - 20, {
+      duration: 1000,
+      onChange: this.canvas.renderAll.bind(this.canvas),
+    });
+
+    this.canvas.requestRenderAll();
+    // this.canvas.remove(rect_list_item); // 删除提示
+
+    // 要得到对角线的坐标点， 左上---右下
+    var tl_br = [
+      Number(address.split(",")[0]),
+      Number(address.split(",")[1]),
+      Number(address.split(",")[2]),
+      Number(address.split(",")[3]),
+    ];
+    console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+  }
+
+  // 编辑名称时---改变矩形title
+  edit_name_tochange_recttitle(data) {
+    console.error("编辑位置时---改变矩形位置>>>", data);
+    var no = data["no"],
+      rid = data["rid"],
+      address = data["address"],
+      rect_list = this.rects,
+      planetLabel_list = this.planetLabel_list,
+      rect_index = null,
+      row_item_list = this.row_item_list;
+    row_item_list.forEach((row, index) => {
+      if (row[row.length - 1] === rid) {
+        rect_index = index;
+      }
+    });
+    var planetLabel_list_item = planetLabel_list[rect_index];
+
+    // 更新title
+    planetLabel_list_item.set({
+      text: no,
+    });
+    // rect.set({ left: 20, top: 50 });
+    this.canvas.renderAll();
+  }
+
   deleteObject(that) {
     return function deleteObject(eventData, transform) {
       var target = transform.target;
@@ -695,7 +786,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     });
     rect.lockRotation = true;
     rect.setControlVisible("mtr", false);
-    console.error("-----------rect->", rect);
+    // console.error("-----------rect->", rect);
 
     this.rects.push(rect);
     this.canvas.add(rect);

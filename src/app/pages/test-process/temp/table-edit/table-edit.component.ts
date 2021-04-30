@@ -1,21 +1,20 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
 @Component({
-  selector: 'app-table-edit',
-  templateUrl: './table-edit.component.html',
-  styleUrls: ['./table-edit.component.scss']
+  selector: "app-table-edit",
+  templateUrl: "./table-edit.component.html",
+  styleUrls: ["./table-edit.component.scss"],
 })
 export class TableEditComponent implements OnInit {
-  @Input() value:any;
+  @Input() value: any;
   @Input() rowData;
 
   @Output() edit: EventEmitter<any> = new EventEmitter();
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
-  edit_event(){
+  edit_event() {
     this.rowData.address = this.value;
     this.edit.emit(this.rowData);
   }
