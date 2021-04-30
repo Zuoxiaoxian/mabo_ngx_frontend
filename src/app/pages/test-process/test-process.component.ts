@@ -232,7 +232,8 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
               top: tl.y - 20,
               // text: item[0],
             });
-            that.canvas.add(text_item);
+            // that.canvas.add(text_item);
+            that.canvas.renderAll();
             var r_list = that.canvas.getObjects();
             r_list.forEach((element, index) => {
               if (element == text_item && index < r_list.length - 1) {
@@ -264,21 +265,30 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
         var rect_index = rect_list.indexOf(select_item);
         var item = that.row_item_list[rect_index];
-        item[1] = tl_br.join(",");
-        // console.error("rect_index , item>>", rect_index, item);
-        // this.source.update()
-        var rows = []; // 删除时候的 table数据
-        that.row_item_list.forEach((item) => {
-          var row = {
-            no: item[0],
-            address: item[1],
-            description: item[2],
-            rid: item[3],
-          };
-          rows.push(row);
-        });
-        console.error("更新tabel>>>>", rows);
-        that.source.load(rows);
+        if (item) {
+          item[1] = tl_br.join(",");
+          // console.error("rect_index , item>>", rect_index, item);
+          // this.source.update()
+          var rows = []; // 删除时候的 table数据
+          that.row_item_list.forEach((item) => {
+            var row = {
+              no: item[0],
+              address: item[1],
+              description: item[2],
+              rid: item[3],
+            };
+            rows.push(row);
+          });
+          console.error("更新tabel>>>>", rows);
+          that.source.load(rows);
+        } else {
+          // var item = that.row_item_list[rect_index];
+          console.error(
+            "更新tabel| rect_index,>>>>",
+            rect_index,
+            that.row_item_list
+          );
+        }
       }
     });
   }
@@ -752,6 +762,16 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     var text_item = planetLabel_list[rect_index]; // rect 对应的 title
     this.canvas.remove(text_item); // 删除提示
     this.canvas.remove(target); // 删除矩形
+
+    row_item_list.splice(rect_index, 1);
+    planetLabel_list.splice(rect_index, 1);
+    rect_list.splice(rect_index, 1);
+    // console.error(
+    //   "删除 row_item_list",
+    //   row_item_list,
+    //   planetLabel_list,
+    //   rect_list
+    // );
 
     this.canvas.requestRenderAll();
   }
