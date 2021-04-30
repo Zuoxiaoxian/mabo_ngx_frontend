@@ -172,7 +172,7 @@ export class CameraNewaddComponent implements OnInit {
    * 检查必录项
    */
   isMustRecord(){
-    if(!this.stream_name){
+    if(!this.stream_name && this.type == 'add'){
       return true;
     }
     for(let item of this.message){

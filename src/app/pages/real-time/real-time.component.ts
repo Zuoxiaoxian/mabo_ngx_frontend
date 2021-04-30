@@ -135,9 +135,10 @@ export class RealTimeComponent implements OnInit {
         if(i%3 == 0){
           this.getHis();
         }
-        this.getStreamBaseInfo();
+        // this.getStreamBaseInfo();
         this.getStatus();
         this.getTask();
+        this.getNearlyAb();
         i++;
       },5000)
     })
@@ -223,6 +224,38 @@ export class RealTimeComponent implements OnInit {
         }
       }
     );
+  }
+
+// 临近告警
+  public nearlyAbPast = '10s'
+  errorTip = false;
+  getNearlyAb() {
+    var param = {
+      'past_range': this.nearlyAbPast
+    };
+    this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/project/' + this._.name + '/all/model/change_past', param).subscribe(
+      (res: {}[]) => {
+        if (res.length >= 1) {
+          console.log('存在超过一个得异常')
+          // this.windowService.open(
+          //   this.nearlyAbTemplate, {
+          //   title: '异常告警',
+          //   context: { text: '过去' + this.nearlyAbPast + '存在异常, 请检查.' }
+          // })
+          if(!this.errorTip){
+            this.errorTip = true;
+            this.dialogService.open(DialogTipComponent, {
+              context: {
+                title:'异常提示',
+                body:'过去' + this.nearlyAbPast + '存在异常, 请检查.'
+              },
+            }).onClose.subscribe(f=>{
+              this.errorTip = false;
+            })
+          }
+        }
+      });
+
   }
 
 

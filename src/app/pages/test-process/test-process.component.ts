@@ -120,8 +120,8 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
   // 录像的宽高
   video = {
-    h: 0,
-    w: 0,
+    h: 450,
+    w: 800,
   };
 
   canvas = new fabric.Canvas("canvas");
@@ -138,160 +138,164 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.getStream();
-    this.canvas = new fabric.Canvas("canvas");
-    var canvas = this.canvas;
 
-    var that = this;
-
-    // 鼠标 进入矩形
-    // var hoverTarget;
-    // that.canvas.on("mouse:over", function (options) {
-    //   hoverTarget = options.target;
-    //   // var rect_list = that.canvas.getObjects();
-    //   var rect_list = that.rects;
-    //   if (options.target && options.target.type === "rect") {
-    //     var rect_index = rect_list.indexOf(options.target);
-    //     var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
-
-    //     // var polygonCenter = that.canvas.getActiveObject().getCenterPoint();
-    //     var polygonCenter = options.target.getCenterPoint();
-    //     // console.error("mouse:over", options.target, options.target.left);
-    //     var translatedPoints = options.target.get("aCoords");
-    //     // console.error("mouse:over", translatedPoints);
-    //     // 得到 左上--右下点的坐标， tl、 br
-    //     var tl = translatedPoints["tl"]; // 左上 {x: 100, y: 100}
-    //     var br = translatedPoints["br"]; // 右下 {x: 100, y: 100}
-    //     // console.error("mouse:over--tl,br", tl, br);
-    //     var item = that.row_item_list[rect_index];
-    //     console.error("text_item, item", text_item, item, that.canvas);
-    //     text_item.set({
-    //       left: tl.x + 10,
-    //       top: tl.y - 20,
-    //       text: item[0],
-    //     });
-    //     canvas.add(text_item);
-    //   }
-    // });
-
-    // 鼠标 移出矩形
-    // that.canvas.on("mouse:out", function (options) {
-    //   var rect_list = that.rects;
-    //   var rect_index = rect_list.indexOf(options.target);
-    //   var text_item = that.planetLabel_list[rect_index];
-    //   that.canvas.remove(text_item);
-    //   that.canvas.requestRenderAll();
-    // });
-
-    // // 监听移动
-    // that.canvas.on("mouse:down", function (options) {
-    //   if (options.target) {
-    //     console.log("选中的", options.target);
-    //     var target = options.target;
-    //     if (options.target.type === "rect") {
-    //       var rect_list = that.rects;
-    //       var rect_index = rect_list.indexOf(target);
-    //       var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
-    //       options.target.on("moving", function (options) {
-    //         var translatedPoints = target.get("aCoords");
-    //         // 得到 左上--右下点的坐标， tl、 br
-    //         var tl = translatedPoints["tl"]; // 左上 {x: 100, y: 100}
-    //         var br = translatedPoints["br"]; // 右下 {x: 100, y: 100}
-    //         // console.error("mouse:over--tl,br", tl, br);
-    //         var item = that.row_item_list[rect_index];
-    //         text_item.set({
-    //           left: tl.x + 10,
-    //           top: tl.y - 20,
-    //           text: item[0],
-    //         });
-    //         that.canvas.add(text_item);
-    //         var r_list = that.canvas.getObjects();
-    //         console.error("r_list>>>>>>", r_list);
-    //       });
-    //     }
-    //   }
-    // });
-
-    // 监听移动
-    that.canvas.on("mouse:down", function (options) {
-      if (options.target) {
-        console.log("选中的", options.target);
-        var target = options.target;
-        if (options.target.type === "rect") {
-          options.target.on("moving", function (options) {
-            var rect_list = that.rects;
-            var rect_index = rect_list.indexOf(target);
-            var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
-            var translatedPoints = target.get("aCoords");
-            // 得到 左上--右下点的坐标， tl、 br
-            var tl = translatedPoints["tl"]; // 左上 {x: 100, y: 100}
-            var br = translatedPoints["br"]; // 右下 {x: 100, y: 100}
-            // console.error("mouse:over--tl,br", tl, br);
-            var item = that.row_item_list[rect_index];
-            text_item.set({
-              left: tl.x + 10,
-              top: tl.y - 20,
-              // text: item[0],
+    setTimeout(() => {
+      this.canvas = new fabric.Canvas("canvas");
+      var canvas = this.canvas;
+  
+      var that = this;
+  
+      // 鼠标 进入矩形
+      // var hoverTarget;
+      // that.canvas.on("mouse:over", function (options) {
+      //   hoverTarget = options.target;
+      //   // var rect_list = that.canvas.getObjects();
+      //   var rect_list = that.rects;
+      //   if (options.target && options.target.type === "rect") {
+      //     var rect_index = rect_list.indexOf(options.target);
+      //     var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
+  
+      //     // var polygonCenter = that.canvas.getActiveObject().getCenterPoint();
+      //     var polygonCenter = options.target.getCenterPoint();
+      //     // console.error("mouse:over", options.target, options.target.left);
+      //     var translatedPoints = options.target.get("aCoords");
+      //     // console.error("mouse:over", translatedPoints);
+      //     // 得到 左上--右下点的坐标， tl、 br
+      //     var tl = translatedPoints["tl"]; // 左上 {x: 100, y: 100}
+      //     var br = translatedPoints["br"]; // 右下 {x: 100, y: 100}
+      //     // console.error("mouse:over--tl,br", tl, br);
+      //     var item = that.row_item_list[rect_index];
+      //     console.error("text_item, item", text_item, item, that.canvas);
+      //     text_item.set({
+      //       left: tl.x + 10,
+      //       top: tl.y - 20,
+      //       text: item[0],
+      //     });
+      //     canvas.add(text_item);
+      //   }
+      // });
+  
+      // 鼠标 移出矩形
+      // that.canvas.on("mouse:out", function (options) {
+      //   var rect_list = that.rects;
+      //   var rect_index = rect_list.indexOf(options.target);
+      //   var text_item = that.planetLabel_list[rect_index];
+      //   that.canvas.remove(text_item);
+      //   that.canvas.requestRenderAll();
+      // });
+  
+      // // 监听移动
+      // that.canvas.on("mouse:down", function (options) {
+      //   if (options.target) {
+      //     console.log("选中的", options.target);
+      //     var target = options.target;
+      //     if (options.target.type === "rect") {
+      //       var rect_list = that.rects;
+      //       var rect_index = rect_list.indexOf(target);
+      //       var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
+      //       options.target.on("moving", function (options) {
+      //         var translatedPoints = target.get("aCoords");
+      //         // 得到 左上--右下点的坐标， tl、 br
+      //         var tl = translatedPoints["tl"]; // 左上 {x: 100, y: 100}
+      //         var br = translatedPoints["br"]; // 右下 {x: 100, y: 100}
+      //         // console.error("mouse:over--tl,br", tl, br);
+      //         var item = that.row_item_list[rect_index];
+      //         text_item.set({
+      //           left: tl.x + 10,
+      //           top: tl.y - 20,
+      //           text: item[0],
+      //         });
+      //         that.canvas.add(text_item);
+      //         var r_list = that.canvas.getObjects();
+      //         console.error("r_list>>>>>>", r_list);
+      //       });
+      //     }
+      //   }
+      // });
+  
+      // 监听移动
+      that.canvas.on("mouse:down", function (options) {
+        if (options.target) {
+          console.log("选中的", options.target);
+          var target = options.target;
+          if (options.target.type === "rect") {
+            options.target.on("moving", function (options) {
+              var rect_list = that.rects;
+              var rect_index = rect_list.indexOf(target);
+              var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
+              var translatedPoints = target.get("aCoords");
+              // 得到 左上--右下点的坐标， tl、 br
+              var tl = translatedPoints["tl"]; // 左上 {x: 100, y: 100}
+              var br = translatedPoints["br"]; // 右下 {x: 100, y: 100}
+              // console.error("mouse:over--tl,br", tl, br);
+              var item = that.row_item_list[rect_index];
+              text_item.set({
+                left: tl.x + 10,
+                top: tl.y - 20,
+                // text: item[0],
+              });
+              // that.canvas.add(text_item);
+              that.canvas.renderAll();
+              that.canvas.requestRenderAll();
+              var r_list = that.canvas.getObjects();
             });
-            // that.canvas.add(text_item);
+          }
+        }
+      });
+  
+      // 监听鼠标 ‘松开’
+      this.canvas.on("mouse:up", function (options) {
+        var select_item = that.canvas.getActiveObject();
+        var rect_list = that.rects;
+        if (select_item) {
+          var polygonCenter = select_item.getCenterPoint();
+          // console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
+          var translatedPoints = canvas.getActiveObject().get("aCoords");
+          // console.error("得到 顶点坐标>>>", translatedPoints);
+          // 要得到对角线的坐标点， 左上---右下
+          var tl_br = [
+            translatedPoints["tl"]["x"],
+            translatedPoints["tl"]["y"],
+            translatedPoints["br"]["x"],
+            translatedPoints["br"]["y"],
+          ];
+          // console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+  
+          var rect_index = rect_list.indexOf(select_item);
+          var item = that.row_item_list[rect_index];
+          if (item) {
+            item[1] = tl_br.join(",");
+            // console.error("rect_index , item>>", rect_index, item);
+            // this.source.update()
+            var rows = []; // 删除时候的 table数据
+            that.row_item_list.forEach((item) => {
+              var row = {
+                no: item[0],
+                address: item[1],
+                description: item[2],
+                rid: item[3],
+              };
+              rows.push(row);
+            });
+            // console.error("更新tabel>>>>", rows);
+            that.source.load(rows);
+  
+            // 更新title
+  
             that.canvas.renderAll();
-            that.canvas.requestRenderAll();
-            var r_list = that.canvas.getObjects();
-          });
+            // that.canvas.requestRenderAll();
+          } else {
+            // var item = that.row_item_list[rect_index];
+            console.error(
+              "更新tabel| rect_index,>>>>",
+              rect_index,
+              that.row_item_list
+            );
+          }
         }
-      }
-    });
-
-    // 监听鼠标 ‘松开’
-    this.canvas.on("mouse:up", function (options) {
-      var select_item = that.canvas.getActiveObject();
-      var rect_list = that.rects;
-      if (select_item) {
-        var polygonCenter = select_item.getCenterPoint();
-        // console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
-        var translatedPoints = canvas.getActiveObject().get("aCoords");
-        // console.error("得到 顶点坐标>>>", translatedPoints);
-        // 要得到对角线的坐标点， 左上---右下
-        var tl_br = [
-          translatedPoints["tl"]["x"],
-          translatedPoints["tl"]["y"],
-          translatedPoints["br"]["x"],
-          translatedPoints["br"]["y"],
-        ];
-        // console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
-
-        var rect_index = rect_list.indexOf(select_item);
-        var item = that.row_item_list[rect_index];
-        if (item) {
-          item[1] = tl_br.join(",");
-          // console.error("rect_index , item>>", rect_index, item);
-          // this.source.update()
-          var rows = []; // 删除时候的 table数据
-          that.row_item_list.forEach((item) => {
-            var row = {
-              no: item[0],
-              address: item[1],
-              description: item[2],
-              rid: item[3],
-            };
-            rows.push(row);
-          });
-          // console.error("更新tabel>>>>", rows);
-          that.source.load(rows);
-
-          // 更新title
-
-          that.canvas.renderAll();
-          // that.canvas.requestRenderAll();
-        } else {
-          // var item = that.row_item_list[rect_index];
-          console.error(
-            "更新tabel| rect_index,>>>>",
-            rect_index,
-            that.row_item_list
-          );
-        }
-      }
-    });
+      });
+    }, 20);
+   
   }
 
   // 新增 名称-位置-说明后，同时新建canas的矩形
@@ -356,16 +360,19 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
               address[i] = parseFloat(el);
             });
           } else {
-            let arr = address.toString().split(",");
-            address.forEach((f, i) => {
-              if (arr && arr[i]) f = parseFloat(arr[i]);
-            });
+            let arr = f.address.toString().split(",");
+            address = arr.map(m => parseInt(m));
+            // address.forEach((g, i) => {
+              // if (arr && arr[i]) {
+                // g = parseFloat(arr[i]);
+              // }
+            // });
           }
           this.test_info.crop_mode_arr[f.no] = [
-            (w * address[0]) / this.video.w,
-            (h * address[1]) / this.video.h,
-            (w * address[2]) / this.video.w,
-            (h * address[3]) / this.video.h,
+            (w *( address[0] ||0)) / this.video.w,
+            (h * (address[1] ||0)) / this.video.h,
+            (w * (address[2] ||0)) / this.video.w,
+            (h * (address[3] ||0)) / this.video.h,
           ];
           this.test_info.crop_mode_arr[f.no] = this.test_info.crop_mode_arr[f.no].map(m => 
             parseInt(m))
@@ -514,8 +521,8 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       )
       .subscribe((f: any) => {
         console.log(f);
-        this.video.h = f.height;
-        this.video.w = f.width;
+        this.video.h = f.height ;
+        this.video.w = f.width ;
       });
   }
 

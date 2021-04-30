@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { HttpserviceService } from 'app/services/http/httpservice.service';
 
@@ -7,7 +7,7 @@ import { HttpserviceService } from 'app/services/http/httpservice.service';
   templateUrl: './dialog-video.component.html',
   styleUrls: ['./dialog-video.component.scss']
 })
-export class DialogVideoComponent implements OnInit {
+export class DialogVideoComponent implements OnInit  {
   @Input() set  title(data){
     if(data){
       this._title = new Date(Date.parse(data)).toLocaleString()
@@ -18,19 +18,24 @@ export class DialogVideoComponent implements OnInit {
   _title
   vjs_address;
   hisVideoParam;
+  @ViewChild('video')video:any
   constructor(protected ref: NbDialogRef<DialogVideoComponent>,private http:HttpserviceService) {}
-
+  
   ngOnInit() {
     this.getData();
     
   }
 
-
   dismiss(){
     this.ref.close()
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes)
+  }
+
   getData(){
+    this.vjs_address = '';
     var appearTime: string = this.body['time'];
     var appear_stamp = Date.parse(appearTime) / 1000
     this.hisVideoParam = {

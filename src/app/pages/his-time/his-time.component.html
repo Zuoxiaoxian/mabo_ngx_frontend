@@ -16,8 +16,8 @@
                   右键另存为
                 </a> 
                 <div  class="vido" *ngIf="vjs_address;else elseBlock;">
-                  <app-vjs-player [options]="{ width: '604',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
-                  <!-- <video style="width: 562px;" controls>
+                  <app-vjs-player  *ngIf="vjs_address" #video [options]="{ width: 'auto',height: '280',autoplay: true, controls: true, sources: [{ src: vjs_address, type: 'video/mp4' }]}"></app-vjs-player>
+                  <!-- <video style="width: 772px;" controls>
                     <source [src]="vjs_address" type="video/mp4">
                   </video> -->
                 </div>
