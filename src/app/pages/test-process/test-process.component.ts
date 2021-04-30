@@ -108,6 +108,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         onComponentInitFunction: (instance) => {
           instance.del.subscribe((row) => {
             this.source.remove(row);
+            this.remove_row_to_deleteobject(row);
           });
         },
       },
@@ -259,12 +260,25 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
           translatedPoints["br"]["x"],
           translatedPoints["br"]["y"],
         ];
-        console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+        // console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
 
         var rect_index = rect_list.indexOf(select_item);
         var item = that.row_item_list[rect_index];
+        item[1] = tl_br.join(",");
         // console.error("rect_index , item>>", rect_index, item);
         // this.source.update()
+        var rows = []; // 删除时候的 table数据
+        that.row_item_list.forEach((item) => {
+          var row = {
+            no: item[0],
+            address: item[1],
+            description: item[2],
+            rid: item[3],
+          };
+          rows.push(row);
+        });
+        console.error("更新tabel>>>>", rows);
+        that.source.load(rows);
       }
     });
   }
@@ -645,6 +659,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       row_item_list = this.row_item_list;
     row_item_list.forEach((row, index) => {
       if (row[row.length - 1] === rid) {
+        row[1] = address;
         rect_index = index;
       }
     });
@@ -664,8 +679,9 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       width: width,
       height: height,
     });
-    rect_list[rect_index] = rect_list_item;
-    this.canvas.add(rect_list_item);
+    // rect_list[rect_index] = rect_list_item;
+    // this.canvas.add(rect_list_item);
+    this.canvas.renderAll();
 
     // ---------矩形对应的title移动
     var planetLabel_list_item = planetLabel_list[rect_index];
@@ -703,6 +719,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       row_item_list = this.row_item_list;
     row_item_list.forEach((row, index) => {
       if (row[row.length - 1] === rid) {
+        row[0] = no;
         rect_index = index;
       }
     });
@@ -712,11 +729,35 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     planetLabel_list_item.set({
       text: no,
     });
-    // rect.set({ left: 20, top: 50 });
     this.canvas.renderAll();
   }
 
+  // 删除table中的行时，删除矩形和矩形对应的title
+  remove_row_to_deleteobject(data) {
+    console.error("删除table中的行时，删除矩形和矩形对应的title", data);
+    var no = data["no"],
+      rid = data["rid"],
+      address = data["address"],
+      rect_list = this.rects,
+      planetLabel_list = this.planetLabel_list,
+      rect_index = null,
+      row_item_list = this.row_item_list;
+    row_item_list.forEach((row, index) => {
+      if (row[row.length - 1] === rid) {
+        rect_index = index;
+      }
+    });
+
+    var target = rect_list[rect_index];
+    var text_item = planetLabel_list[rect_index]; // rect 对应的 title
+    this.canvas.remove(text_item); // 删除提示
+    this.canvas.remove(target); // 删除矩形
+
+    this.canvas.requestRenderAll();
+  }
+
   deleteObject(that) {
+    var source = this.source;
     return function deleteObject(eventData, transform) {
       var target = transform.target;
       var canvas = target.canvas;
@@ -747,6 +788,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         "删除的table的row数据：>>>>>>",
         that.row_item_list[rect_index]
       );
+
       canvas.remove(target);
       that.row_item_list.splice(rect_index, 1);
       that.planetLabel_list.splice(rect_index, 1);
@@ -756,7 +798,21 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         that.planetLabel_list,
         rect_list
       );
-      // console.error("r_list>>>>>>", canvas.getObjects());
+
+      var rows = []; // 删除时候的 table数据
+      that.row_item_list.forEach((item) => {
+        var row = {
+          no: item[0],
+          address: item[1],
+          description: item[2],
+          rid: item[3],
+        };
+        rows.push(row);
+      });
+      console.error("删除tabel>>>>", rows);
+      source.load(rows);
+
+      // 点击图标删除矩形时，同时删除table
       canvas.requestRenderAll();
     };
   }
