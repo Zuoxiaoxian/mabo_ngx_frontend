@@ -234,12 +234,8 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
             });
             // that.canvas.add(text_item);
             that.canvas.renderAll();
+            that.canvas.requestRenderAll();
             var r_list = that.canvas.getObjects();
-            r_list.forEach((element, index) => {
-              if (element == text_item && index < r_list.length - 1) {
-                that.canvas.remove(element); // 删除提示
-              }
-            });
           });
         }
       }
@@ -251,9 +247,9 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       var rect_list = that.rects;
       if (select_item) {
         var polygonCenter = select_item.getCenterPoint();
-        console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
+        // console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
         var translatedPoints = canvas.getActiveObject().get("aCoords");
-        console.error("得到 顶点坐标>>>", translatedPoints);
+        // console.error("得到 顶点坐标>>>", translatedPoints);
         // 要得到对角线的坐标点， 左上---右下
         var tl_br = [
           translatedPoints["tl"]["x"],
@@ -279,8 +275,13 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
             };
             rows.push(row);
           });
-          console.error("更新tabel>>>>", rows);
+          // console.error("更新tabel>>>>", rows);
           that.source.load(rows);
+
+          // 更新title
+
+          that.canvas.renderAll();
+          // that.canvas.requestRenderAll();
         } else {
           // var item = that.row_item_list[rect_index];
           console.error(
@@ -297,7 +298,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   after_add_fang_add_canas(data) {
     // {no: this.source.count(),address: [100, 100, 200, 200],description: "beizhu",}
     var data_ = [data.no, data.address.join(","), data.description, data.rid];
-    console.error("新建canas的矩形--------------->", data);
+    // console.error("新建canas的矩形--------------->", data);
     setTimeout(() => {
       this.canvas.setBackgroundImage(
         "",
