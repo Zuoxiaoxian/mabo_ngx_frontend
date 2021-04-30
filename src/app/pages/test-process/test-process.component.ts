@@ -136,7 +136,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 
   ngAfterViewInit(): void {
-    // this.getStream();
+    this.getStream();
     this.canvas = new fabric.Canvas("canvas");
     var canvas = this.canvas;
 
@@ -314,6 +314,14 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   save() {
     if (this.source.count() > 0) {
       this.test_info.crop_mode = "manual";
+      let video = document.getElementsByTagName('video');
+      console.log(video)
+      let w = 800;
+      let h = 450
+      if(video && video.length > 0){
+        w = document.getElementsByTagName('video')[0].scrollWidth
+        h = document.getElementsByTagName('video')[0].scrollHeight
+      }
       new Array(this.source).forEach((el: any) => {
         el.data.forEach((f) => {
           console.log(f.no, f.address);
@@ -329,11 +337,14 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
             });
           }
           this.test_info.crop_mode_arr[f.no] = [
-            (800 * address[0]) / this.video.w,
-            (450 * address[1]) / this.video.h,
-            (800 * address[2]) / this.video.w,
-            (450 * address[3]) / this.video.h,
+            (w * address[0]) / this.video.w,
+            (h * address[1]) / this.video.h,
+            (w * address[2]) / this.video.w,
+            (h * address[3]) / this.video.h,
           ];
+          this.test_info.crop_mode_arr[f.no] = this.test_info.crop_mode_arr[f.no].map(m => 
+            parseInt(m))
+            console.log(this.test_info.crop_mode_arr[f.no]);
           this.test_info.crop_mode_description[f.no] = f.description;
         });
       });
@@ -484,6 +495,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   }
 
   getVideoAddress() {
+    this.vjs_address = '';
     this.http
       .get("/api/mongo_api/video_process/stream/" + this.test_info.webcam, null)
       .subscribe((res) => {
