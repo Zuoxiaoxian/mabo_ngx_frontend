@@ -22,6 +22,13 @@
                     <td class="title"><span class="red" *ngIf="item.mustRecord">*</span>{{item.title}}</td>
                     <td class="td_content" [ngSwitch]="item.element">
                         <input *ngSwitchCase="'input'" [type]="item.type" [name]="item.name" [(ngModel)]="item.value">
+                        <!-- 下拉 -->
+                        <select [name]="item.name" *ngSwitchCase="'select'" width="90%">
+                            <option value="rtsp_direct">rtsp_direct</option>
+                            <option value="hls">hls</option>
+                            <option value="rtmp">rtmp</option>
+                            <option value="LocalFile">LocalFile</option>
+                        </select>
                         <button nbButton status="info" size="tiny" *ngIf="item.name === 'ip_port'" style="    margin-left: 5px;" (click)="test_ip_port()"> 测试 </button>
                         <textarea *ngSwitchCase="'textarea'" [(ngModel)]="item.value"></textarea>
                         <p *ngSwitchDefault [id]="item.id">{{item.value}}</p>

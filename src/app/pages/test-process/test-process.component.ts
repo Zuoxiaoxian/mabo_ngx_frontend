@@ -140,7 +140,6 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     // this.getStream();
     this.canvas = new fabric.Canvas("canvas");
     var canvas = this.canvas;
-
     var that = this;
 
     // 鼠标 进入矩形
