@@ -234,7 +234,7 @@ export class HisTimeComponent implements OnInit {
       'start_stamp': appear_stamp - 5,
       'end_stamp': appear_stamp + 5,
     }
-
+    this.vjs_address = '';
     this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', this.hisVideoParam).subscribe(
       (res: any) => {
         console.log('video_clip:', res)

@@ -12,8 +12,9 @@
 
         <nb-card-body>
             <div class="row" style="margin-top: 2%;">
-                <div class="col-md-12">
-                    <video id="video" controls width="100%" [src]="ip_port"></video>
+                <div class="col-md-12" style="display: flex;justify-content: center;align-items: center;">
+                    <!-- <video id="video" controls width="100%" [src]="ip_port"></video> -->
+                    <app-vjs-player [options]="{ width: '800',height: 'auto',autoplay: true, controls: true, sources: [{ src: ip_port, type: 'application/x-mpegURL' }]}"></app-vjs-player>
                 </div>
             </div>
             <div class="row" style="margin-top: 2%;">

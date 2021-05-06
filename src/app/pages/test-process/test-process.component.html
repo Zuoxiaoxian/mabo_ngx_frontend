@@ -58,9 +58,9 @@
                     <nb-option value="BaseCheck">
                       默认
                     </nb-option>
-                    <nb-option value="image_check">
+                    <!-- <nb-option value="image_check">
                       图像
-                    </nb-option>
+                    </nb-option> -->
                     <nb-option value = "encoder_check">
                       encoder
                     </nb-option>
@@ -80,8 +80,8 @@
                 <app-vjs-player [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
                 <canvas id="canvas" width="800" height="420" style="border: 1px solid white;"></canvas>
               </div> -->
-              <div *ngIf="true; else elseBlock" class="row_vido">
-                <app-vjs-player [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+              <div *ngIf="vjs_address; else elseBlock" class="row_vido">
+                <app-vjs-player *ngIf="vjs_address" #video [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
                 <div style="position: absolute;z-index: 500;">
                   <canvas id="canvas" width="800" height="450" style="border: 1px solid rgb(253, 15, 15);"></canvas>
                 </div>

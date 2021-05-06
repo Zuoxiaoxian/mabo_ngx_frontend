@@ -1,5 +1,5 @@
 .video-js .vjs-big-play-button{
-    z-index: 1000 ;
+    z-index: 1000  !important;
 }
 .video-js .vjs-progress-control{
     z-index: 1000  !important;
