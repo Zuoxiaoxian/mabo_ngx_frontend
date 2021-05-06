@@ -238,7 +238,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         }
 
         // 监听鼠标 ‘松开’
-        this.canvas.on("mouse:up", function (options) {
+        that.canvas.on("mouse:up", function (options) {
           var select_item = that.canvas.getActiveObject();
           var rect_list = that.rects;
           if (select_item) {
