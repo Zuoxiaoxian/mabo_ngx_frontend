@@ -120,8 +120,8 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
   // 录像的宽高
   video = {
-    h: 450,
-    w: 800,
+    h: 720,
+    w: 1280,
   };
 
   canvas = new fabric.Canvas("canvas");
@@ -364,10 +364,10 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
             // });
           }
           this.test_info.crop_mode_arr[f.no] = [
-            (w / (address[0] || 0)) * this.video.w,
-            (h / (address[1] || 0)) * this.video.h,
-            (w / (address[2] || 0)) * this.video.w,
-            (h / (address[3] || 0)) * this.video.h,
+            ((address[0] || 0) / w) * this.video.w,
+            ((address[1] || 0) / h) * this.video.h,
+            ((address[2] || 0) / w) * this.video.w,
+            ((address[3] || 0) / h) * this.video.h,
           ];
           this.test_info.crop_mode_arr[f.no] = this.test_info.crop_mode_arr[
             f.no

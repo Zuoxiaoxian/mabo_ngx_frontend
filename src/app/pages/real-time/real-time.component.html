@@ -70,7 +70,7 @@
         <nb-card>
           <nb-card-header style="display: flex;justify-content: space-between;align-items: center;">
             异常历史
-            <a [href]="videoSaveUri" target="_blank">stream视频存储目录(PS: 存储目录中文件名以utc时区命名) </a>
+            <a [href]="videoSaveUri" *ngIf="videoSaveUri" target="_blank">stream视频存储目录(PS: 存储目录中文件名以utc时区命名) </a>
             <div style="width: 51%;display: flex;justify-content: space-around;">
               <div>
                 <label>视频展示时间(可自行选取):  </label>
