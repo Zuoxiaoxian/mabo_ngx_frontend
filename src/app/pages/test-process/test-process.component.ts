@@ -364,10 +364,10 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
             // });
           }
           this.test_info.crop_mode_arr[f.no] = [
-            (w * (address[0] || 0)) / this.video.w,
-            (h * (address[1] || 0)) / this.video.h,
-            (w * (address[2] || 0)) / this.video.w,
-            (h * (address[3] || 0)) / this.video.h,
+            (w / (address[0] || 0)) * this.video.w,
+            (h / (address[1] || 0)) * this.video.h,
+            (w / (address[2] || 0)) * this.video.w,
+            (h / (address[3] || 0)) * this.video.h,
           ];
           this.test_info.crop_mode_arr[f.no] = this.test_info.crop_mode_arr[
             f.no
