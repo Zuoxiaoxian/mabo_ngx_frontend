@@ -107,6 +107,9 @@ export class RealTimeComponent implements OnInit {
     'end': 0
   }
 
+  public selectedMoments = [];
+  public ab_his_selectedMoments = [];
+  videoSaveUri  = '';
   timer;
   constructor(private http:HttpserviceService,
     private activateInfo:ActivatedRoute,
@@ -130,17 +133,22 @@ export class RealTimeComponent implements OnInit {
       this.getStreamBaseInfo();
       this.getStatus();
       this.getTask();
+      this.getVideoSaveUri();
       let i = 0;
       this.timer = setInterval(()=>{
-        if(i%3 == 0){
+        if(i%15 == 0){
           this.getHis();
         }
         // this.getStreamBaseInfo();
-        this.getStatus();
-        this.getTask();
-        this.getNearlyAb();
+        if(i%5 == 0){
+          this.getTask();
+        }
+        if(i%2 == 0){
+          this.getStatus();
+          this.getNearlyAb();
+        }
         i++;
-      },5000)
+      },1000)
     })
   }
 
@@ -176,6 +184,49 @@ export class RealTimeComponent implements OnInit {
 
   }
 
+  hisVideoParam;
+  /**
+   *  监听选择的时间改变并保存
+   */
+  closedSpy() {
+    console.log(this.selectedMoments)
+    console.log('start stamp: ' + this.selectedMoments[0].getTime())
+    console.log('end stamp: ' + this.selectedMoments[1].getTime())
+    this.hisVideoParam = {
+      'start_stamp': this.selectedMoments[0].getTime() / 1000,
+      'end_stamp': this.selectedMoments[1].getTime(),
+    };
+    // this.isLoadingHisVideoRes = true;
+    // this.history_video_res.length = 0;
+    // console.log('ready to set data', this.hisVideoParam)
+    // this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/video_clip', this.hisVideoParam).subscribe(
+    //   (res: {}[]) => {
+    //     console.log('video_clip:', res)
+    //     this.history_video_res.push(res);
+    //     this.isLoadingHisVideoRes = false
+    //   });
+  }
+
+  openVideo(){
+    this.dialogService.open(
+      DialogVideoComponent,
+      {
+        context:{
+          _:this._,
+          hisVideoParam:this.hisVideoParam
+        }
+      }
+    );
+  }
+
+  getVideoSaveUri() {
+    this.http.get('/api/mongo_api/video_process/stream/' + this._.stream + '/video_save_addr').subscribe(
+      (res) => {
+        this.videoSaveUri = res['uri']
+      });
+
+
+  }
 
   /**
    * 获取任务信息
@@ -251,6 +302,8 @@ export class RealTimeComponent implements OnInit {
               },
             }).onClose.subscribe(f=>{
               this.errorTip = false;
+              //查询历史记录
+              this.getHis();
             })
           }
         }

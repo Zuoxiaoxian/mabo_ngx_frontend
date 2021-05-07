@@ -11,6 +11,7 @@ import { HisTimeComponent } from '../his-time/his-time.component';
 import { TableBottonComponent } from './table-botton/table-botton.component';
 import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
 import { FormsModule, FormsModule as ngFormsModule } from '@angular/forms';
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
 
 const ROUTES: Routes = [
@@ -33,7 +34,9 @@ const ROUTES: Routes = [
     NbInputModule,
     RouterModule.forChild(ROUTES),
     ngFormsModule,
-    FormsModule
+    FormsModule,
+    OwlDateTimeModule,
+    OwlNativeDateTimeModule,
   ],
   declarations: [RealTimeComponent,DialogTipComponent,DialogVideoComponent,HisTimeComponent,TableBottonComponent,DialogConfirmComponent],
   exports:[
