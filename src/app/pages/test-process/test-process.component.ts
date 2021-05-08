@@ -212,7 +212,6 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     //     }
     //   }
     // });
-
     // 监听移动
     that.canvas.on("mouse:down", function (options) {
       if (options.target) {
