@@ -212,7 +212,6 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     //     }
     //   }
     // });
-
     // 监听移动
     that.canvas.on(
       "mouse:down",
@@ -246,73 +245,80 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     );
     // 监听鼠标 ‘松开’
     that.canvas.on("mouse:up", function (options) {
-      var select_item = that.canvas.getActiveObject();
-      var rect_list = that.rects;
-      if (select_item) {
-        var polygonCenter = select_item.getCenterPoint();
-        // console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
-        var translatedPoints = canvas.getActiveObject().get("aCoords");
-        // console.error("得到 顶点坐标>>>", translatedPoints);
-        // 要得到对角线的坐标点， 左上---右下
-        var tl_br = [
-          translatedPoints["tl"]["x"],
-          translatedPoints["tl"]["y"],
-          translatedPoints["br"]["x"],
-          translatedPoints["br"]["y"],
-        ];
-        // console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+      if (options.target && options.target.type === "rect") {
+        console.log('=->松开')
+        var select_item = that.canvas.getActiveObject();
+        var rect_list = that.rects;
+        if (select_item) {
+          var polygonCenter = select_item.getCenterPoint();
+          // console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
+          var translatedPoints = canvas.getActiveObject().get("aCoords");
+          // console.error("得到 顶点坐标>>>", translatedPoints);
+          // 要得到对角线的坐标点， 左上---右下
+          var tl_br = [
+            translatedPoints["tl"]["x"],
+            translatedPoints["tl"]["y"],
+            translatedPoints["br"]["x"],
+            translatedPoints["br"]["y"],
+          ];
+          // console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+      
+          var rect_index = rect_list.indexOf(select_item);
+          var item = that.row_item_list[rect_index];
+          if (item) {
+            
+            item[1] = tl_br.join(",");
+            
+            var row_2 = {
+                no: item[0],
+                address: item[1],
+                description: item[2],
+                rid: item[3],
+              };
+              row_2 = that.conversion(row_2);
+            const [address,change] = that.out_of_bounds(row_2.address);
+            if(change){
+              row_2.address = address;
+              that.edit_position_tochange_rect(row_2);
+              // return;
+            }
+            // console.error("rect_index , item>>", rect_index, item);
+            // this.source.update()
+            var rows = []; // 删除时候的 table数据
+            that.row_item_list.forEach((item) => {
+              var row = {
+                no: item[0],
+                address: item[1],
+                description: item[2],
+                rid: item[3],
+              };
+              
+              row = that.conversion(row);
+              
+              
     
-        var rect_index = rect_list.indexOf(select_item);
-        var item = that.row_item_list[rect_index];
-        if (item) {
-          var row = {
-            no: item[0],
-            address: item[1],
-            description: item[2],
-            rid: item[3],
-          };
-          row = that.conversion(row);
-          const [address,change] = that.out_of_bounds(row.address);
-          if(change){
-            row.address = address;
-            that.edit_position_tochange_rect(row);
-            return;
+              rows.push(row);
+            });
+            
+            // console.error("更新tabel>>>>", rows);
+            that.source.load(rows);
+  
+            // 更新title
+  
+            that.canvas.renderAll();
+            
+            // that.canvas.requestRenderAll();
+          } else {
+            // var item = that.row_item_list[rect_index];
+            console.error(
+              "更新tabel| rect_index,>>>>",
+              rect_index,
+              that.row_item_list
+            );
           }
-
-          item[1] = tl_br.join(",");
-          // console.error("rect_index , item>>", rect_index, item);
-          // this.source.update()
-          var rows = []; // 删除时候的 table数据
-          that.row_item_list.forEach((item) => {
-            var row = {
-              no: item[0],
-              address: item[1],
-              description: item[2],
-              rid: item[3],
-            };
-            
-            row = that.conversion(row);
-            
-            rows.push(row);
-          });
-          
-          // console.error("更新tabel>>>>", rows);
-          that.source.load(rows);
-
-          // 更新title
-
-          that.canvas.renderAll();
-          
-          // that.canvas.requestRenderAll();
-        } else {
-          // var item = that.row_item_list[rect_index];
-          console.error(
-            "更新tabel| rect_index,>>>>",
-            rect_index,
-            that.row_item_list
-          );
         }
       }
+      
     });
   }
 
@@ -719,6 +725,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         ((d.address[3] || 0) / h) * this.video.h,
       ].map((m) => parseInt(m.toString()) ).join(',');
     }else if(Array.isArray(d.address)){
+
       d.address = [
         ((d.address[0] || 0) / w) * this.video.w,
         ((d.address[1] || 0) / h) * this.video.h,
@@ -769,6 +776,8 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     // let h = this.video.h;
     if(typeof address ===  'string'){
       ads = address.split(',');
+      let f_h = ads[3] - ads[1];
+      let f_w = ads[2] - ads[0];
       let change = false;//是否需要重新修改位置
       // for(let i = 0;i < ads.length-1;i++ ){
       //   let el = ads[i];
