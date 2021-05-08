@@ -68,10 +68,22 @@
       </div>
       <div class="col-md-12" >
         <nb-card>
-          <nb-card-header>
+          <nb-card-header style="display: flex;justify-content: space-between;align-items: center;">
             异常历史
+            <a [href]="videoSaveUri" *ngIf="true" target="_blank">stream视频存储目录(PS: 存储目录中文件名以utc时区命名) </a>
+            <div style="display: flex;justify-content: space-around;">
+              <div>
+                <label>视频展示时间(可自行选取):  </label>
+                <input [(ngModel)]="selectedMoments" [selectMode]="'range'" [owlDateTimeTrigger]="date_range_component" [owlDateTime]="date_range_component" style="width: 20rem; color: cornflowerblue;height: 100%;margin-right: 0.5rem;" id="daterange" matInput>
+                <owl-date-time (afterPickerClosed)="closedSpy()" #date_range_component></owl-date-time>
+                <button nbButton hero status = "success" style="margin-right: 2rem;" 
+                 (click)="openVideo();">回溯视频</button>
+                <button nbButton hero status = "success" (click)="getHis();">刷新历史</button>
+              </div>
+            </div>
           </nb-card-header>
           <nb-card-body>
+            <div style="float: right;">异常视频历史上下区间（单位：s）：<input style="width: 6rem;" type="number" nbInput  [(ngModel)]="videoInterval"></div>
             <ng2-smart-table style="width: 100%;" [settings]="setting" [source]="source">
             </ng2-smart-table>
           </nb-card-body>

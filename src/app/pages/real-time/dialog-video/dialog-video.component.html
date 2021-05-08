@@ -1,13 +1,13 @@
 <nb-card style="width: 48rem;height: 33rem;">
   <nb-card-header>{{ _title }}</nb-card-header>
-  <nb-card-body>
+  <nb-card-body style="display: flex;flex-wrap: wrap;align-items: center;">
     <div *ngIf="vjs_address;else elseBlock" class="vido">
       <!-- <video style="width: 100%;" controls>
         <source [src]="vjs_address" type="video/mp4">
       </video> -->
       <app-vjs-player *ngIf="vjs_address" [options]="{ width: '720',height: 'auto',autoplay: true, controls: true, sources: [{ src: vjs_address, type: 'video/mp4' }]}"></app-vjs-player>
     </div>
-    <div style="width: 100%;height: 10%;">
+    <div style="width: 100%;height: 10%;" *ngIf="!hisVideoParam">
       <input nbInput type="text" placeholder="备注内容" disabled [(ngModel)]="body.remarks" style="width: 100%;max-width: 100%;">
     </div>
   </nb-card-body>
@@ -15,7 +15,7 @@
     <a download [href]="vjs_address" disabled *ngIf="vjs_address;else nofile;" (click)="(false)">
       右键另存为
     </a>
-    <button nbButton hero status="success" (click)="save()" title="该功能暂时未开发" disabled>保存备注并保存</button>
+    <button nbButton hero status="success" *ngIf="!hisVideoParam" (click)="save()" title="该功能暂时未开发" disabled>保存备注并保存</button>
     <button nbButton hero status="primary" (click)="dismiss()">关闭</button>
   </nb-card-footer>
 </nb-card>

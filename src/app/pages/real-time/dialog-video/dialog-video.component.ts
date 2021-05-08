@@ -15,9 +15,10 @@ export class DialogVideoComponent implements OnInit  {
   };
   @Input() body: any;
   @Input() _: any;
+  @Input() hisVideoParam:any;//当有值的时候为自定义时间
+  @Input() videoInterval = 5;
   _title
   vjs_address;
-  hisVideoParam;
   @ViewChild('video')video:any
   constructor(protected ref: NbDialogRef<DialogVideoComponent>,private http:HttpserviceService) {}
   
@@ -35,19 +36,28 @@ export class DialogVideoComponent implements OnInit  {
   }
 
   getData(){
-    this.vjs_address = '';
-    var appearTime: string = this.body['time'];
-    var appear_stamp = Date.parse(appearTime) / 1000
-    this.hisVideoParam = {
-      'start_stamp': appear_stamp - 5,
-      'end_stamp': appear_stamp + 5,
+    if(this.hisVideoParam){
+      console.log('ready to set data', this.hisVideoParam)
+      this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', this.hisVideoParam).subscribe(
+        (res: {}[]) => {
+          console.log('video_clip:', res)
+          this.vjs_address  = res['uri'] || '';
+        });
+    }else{
+      this.vjs_address = '';
+      var appearTime: string = this.body['time'];
+      var appear_stamp = Date.parse(appearTime) / 1000
+      let hisVideoParam = {
+        'start_stamp': appear_stamp - this.videoInterval,
+        'end_stamp': appear_stamp + this.videoInterval,
+      }
+  
+      this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', hisVideoParam).subscribe(
+        (res: {}[]) => {
+          this.vjs_address  = res['uri'] || '';
+          console.log('video_clip:', this.vjs_address)
+        });
     }
-
-    this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', this.hisVideoParam).subscribe(
-      (res: {}[]) => {
-        this.vjs_address  = res['uri'] || '';
-        console.log('video_clip:', this.vjs_address)
-      });
   }
 
   save(){
