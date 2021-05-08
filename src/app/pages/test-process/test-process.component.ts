@@ -246,7 +246,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         var polygonCenter = select_item.getCenterPoint();
         // console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
         var translatedPoints = canvas.getActiveObject().get("aCoords");
-        // console.error("得到 顶点坐标>>>", translatedPoints);
+        console.error("监听鼠标 ‘松开’ 得到 顶点坐标>>>", translatedPoints);
         // 要得到对角线的坐标点， 左上---右下
         var tl_br = [
           translatedPoints["tl"]["x"],
