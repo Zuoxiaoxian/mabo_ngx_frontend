@@ -120,8 +120,8 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
   // 录像的宽高
   video = {
-    h: 720,
     w: 1280,
+    h: 780,
   };
 
   canvas = new fabric.Canvas("canvas");
@@ -141,6 +141,9 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     this.canvas = new fabric.Canvas("canvas");
     var canvas = this.canvas;
     var that = this;
+    // this.canvas = new fabric.Canvas("canvas");
+    // var canvas = this.canvas;
+    // var that = this;
 
     // 鼠标 进入矩形
     // var hoverTarget;
@@ -269,6 +272,13 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
                   description: item[2],
                   rid: item[3],
                 };
+                
+                row = that.conversion(row);
+                // const [address,change] = that.out_of_bounds(row.address);
+                // if(change){
+                //   row.address = address;
+                //   that.edit_position_tochange_rect(row);
+                // }
                 rows.push(row);
               });
               // console.error("更新tabel>>>>", rows);
@@ -338,43 +348,50 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   save() {
     if (this.source.count() > 0) {
       this.test_info.crop_mode = "manual";
-      let video = document.getElementsByTagName("video");
-      console.log(video);
-      let w = 800;
-      let h = 450;
-      if (video && video.length > 0) {
-        w = document.getElementsByTagName("video")[0].scrollWidth;
-        h = document.getElementsByTagName("video")[0].scrollHeight;
-      }
+      // let video = document.getElementsByTagName("video");
+      // console.log(video);
+      // let w = 800;
+      // let h = 450;
+      // if (video && video.length > 0) {
+      //   w = document.getElementsByTagName("video")[0].scrollWidth;
+      //   h = document.getElementsByTagName("video")[0].scrollHeight;
+      // }
+      // new Array(this.source).forEach((el: any) => {
+      //   el.data.forEach((f) => {
+      //     console.log(f.no, f.address);
+      //     let address = [0, 0, 0, 0];
+      //     if (Array.isArray(f.address)) {
+      //       f.address.forEach((el, i) => {
+      //         address[i] = parseFloat(el);
+      //       });
+      //     } else {
+      //       let arr = f.address.toString().split(",");
+      //       address = arr.map((m) => parseInt(m));
+      //       // address.forEach((g, i) => {
+      //       // if (arr && arr[i]) {
+      //       // g = parseFloat(arr[i]);
+      //       // }
+      //       // });
+      //     }
+      //     this.test_info.crop_mode_arr[f.no] = [
+      //       ((address[0] || 0) / w) * this.video.w,
+      //       ((address[1] || 0) / h) * this.video.h,
+      //       ((address[2] || 0) / w) * this.video.w,
+      //       ((address[3] || 0) / h) * this.video.h,
+      //     ];
+      //     this.test_info.crop_mode_arr[f.no] = this.test_info.crop_mode_arr[
+      //       f.no
+      //     ].map((m) => parseInt(m));
+      //     console.log(this.test_info.crop_mode_arr[f.no]);
+      //     this.test_info.crop_mode_description[f.no] = f.description;
+      //   });
+      // });
       new Array(this.source).forEach((el: any) => {
         el.data.forEach((f) => {
-          console.log(f.no, f.address);
-          let address = [0, 0, 0, 0];
-          if (Array.isArray(f.address)) {
-            f.address.forEach((el, i) => {
-              address[i] = parseFloat(el);
-            });
-          } else {
-            let arr = f.address.toString().split(",");
-            address = arr.map((m) => parseInt(m));
-            // address.forEach((g, i) => {
-            // if (arr && arr[i]) {
-            // g = parseFloat(arr[i]);
-            // }
-            // });
+          if (typeof f.address === 'string') {
+            f.address = f.address.toString().split(",");
           }
-          this.test_info.crop_mode_arr[f.no] = [
-            ((address[0] || 0) / w) * this.video.w,
-            ((address[1] || 0) / h) * this.video.h,
-            ((address[2] || 0) / w) * this.video.w,
-            ((address[3] || 0) / h) * this.video.h,
-          ];
-          this.test_info.crop_mode_arr[f.no] = this.test_info.crop_mode_arr[
-            f.no
-          ].map((m) => parseInt(m));
-          console.log(this.test_info.crop_mode_arr[f.no]);
-          this.test_info.crop_mode_description[f.no] = f.description;
-        });
+        })
       });
     } else {
       this.test_info.crop_mode = "None";
@@ -519,6 +536,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         console.log(f);
         this.video.h = f.height;
         this.video.w = f.width;
+        
       });
   }
 
@@ -543,16 +561,6 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
           }
         }
       });
-  }
-
-  getwidth() {
-    let vido = document.getElementsByClassName("row_vido");
-    return vido[0].scrollWidth - 320;
-  }
-
-  getheight() {
-    let vido = document.getElementsByClassName("row_vido");
-    return vido[0].scrollHeight - 20;
   }
 
   keyup(e, value) {
@@ -582,6 +590,10 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
    * 添加裁剪的数据
    */
   add_fang() {
+    // if(!this.video.h || !this.video.w){
+    //   alert('未获得摄像头实际宽高，无法使用画框功能');
+    //   return;
+    // }
     var no = this.source.count();
     var data = {
       no: String(no),
@@ -589,7 +601,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       description: "beizhu",
       rid: no,
     };
-    this.source.prepend(data);
+    this.source.prepend(this.conversion(data));
     console.log(this.source);
     // 新增 cannas 矩形
     this.after_add_fang_add_canas(data);
@@ -671,6 +683,137 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       // this.test_info
     };
   }
+
+  /**
+   * 将 得到的坐标转换为 实际宽高的坐标
+   * @param data 
+   */
+  conversion(data){
+    let w = 800;
+    let h = 450;
+    let video = document.getElementsByTagName("video");
+    if (video && video.length > 0) {
+      w = document.getElementsByTagName("video")[0].scrollWidth;
+      h = document.getElementsByTagName("video")[0].scrollHeight;
+    }
+    let d = JSON.parse(JSON.stringify(data));
+    if(typeof d.address === 'string') {
+      d.address  = d.address.split(',').map((m) => parseInt(m));
+      d.address = [
+        ((d.address[0] || 0) / w) * this.video.w,
+        ((d.address[1] || 0) / h) * this.video.h,
+        ((d.address[2] || 0) / w) * this.video.w,
+        ((d.address[3] || 0) / h) * this.video.h,
+      ].map((m) => parseInt(m.toString()) ).join(',');
+    }else if(Array.isArray(d.address)){
+      d.address = [
+        ((d.address[0] || 0) / w) * this.video.w,
+        ((d.address[1] || 0) / h) * this.video.h,
+        ((d.address[2] || 0) / w) * this.video.w,
+        ((d.address[3] || 0) / h) * this.video.h,
+      ].map((m) => parseInt(m.toString()));
+      
+    }
+    return d;
+  }
+
+  anti_conversion(address){
+    let w = 800;
+    let h = 450;
+    let video = document.getElementsByTagName("video");
+    if (video && video.length > 0) {
+      w = document.getElementsByTagName("video")[0].scrollWidth;
+      h = document.getElementsByTagName("video")[0].scrollHeight;
+    }
+    if(typeof address === 'string'){
+      let d:any = address.split(',');
+      address = [
+        ( w / this.video.w) * d[0],
+        ( h / this.video.h) * d[1],
+        ( w / this.video.w) * d[2],
+        ( h / this.video.h) * d[3],
+      ].map((m) => parseInt(m.toString())).join(',');
+    }else if(Array.isArray(address)){
+      address = [
+        ( w / this.video.w) * address[0],
+        ( h / this.video.h) * address[1],
+        ( w / this.video.w) * address[2],
+        ( h / this.video.h) * address[3],
+      ].map((m) => parseInt(m.toString())).join(',');
+    }
+    return address
+  }
+
+  /**
+   * 画框的坐标越界判断
+   * @param address 
+   */
+  out_of_bounds(address){
+    let ads = [];
+    // let w = document.getElementsByTagName("video")[0].scrollWidth;
+    // let h = document.getElementsByTagName("video")[0].scrollHeight;
+    let w = this.video.w;
+    let h = this.video.h;
+    if(typeof address ===  'string'){
+      ads = address.split(',');
+      let change = false;//是否需要重新修改位置
+      // for(let i = 0;i < ads.length-1;i++ ){
+      //   let el = ads[i];
+      //   if(el < 0 ){
+      //     ads[i] = 0;
+      //     change = true;
+      //     break;
+      //   }
+      //   if(i%2 == 1 && el > w){
+      //     // y
+      //     ads[i] = w;
+      //     change = true;
+      //     break;
+      //   }
+      //   if(i%2 == 0 && el > h){
+      //     // x
+      //     ads[i] = h;
+      //     change = true;
+      //     break;
+      //   }
+      // }
+      if(ads[0] < 0){
+        ads[2] = ads[2] - parseInt(ads[0]);
+        ads[0] = 0;
+        change = true;
+      }
+      if(ads[1] < 0){
+        ads[3] = ads[3] - parseInt(ads[1]);
+        ads[1] = 0;
+        change = true;
+      }
+      if(ads[2] < 0){
+
+      }
+      if(ads[3] < 0){
+        
+      }
+
+      if(ads[0] > w){
+
+      }
+      if(ads[2] > w){
+
+      }
+
+      if(ads[1] > h){
+
+      }
+      if(ads[3] > h){
+
+      }
+     
+
+      console.log(ads)
+      return [ads.join(','),change]
+      // 
+    }
+  }
   // -------------------------------------
 
   // 编辑位置时---改变矩形位置
@@ -678,7 +821,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     console.error("编辑位置时---改变矩形位置>>>", data);
     var no = data["no"],
       rid = data["rid"],
-      address = data["address"],
+      address = this.anti_conversion(data["address"]),
       rect_list = this.rects,
       planetLabel_list = this.planetLabel_list,
       rect_index = null,
@@ -691,6 +834,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     });
     // -------矩形移动
     var rect_list_item = rect_list[rect_index];
+    console.log(rect_list_item)
     rect_list_item.animate("left", Number(address.split(",")[0]), {
       duration: 1000,
       onChange: this.canvas.renderAll.bind(this.canvas),

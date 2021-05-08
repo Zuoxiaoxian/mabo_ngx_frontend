@@ -81,14 +81,18 @@
                 <canvas id="canvas" width="800" height="420" style="border: 1px solid white;"></canvas>
               </div> -->
               <div *ngIf="true; else elseBlock" class="row_vido">
-                <app-vjs-player *ngIf="vjs_address" #video [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+                <app-vjs-player *ngIf="true" #video [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
                 <div style="position: absolute;z-index: 500;">
                   <canvas id="canvas" width="800" height="450" style="border: 1px solid rgb(253, 15, 15);"></canvas>
                 </div>
               </div>
 
               <div class="row" style="width: 100%;">
-                <button nbButton hero status="success" (click)="add_fang()">新增canvas</button>
+                <div style="width: 100%;display: flex;align-items: center;justify-content: space-between;">
+                  <button nbButton hero status="success" (click)="add_fang()">新增canvas</button>
+                  <span style="margin-right: 6rem;">{{ video.w || '——'  }} * {{ video.h || '——' }} </span>
+                  <span></span>
+                </div>
                 <ng2-smart-table style="width: 100%;" [settings]="setting" [source]="source" ></ng2-smart-table>
               </div>
             </nb-card-body>

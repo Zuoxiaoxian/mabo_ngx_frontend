@@ -17,7 +17,7 @@ declare var $
   styleUrls: ['./real-time.component.scss']
 })
 export class RealTimeComponent implements OnInit {
-
+  videoInterval = 5;//异常历史视频上下区间
   public org_address = "";
   public org_type = ""
   public vjs_address = "";
@@ -77,7 +77,8 @@ export class RealTimeComponent implements OnInit {
                 context:{
                   body:row,
                   title:row.time,
-                  _:this._
+                  _:this._,
+                  videoInterval:this.videoInterval
                 }
               }
             );
@@ -196,15 +197,6 @@ export class RealTimeComponent implements OnInit {
       'start_stamp': this.selectedMoments[0].getTime() / 1000,
       'end_stamp': this.selectedMoments[1].getTime(),
     };
-    // this.isLoadingHisVideoRes = true;
-    // this.history_video_res.length = 0;
-    // console.log('ready to set data', this.hisVideoParam)
-    // this.http.post('/api/mongo_api/video_process/stream/' + this.stream_name + '/video_clip', this.hisVideoParam).subscribe(
-    //   (res: {}[]) => {
-    //     console.log('video_clip:', res)
-    //     this.history_video_res.push(res);
-    //     this.isLoadingHisVideoRes = false
-    //   });
   }
 
   openVideo(){

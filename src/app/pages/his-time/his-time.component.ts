@@ -107,6 +107,9 @@ export class HisTimeComponent implements OnInit {
     'start': 0,
     'end': 0
   }
+  public selectedMoments = [];
+  public ab_his_selectedMoments = [];
+  videoInterval = 5;
   constructor(private http:HttpserviceService,
     private activateInfo:ActivatedRoute,
     private dialogService:NbDialogService ) { }
@@ -125,7 +128,7 @@ export class HisTimeComponent implements OnInit {
           this._.statusName = queryParams.taskstatus||'';
           this._.stream = queryParams.stream||'';
           this.getHis();
-          // this.getStreamBaseInfo();
+          this.getStreamBaseInfo();
           this.getTask();
         })
   }
@@ -195,7 +198,27 @@ export class HisTimeComponent implements OnInit {
         }
       );
     }
-    
+  
+
+    closedSpy() {
+      console.log(this.selectedMoments)
+      console.log('start stamp: ' + this.selectedMoments[0].getTime())
+      console.log('end stamp: ' + this.selectedMoments[1].getTime())
+      this.hisVideoParam = {
+        'start_stamp': this.selectedMoments[0].getTime() / 1000,
+        'end_stamp': this.selectedMoments[1].getTime(),
+      };
+    }
+
+    openVideo(){
+      this.vjs_address = '';
+      this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', this.hisVideoParam).subscribe(
+        (res: {}[]) => {
+          console.log('video_clip:', res)
+          this.vjs_address  = res['uri'] || '';
+        });
+    }
+
 
     /**
    * 获取任务信息
@@ -231,8 +254,8 @@ export class HisTimeComponent implements OnInit {
     }
     var appear_stamp = Date.parse(appearTime) / 1000
     this.hisVideoParam = {
-      'start_stamp': appear_stamp - 5,
-      'end_stamp': appear_stamp + 5,
+      'start_stamp': appear_stamp - this.videoInterval,
+      'end_stamp': appear_stamp + this.videoInterval,
     }
     this.vjs_address = '';
     this.http.post('/api/mongo_api/video_process/stream/' + this._.stream + '/video_clip', this.hisVideoParam).subscribe(

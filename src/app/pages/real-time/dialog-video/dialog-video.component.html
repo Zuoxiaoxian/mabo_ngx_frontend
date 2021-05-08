@@ -1,6 +1,6 @@
 <nb-card style="width: 48rem;height: 33rem;">
   <nb-card-header>{{ _title }}</nb-card-header>
-  <nb-card-body>
+  <nb-card-body style="display: flex;flex-wrap: wrap;align-items: center;">
     <div *ngIf="vjs_address;else elseBlock" class="vido">
       <!-- <video style="width: 100%;" controls>
         <source [src]="vjs_address" type="video/mp4">
