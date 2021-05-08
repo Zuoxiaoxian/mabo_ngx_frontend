@@ -240,67 +240,80 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
           }
         }
 
-        // 监听鼠标 ‘松开’
-        that.canvas.on("mouse:up", function (options) {
-          var select_item = that.canvas.getActiveObject();
-          var rect_list = that.rects;
-          if (select_item) {
-            var polygonCenter = select_item.getCenterPoint();
-            // console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
-            var translatedPoints = canvas.getActiveObject().get("aCoords");
-            // console.error("得到 顶点坐标>>>", translatedPoints);
-            // 要得到对角线的坐标点， 左上---右下
-            var tl_br = [
-              translatedPoints["tl"]["x"],
-              translatedPoints["tl"]["y"],
-              translatedPoints["br"]["x"],
-              translatedPoints["br"]["y"],
-            ];
-            // console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
-
-            var rect_index = rect_list.indexOf(select_item);
-            var item = that.row_item_list[rect_index];
-            if (item) {
-              item[1] = tl_br.join(",");
-              // console.error("rect_index , item>>", rect_index, item);
-              // this.source.update()
-              var rows = []; // 删除时候的 table数据
-              that.row_item_list.forEach((item) => {
-                var row = {
-                  no: item[0],
-                  address: item[1],
-                  description: item[2],
-                  rid: item[3],
-                };
-                
-                row = that.conversion(row);
-                // const [address,change] = that.out_of_bounds(row.address);
-                // if(change){
-                //   row.address = address;
-                //   that.edit_position_tochange_rect(row);
-                // }
-                rows.push(row);
-              });
-              // console.error("更新tabel>>>>", rows);
-              that.source.load(rows);
-
-              // 更新title
-
-              that.canvas.renderAll();
-              // that.canvas.requestRenderAll();
-            } else {
-              // var item = that.row_item_list[rect_index];
-              console.error(
-                "更新tabel| rect_index,>>>>",
-                rect_index,
-                that.row_item_list
-              );
-            }
-          }
-        });
-      },
-      20
+        
+       
+      }
     );
+    // 监听鼠标 ‘松开’
+    that.canvas.on("mouse:up", function (options) {
+      var select_item = that.canvas.getActiveObject();
+      var rect_list = that.rects;
+      if (select_item) {
+        var polygonCenter = select_item.getCenterPoint();
+        // console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
+        var translatedPoints = canvas.getActiveObject().get("aCoords");
+        // console.error("得到 顶点坐标>>>", translatedPoints);
+        // 要得到对角线的坐标点， 左上---右下
+        var tl_br = [
+          translatedPoints["tl"]["x"],
+          translatedPoints["tl"]["y"],
+          translatedPoints["br"]["x"],
+          translatedPoints["br"]["y"],
+        ];
+        // console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+    
+        var rect_index = rect_list.indexOf(select_item);
+        var item = that.row_item_list[rect_index];
+        if (item) {
+          var row = {
+            no: item[0],
+            address: item[1],
+            description: item[2],
+            rid: item[3],
+          };
+          row = that.conversion(row);
+          const [address,change] = that.out_of_bounds(row.address);
+          if(change){
+            row.address = address;
+            that.edit_position_tochange_rect(row);
+            return;
+          }
+
+          item[1] = tl_br.join(",");
+          // console.error("rect_index , item>>", rect_index, item);
+          // this.source.update()
+          var rows = []; // 删除时候的 table数据
+          that.row_item_list.forEach((item) => {
+            var row = {
+              no: item[0],
+              address: item[1],
+              description: item[2],
+              rid: item[3],
+            };
+            
+            row = that.conversion(row);
+            
+            rows.push(row);
+          });
+          
+          // console.error("更新tabel>>>>", rows);
+          that.source.load(rows);
+
+          // 更新title
+
+          that.canvas.renderAll();
+          
+          // that.canvas.requestRenderAll();
+        } else {
+          // var item = that.row_item_list[rect_index];
+          console.error(
+            "更新tabel| rect_index,>>>>",
+            rect_index,
+            that.row_item_list
+          );
+        }
+      }
+    });
   }
 
   // 新增 名称-位置-说明后，同时新建canas的矩形
@@ -750,10 +763,10 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
    */
   out_of_bounds(address){
     let ads = [];
-    // let w = document.getElementsByTagName("video")[0].scrollWidth;
-    // let h = document.getElementsByTagName("video")[0].scrollHeight;
-    let w = this.video.w;
-    let h = this.video.h;
+    let w = document.getElementsByTagName("video")[0].scrollWidth;
+    let h = document.getElementsByTagName("video")[0].scrollHeight;
+    // let w = this.video.w;
+    // let h = this.video.h;
     if(typeof address ===  'string'){
       ads = address.split(',');
       let change = false;//是否需要重新修改位置
