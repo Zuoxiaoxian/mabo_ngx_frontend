@@ -82,6 +82,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         onComponentInitFunction: (instance) => {
           instance.edit.subscribe((value) => {
             // TODO 进行图像画框
+
             this.edit_name_tochange_recttitle(value);
           });
         },
@@ -95,7 +96,11 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         onComponentInitFunction: (instance) => {
           instance.edit.subscribe((value) => {
             // TODO 进行图像画框
-            this.edit_position_tochange_rect(value);
+            // value = this.conversion(value);
+            var address = this.anti_conversion(value.address);
+            console.error("位置value>>>", value);
+            // 修改位置，必须添加参数 'edit' 表示添加
+            this.edit_position_tochange_rect(value, false, address, "edit");
           });
         },
       },
@@ -132,6 +137,9 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   rects = []; // canvas item
 
   _canvas;
+  // 移动或者是缩放的原来的组表
+  tl_br = [];
+
   constructor(private http: HttpserviceService, private router: Router) {}
 
   ngOnInit() {}
@@ -217,7 +225,29 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       if (options.target) {
         console.log("选中的", options.target);
         var target = options.target;
+        var translatedPoints = target.get("aCoords");
+        this.tl_br = [
+          translatedPoints["tl"]["x"],
+          translatedPoints["tl"]["y"],
+          translatedPoints["br"]["x"],
+          translatedPoints["br"]["y"],
+        ];
+
         if (options.target.type === "rect") {
+          // 监听缩放
+          options.target.on("scaling", function (options) {
+            // console.error("监听缩放===============>");
+            // var width =
+            //     Number(address_.split(",")[2]) - Number(address_.split(",")[0]),
+            //   height =
+            //     Number(address_.split(",")[3]) - Number(address_.split(",")[1]);
+            // target.set({
+            //   width: width,
+            //   height: height,
+            // });
+            // target.setCoords();
+          });
+
           options.target.on("moving", function (options) {
             var rect_list = that.rects;
             var rect_index = rect_list.indexOf(target);
@@ -245,20 +275,51 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         var polygonCenter = select_item.getCenterPoint();
         // console.error("得到 中心点坐标polygonCenter>>>", polygonCenter);
         var translatedPoints = canvas.getActiveObject().get("aCoords");
-        console.error("监听鼠标 ‘松开’ 得到 顶点坐标>>>", translatedPoints);
+        // console.error("监听鼠标 ‘松开’ 得到 顶点坐标>>>", translatedPoints);
         // 要得到对角线的坐标点， 左上---右下
         var tl_br = [
-          translatedPoints["tl"]["x"],
-          translatedPoints["tl"]["y"],
-          translatedPoints["br"]["x"],
-          translatedPoints["br"]["y"],
+          Math.round(translatedPoints["tl"]["x"]),
+          Math.round(translatedPoints["tl"]["y"]),
+          Math.round(translatedPoints["br"]["x"]),
+          Math.round(translatedPoints["br"]["y"]),
         ];
-        // console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+
+        var address = tl_br.join(",");
+
+        var width =
+            Number(address.split(",")[2]) - Number(address.split(",")[0]),
+          height =
+            Number(address.split(",")[3]) - Number(address.split(",")[1]);
+        console.error("*******width,height", width, height);
+        // select_item.set({
+        //   width: width,
+        //   height: height,
+        // });
+        // select_item.setCoords();
+
+        // console.error("***要得到对角线的坐标点， 左上---右下tl_br>>", tl_br);
+        // console.error("***要得到对角线的坐标点， 左上---右下>>", this.tl_br);
 
         var rect_index = rect_list.indexOf(select_item);
         var item = that.row_item_list[rect_index];
         if (item) {
           item[1] = tl_br.join(",");
+
+          var row_2 = {
+            no: item[0],
+            address: item[1],
+            description: item[2],
+            rid: item[3],
+          };
+          row_2 = that.conversion(row_2);
+          const [address, change] = that.out_of_bounds(row_2.address);
+          if (change) {
+            var before_address = this.tl_br.join(",");
+            row_2.address = address;
+            that.edit_position_tochange_rect(row_2, change, before_address);
+            // return;
+          }
+
           // console.error("rect_index , item>>", rect_index, item);
           // this.source.update()
           var rows = []; // 删除时候的 table数据
@@ -269,11 +330,14 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
               description: item[2],
               rid: item[3],
             };
+            // 800*450---->1280*780
+            console.error("************row*********", row);
+            row = that.conversion(row);
             rows.push(row);
           });
-          // console.error("更新tabel>>>>", rows);
-          that.source.load(rows);
+          console.error("************8rows*********", rows);
 
+          that.source.load(rows);
           // 更新title
 
           that.canvas.renderAll();
@@ -672,7 +736,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
   /**
    * 将 得到的坐标转换为 实际宽高的坐标
-   * @param data
+   * @param data  800*450---->1280*780
    */
   conversion(data) {
     let w = 800;
@@ -704,6 +768,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     return d;
   }
 
+  // 1280*780----> 800*450
   anti_conversion(address) {
     let w = 800;
     let h = 450;
@@ -740,41 +805,26 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
    * @param address
    */
   out_of_bounds(address) {
+    // return [address, true];
     let ads = [];
     let w = document.getElementsByTagName("video")[0].scrollWidth;
     let h = document.getElementsByTagName("video")[0].scrollHeight;
     // let w = this.video.w;
     // let h = this.video.h;
     if (typeof address === "string") {
-      ads = address.split(",");
+      // ads = address.split(",");
+      ads = address.split(",").map(function (a) {
+        return Number(a);
+      });
       let change = false; //是否需要重新修改位置
-      // for(let i = 0;i < ads.length-1;i++ ){
-      //   let el = ads[i];
-      //   if(el < 0 ){
-      //     ads[i] = 0;
-      //     change = true;
-      //     break;
-      //   }
-      //   if(i%2 == 1 && el > w){
-      //     // y
-      //     ads[i] = w;
-      //     change = true;
-      //     break;
-      //   }
-      //   if(i%2 == 0 && el > h){
-      //     // x
-      //     ads[i] = h;
-      //     change = true;
-      //     break;
-      //   }
-      // }
+
       if (ads[0] < 0) {
-        ads[2] = ads[2] - parseInt(ads[0]);
+        ads[2] = Number(ads[2] - parseInt(ads[0]));
         ads[0] = 0;
         change = true;
       }
       if (ads[1] < 0) {
-        ads[3] = ads[3] - parseInt(ads[1]);
+        ads[3] = Number(ads[3] - parseInt(ads[1]));
         ads[1] = 0;
         change = true;
       }
@@ -801,8 +851,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   // -------------------------------------
 
   // 编辑位置时---改变矩形位置
-  edit_position_tochange_rect(data) {
-    console.error("编辑位置时---改变矩形位置>>>", data);
+  edit_position_tochange_rect(data, change?, before_address?, edit?) {
     var no = data["no"],
       rid = data["rid"],
       address = this.anti_conversion(data["address"]),
@@ -818,7 +867,10 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     });
     // -------矩形移动
     var rect_list_item = rect_list[rect_index];
-    console.log(rect_list_item);
+    console.error("address，change-------------", address, change); // 0,30,101,131
+    // console.error("before_address-------------", before_address);
+
+    // // 动画----
     rect_list_item.animate("left", Number(address.split(",")[0]), {
       duration: 1000,
       onChange: this.canvas.renderAll.bind(this.canvas),
@@ -827,38 +879,185 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       duration: 1000,
       onChange: this.canvas.renderAll.bind(this.canvas),
     });
-    var width = Number(address.split(",")[2] - address.split(",")[0]),
-      height = Number(address.split(",")[3] - address.split(",")[1]);
-    rect_list_item.set({
-      width: width,
-      height: height,
-    });
-    // rect_list[rect_index] = rect_list_item;
-    // this.canvas.add(rect_list_item);
+
+    // -------得到当前的宽高-----------
+    var rect_width = Math.round(rect_list_item.get("width"));
+    var rect_height = Math.round(rect_list_item.get("height"));
+    console.error("得到当前的宽高->>", rect_width, rect_height);
+
+    var width, height;
+    if (change) {
+      width =
+        Number(before_address.split(",")[2]) -
+        Number(before_address.split(",")[0]);
+      height =
+        Number(before_address.split(",")[3]) -
+        Number(before_address.split(",")[1]);
+    } else {
+      if (typeof before_address === "string") {
+        width =
+          Number(before_address.split(",")[2]) -
+          Number(before_address.split(",")[0]);
+        height =
+          Number(before_address.split(",")[3]) -
+          Number(before_address.split(",")[1]);
+      } else {
+        // 1280*780----> 800*450
+        width = before_address.split(",")[2] - before_address.split(",")[0];
+        height = before_address.split(",")[3] - before_address.split(",")[1];
+        console.error("before_address>>>>", before_address);
+      }
+    }
+    console.error(
+      "data, change, before_address,edit---->",
+      data,
+      change,
+      before_address,
+      edit
+    );
+
+    if (edit === "edit") {
+      console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+      console.error("width,height---------->>>", width, height);
+      // rect_list_item.animate("width", Math.round(Number(width)), {
+      //   duration: 1000,
+      //   onChange: this.canvas.renderAll.bind(this.canvas),
+      // });
+      // rect_list_item.animate("height", Math.round(Number(height)), {
+      //   duration: 1000,
+      //   onChange: this.canvas.renderAll.bind(this.canvas),
+      // });
+
+      rect_list_item.set({
+        width: width,
+        height: height,
+      });
+
+      var translatedPoints = rect_list_item["aCoords"];
+      // var translatedPoints = this.canvas.getActiveObject().get("aCoords");
+      console.error("监听鼠标 ‘松开’ 得到 顶点坐标>>>", translatedPoints);
+      rect_list_item.set({
+        // width: Math.round(width),
+        // height: Math.round(height),
+        aCoords: {
+          bl: {
+            //----左下
+            x: Math.round(Number(before_address.split(",")[0])),
+            y: Math.round(Number(before_address.split(",")[3])),
+          },
+          br: {
+            // 右下
+            x: Math.round(Number(before_address.split(",")[2])),
+            y: Math.round(Number(before_address.split(",")[3])),
+          },
+          tl: {
+            // 左上
+            x: Math.round(Number(before_address.split(",")[0])),
+            y: Math.round(Number(before_address.split(",")[1])),
+          },
+          tr: {
+            // --- 右上-----
+            x: Math.round(Number(before_address.split(",")[2])),
+            y: Math.round(Number(before_address.split(",")[1])),
+          },
+        },
+      });
+      rect_list_item.setCoords();
+    }
+
     this.canvas.renderAll();
+    // console.error(
+    //   "监听鼠标 ‘松开’ 得到 顶点坐标222>>>",
+    //   rect_list_item.get("aCoords")
+    // );
 
     // ---------矩形对应的title移动
     var planetLabel_list_item = planetLabel_list[rect_index];
-    planetLabel_list_item.animate("left", Number(address.split(",")[0]) + 10, {
-      duration: 1000,
-      onChange: this.canvas.renderAll.bind(this.canvas),
-    });
-    planetLabel_list_item.animate("top", Number(address.split(",")[1]) - 20, {
-      duration: 1000,
-      onChange: this.canvas.renderAll.bind(this.canvas),
-    });
+    if (typeof address === "string") {
+      planetLabel_list_item.animate(
+        "left",
+        Number(address.split(",")[0]) + 10,
+        {
+          duration: 1000,
+          onChange: this.canvas.renderAll.bind(this.canvas),
+        }
+      );
+      planetLabel_list_item.animate(
+        "top",
+        Number(address.split(",")[1]) - 20 < 0
+          ? 0
+          : Number(address.split(",")[1]) - 20,
+        {
+          duration: 1000,
+          onChange: this.canvas.renderAll.bind(this.canvas),
+        }
+      );
+    } else {
+      planetLabel_list_item.animate("left", Number(address.address[0]) + 10, {
+        duration: 1000,
+        onChange: this.canvas.renderAll.bind(this.canvas),
+      });
+      planetLabel_list_item.animate(
+        "top",
+        Number(address.address[1]) - 20 < 0
+          ? 0
+          : Number(address.address[1]) - 20,
+        {
+          duration: 1000,
+          onChange: this.canvas.renderAll.bind(this.canvas),
+        }
+      );
+    }
 
-    this.canvas.requestRenderAll();
-    // this.canvas.remove(rect_list_item); // 删除提示
+    // this.canvas.requestRenderAll();
 
     // 要得到对角线的坐标点， 左上---右下
-    var tl_br = [
-      Number(address.split(",")[0]),
-      Number(address.split(",")[1]),
-      Number(address.split(",")[2]),
-      Number(address.split(",")[3]),
-    ];
-    console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+    if (typeof address === "string") {
+      var tl_br = [
+        Number(address.split(",")[0]),
+        Number(address.split(",")[1]),
+        Number(address.split(",")[2]),
+        Number(address.split(",")[3]),
+      ];
+      console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+    } else {
+      var tl_br = [
+        Number(address.address[0]),
+        Number(address.address[1]),
+        Number(address.address[2]),
+        Number(address.address[3]),
+      ];
+      console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+    }
+
+    // 更新table数据 tl_br  [100, 99, 233, 233]  rect_index
+    setTimeout(() => {
+      console.error(
+        "监听鼠标 ‘松开’ 得到 顶点坐标222>>>",
+        rect_list_item.get("aCoords")
+      );
+      var tl_br = [
+        Math.round(before_address.split(",")[0]),
+        Math.round(before_address.split(",")[1]),
+        Math.round(before_address.split(",")[2]),
+        Math.round(before_address.split(",")[3]),
+      ];
+      const [_address, _change] = this.out_of_bounds(tl_br.join(","));
+      console.error("_address??????", _address);
+
+      row_item_list[rect_index][1] = _address;
+      var rows = [];
+      var row = {
+        no: row_item_list[rect_index][0],
+        address: row_item_list[rect_index][1],
+        description: row_item_list[rect_index][2],
+        rid: row_item_list[rect_index][3],
+      };
+      row = this.conversion(row);
+      rows.push(row);
+      console.error("row_item_list, rect_index", row_item_list, rect_index);
+      this.source.load(rows);
+    }, 200);
   }
 
   // 编辑名称时---改变矩形title
@@ -989,6 +1188,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       left = Number(item[1].split(",")[1]),
       width = Number(item[1].split(",")[2] - item[1].split(",")[0]),
       height = Number(item[1].split(",")[3] - item[1].split(",")[1]);
+
     // @ts-ignore
     var rect = new fabric.Rect({
       top: top,
