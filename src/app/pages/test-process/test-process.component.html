@@ -27,7 +27,7 @@
                 </div>
                 <div>
                   <!-- 下划线字母数字 -->
-                  <input style="width: 80%;" nbInput type="text" [(ngModel)]="test_info.project_name" (keyup)="keyup($event,test_info.project_name)">
+                  <input style="width: 80%;"  [disabled]="disabled"  nbInput type="text" [(ngModel)]="test_info.project_name" (keyup)="keyup($event,test_info.project_name)">
                 </div>
                 <div><span class="red">*</span>样件编号</div>
                 <div>
@@ -46,7 +46,7 @@
                 </div>
                 <div><span class="red">*</span>摄像头</div>
                 <div>
-                  <nb-select style="width: 80%;" [selected]="test_info.webcam" (selectedChange)="changeWebcam($event)">
+                  <nb-select style="width: 80%;" [disabled]="disabled" [selected]="test_info.webcam" (selectedChange)="changeWebcam($event)">
                     <nb-option *ngFor="let item of webcamList" [value]="item">
                       {{item}}
                     </nb-option>
@@ -81,9 +81,11 @@
                 <canvas id="canvas" width="800" height="420" style="border: 1px solid white;"></canvas>
               </div> -->
               <div *ngIf="true; else elseBlock" class="row_vido">
-                <app-vjs-player *ngIf="true" #video [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
-                <div style="position: absolute;z-index: 500;">
-                  <canvas id="canvas" width="800" height="450" style="border: 1px solid rgb(253, 15, 15);"></canvas>
+                <div style="position: relative;">
+                  <app-vjs-player *ngIf="vjs_address" #video [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+                  <div style="position: absolute;z-index: 500;top: 0;">
+                    <canvas id="canvas" width="800" height="450" style="border: 1px solid rgb(253, 15, 15);"></canvas>
+                  </div>
                 </div>
               </div>
 

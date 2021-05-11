@@ -14,6 +14,10 @@ const ROUTER = [
   {
       path: '',
       component: TestProcessComponent,
+  },
+  {
+      path: 'edit/:stream_name/:project_name',
+      component: TestProcessComponent,
   }
 ]
 
