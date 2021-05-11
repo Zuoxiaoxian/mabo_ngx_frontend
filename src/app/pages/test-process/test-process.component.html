@@ -82,7 +82,7 @@
               </div> -->
               <div *ngIf="true; else elseBlock" class="row_vido">
                 <div style="position: relative;">
-                  <app-vjs-player *ngIf="vjs_address" #video [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
+                  <app-vjs-player *ngIf="true" #video [options]="{ width: '800',height: 'auto',autoplay: false, controls: true, sources: [{ src: vjs_address, type: 'application/x-mpegURL' }]}"></app-vjs-player>
                   <div style="position: absolute;z-index: 500;top: 0;">
                     <canvas id="canvas" width="800" height="450" style="border: 1px solid rgb(253, 15, 15);"></canvas>
                   </div>

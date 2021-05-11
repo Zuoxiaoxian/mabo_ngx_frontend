@@ -23,7 +23,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   public vjs_address = "";
   public current_project_name;
 
-  type = 'add';//默认为添加 edit为修改
+  type = "add"; //默认为添加 edit为修改
 
   test_info = {
     number: "", //任务单编号
@@ -96,10 +96,10 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         renderComponent: TableEditComponent,
         onComponentInitFunction: (instance) => {
           instance.edit.subscribe((value) => {
-           // TODO 进行图像画框
+            // TODO 进行图像画框
             // value = this.conversion(value);
             var address = this.anti_conversion(value.address);
-            console.error("位置value>>>", value);
+            console.error("位置value,address>>>", value, address);
             // 修改位置，必须添加参数 'edit' 表示添加
             this.edit_position_tochange_rect(value, false, address, "edit");
           });
@@ -139,16 +139,19 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
   _canvas;
   disabled = false;
-  constructor(private http: HttpserviceService, private router: Router,private activate:ActivatedRoute) {}
+  constructor(
+    private http: HttpserviceService,
+    private router: Router,
+    private activate: ActivatedRoute
+  ) {}
 
   ngOnInit() {}
 
   ngAfterViewInit(): void {
-   
     this.canvas = new fabric.Canvas("canvas");
     var canvas = this.canvas;
     var that = this;
-   
+
     // 监听移动
     that.canvas.on("mouse:down", function (options) {
       if (options.target) {
@@ -156,10 +159,10 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         var target = options.target;
         var translatedPoints = target.get("aCoords");
         this.tl_br = [
-          translatedPoints["tl"]["x"],
-          translatedPoints["tl"]["y"],
-          translatedPoints["br"]["x"],
-          translatedPoints["br"]["y"],
+          Math.round(translatedPoints["tl"]["x"]),
+          Math.round(translatedPoints["tl"]["y"]),
+          Math.round(translatedPoints["br"]["x"] - 1),
+          Math.round(translatedPoints["br"]["y"] - 1),
         ];
 
         if (options.target.type === "rect") {
@@ -209,25 +212,15 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         var tl_br = [
           Math.round(translatedPoints["tl"]["x"]),
           Math.round(translatedPoints["tl"]["y"]),
-          Math.round(translatedPoints["br"]["x"]),
-          Math.round(translatedPoints["br"]["y"]),
+          Math.round(translatedPoints["br"]["x"]) - 1,
+          Math.round(translatedPoints["br"]["y"]) - 1,
         ];
 
-        var address = tl_br.join(",");
-
-        var width =
-            Number(address.split(",")[2]) - Number(address.split(",")[0]),
-          height =
-            Number(address.split(",")[3]) - Number(address.split(",")[1]);
-        console.error("*******width,height", width, height);
-        // select_item.set({
-        //   width: width,
-        //   height: height,
-        // });
-        // select_item.setCoords();
-
-        // console.error("***要得到对角线的坐标点， 左上---右下tl_br>>", tl_br);
-        // console.error("***要得到对角线的坐标点， 左上---右下>>", this.tl_br);
+        console.error("***要得到对角线的坐标点， 左上---右下tl_br>>", tl_br);
+        console.error(
+          "***之前的要得到对角线的坐标点， 左上---右下tl_br>>",
+          this.tl_br
+        );
 
         var rect_index = rect_list.indexOf(select_item);
         var item = that.row_item_list[rect_index];
@@ -242,13 +235,44 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
           };
           row_2 = that.conversion(row_2);
           const [address, change] = that.out_of_bounds(row_2.address);
+          // 改变 对应的矩形的宽高！=====================
+          var b_w = tl_br[2] - tl_br[0]; // 当前的宽
+          var b_h = tl_br[3] - tl_br[1]; // 当前的搞
+          var before_address_ = this.tl_br.join(","); // 之前的
+
+          console.error("***改变 对应的矩形的宽高-b_w,b_h>>", b_w, b_h);
+          var width = Math.round(
+            Number(before_address_.split(",")[2]) -
+              Number(before_address_.split(",")[0])
+          );
+          var height = Math.round(
+            Number(before_address_.split(",")[3]) -
+              Number(before_address_.split(",")[1])
+          );
+          console.error("***之前的width,height>>", width, height);
+          console.error("***scale>>", select_item.getObjectScaling());
+          var scaleX = select_item.getObjectScaling().scaleX,
+            scaleY = select_item.getObjectScaling().scaleY;
+          console.error("***scaleX,scaleY==>>", scaleX, scaleY);
+          if (Math.abs(width - b_w) > 2 || Math.abs(height - b_h) > 2) {
+            select_item.set({
+              // width: Math.round(100 * scaleX),
+              // height: Math.round(100 * scaleY),
+              scaleX: b_w / width,
+              scaleY: b_h / height,
+            });
+            select_item.setCoords();
+            that.canvas.renderAll();
+          }
+          // 改变 对应的矩形的宽高！=====================
+
           if (change) {
             var before_address = this.tl_br.join(",");
+            // var before_address = tl_br.join(",");
             row_2.address = address;
-            that.edit_position_tochange_rect(row_2, change, before_address);
-            // return;
-          }
 
+            that.edit_position_tochange_rect(row_2, change, before_address);
+          }
           // console.error("rect_index , item>>", rect_index, item);
           // this.source.update()
           var rows = []; // 删除时候的 table数据
@@ -269,8 +293,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
           that.source.load(rows);
           // 更新title
 
-          that.canvas.renderAll();
-          // that.canvas.requestRenderAll();
+          // that.canvas.renderAll();
         } else {
           // var item = that.row_item_list[rect_index];
           console.error(
@@ -282,59 +305,67 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       }
     });
 
-    this.activate.params.subscribe((data)=>{
-      if(data.stream_name){
-        this.type = 'edit';
+    this.activate.params.subscribe((data) => {
+      if (data.stream_name) {
+        this.type = "edit";
         setTimeout(() => {
           this.disabled = true;
         }, 20);
-        this.http.get(`api/mongo_api/video_process/stream/${data.stream_name}/project/${data.project_name}`, 
-        null).subscribe((f: any) => {
-          let arr = []
-          this.test_info.project_name = data.project_name;
-          this.test_info.webcam = f.task?.webcam;
-          this.getStream();
-          this.test_info.number = f.task?.number;
-          this.test_info.peopel = f.task?.peopel;
-          this.test_info.equipment = f.task?.equipment;
-          this.test_info.laboratory = f.task?.laboratory;
-          this.test_info.check_model = f.stream_adjust.standby.check_model;
-          console.log(JSON.stringify(f));
-          this.test_info.project_name = f.project_name;
-          this.http
+        this.http
           .get(
-            `/api/mongo_api/video_process/stream/${this.test_info.webcam}/detail`,
+            `api/mongo_api/video_process/stream/${data.stream_name}/project/${data.project_name}`,
             null
           )
-          .subscribe((c: any) => {
-            this.video.h = c.height;
-            this.video.w = c.width;
-            let i = 0;
-            for(let key in  f.crop_setting.manual_box){
-              let g = {
-                no:key,
-                address:this.anti_conversion(f.crop_setting.manual_box[key]).split(','),
-                description:f.task.crop_mode_description ? f.task.crop_mode_description[key]:'',
-                rid:i,
-              };
-              console.log(g);
-              arr.push(g);
-              i++;
-              this.add_fang(g)
-            };
+          .subscribe((f: any) => {
+            let arr = [];
+            this.test_info.project_name = data.project_name;
+            this.test_info.webcam = f.task?.webcam;
+            this.getStream();
+            this.test_info.number = f.task?.number;
+            this.test_info.peopel = f.task?.peopel;
+            this.test_info.equipment = f.task?.equipment;
+            this.test_info.laboratory = f.task?.laboratory;
+            this.test_info.check_model = f.stream_adjust.standby.check_model;
+            console.log(JSON.stringify(f));
+            this.test_info.project_name = f.project_name;
+            this.http
+              .get(
+                `/api/mongo_api/video_process/stream/${this.test_info.webcam}/detail`,
+                null
+              )
+              .subscribe((c: any) => {
+                this.video.h = c.height;
+                this.video.w = c.width;
+                let i = 0;
+                for (let key in f.crop_setting.manual_box) {
+                  let g = {
+                    no: key,
+                    address: this.anti_conversion(
+                      f.crop_setting.manual_box[key]
+                    ).split(","),
+                    description: f.task.crop_mode_description
+                      ? f.task.crop_mode_description[key]
+                      : "",
+                    rid: i,
+                  };
+                  console.log(g);
+                  arr.push(g);
+                  i++;
+                  this.add_fang(g);
+                }
+              });
+
+            //           address: (4) [100, 100, 200, 200]
+            // description: "beizhu"
+            // no: "0"
+            // rid: 0
+            console.log(arr);
           });
-          
-//           address: (4) [100, 100, 200, 200]
-// description: "beizhu"
-// no: "0"
-// rid: 0
-          console.log(arr)
-        })
-      }else{
-        this.getStream();
+      } else {
+        // this.getStream();
       }
       // /mongo_api/video_process/stream/string:stream_name/project/string:project_name
-    })
+    });
   }
 
   // 新增 名称-位置-说明后，同时新建canas的矩形
@@ -422,12 +453,14 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       // });
       new Array(this.source).forEach((el: any) => {
         el.data.forEach((f) => {
-          if (typeof f.address === 'string') {
+          if (typeof f.address === "string") {
             f.address = f.address.toString().split(",");
           }
-          this.test_info.crop_mode_arr[f.no] = f.address.map((m) => parseInt(m));
+          this.test_info.crop_mode_arr[f.no] = f.address.map((m) =>
+            parseInt(m)
+          );
           this.test_info.crop_mode_description[f.no] = f.description;
-        })
+        });
       });
     } else {
       this.test_info.crop_mode = "None";
@@ -446,12 +479,12 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     }
     this.http
       .get(
-        `/api//mongo_api/video_process/stream/${ this.test_info.webcam}/project/${this.test_info.project_name}`,
+        `/api//mongo_api/video_process/stream/${this.test_info.webcam}/project/${this.test_info.project_name}`,
         null
       )
       .subscribe((f: any) => {
         let str = `/api/mongo_api/video_process/stream/${this.test_info.webcam}/config`;
-        if(this.type == 'edit'){
+        if (this.type == "edit") {
           str = `/api/mongo_api/video_process/stream/${this.test_info.webcam}/change`;
         }
         let json = this.getparam();
@@ -576,7 +609,6 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
         console.log(f);
         this.video.h = f.height;
         this.video.w = f.width;
-        
       });
   }
 
@@ -630,7 +662,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
    * 添加裁剪的数据
    */
   add_fang(f?) {
-     // if(!this.video.h || !this.video.w){
+    // if(!this.video.h || !this.video.w){
     //   alert('未获得摄像头实际宽高，无法使用画框功能');
     //   return;
     // }
@@ -641,7 +673,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       description: "beizhu",
       rid: no,
     };
-    if(f){
+    if (f) {
       data = f;
     }
     this.source.prepend(this.conversion(data));
@@ -731,7 +763,7 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
    * 将 得到的坐标转换为 实际宽高的坐标
    * @param data 800*450---->1280*780
    */
-  conversion(data){
+  conversion(data) {
     let w = 800;
     let h = 450;
     let video = document.getElementsByTagName("video");
@@ -760,8 +792,8 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     }
     return d;
   }
-    // 1280*780----> 800*450
-  anti_conversion(address){
+  // 1280*780----> 800*450
+  anti_conversion(address) {
     let w = 800;
     let h = 450;
     let video = document.getElementsByTagName("video");
@@ -792,441 +824,372 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     return address;
   }
   // -------------------------------------
-/**
+  /**
    * 画框的坐标越界判断
    * @param address
    */
- out_of_bounds(address) {
-  // return [address, true];
-  let ads = [];
-  let w = document.getElementsByTagName("video")[0].scrollWidth;
-  let h = document.getElementsByTagName("video")[0].scrollHeight;
-  // let w = this.video.w;
-  // let h = this.video.h;
-  if (typeof address === "string") {
-    // ads = address.split(",");
-    ads = address.split(",").map(function (a) {
-      return Number(a);
-    });
-    let change = false; //是否需要重新修改位置
+  out_of_bounds(address) {
+    // return [address, true];
+    let ads = [];
+    let w = document.getElementsByTagName("video")[0].scrollWidth;
+    let h = document.getElementsByTagName("video")[0].scrollHeight;
+    // let w = this.video.w;
+    // let h = this.video.h;
+    if (typeof address === "string") {
+      // ads = address.split(",");
+      ads = address.split(",").map(function (a) {
+        return Number(a);
+      });
+      let change = false; //是否需要重新修改位置
 
-    if (ads[0] < 0) {
-      ads[2] = Number(ads[2] - parseInt(ads[0]));
-      ads[0] = 0;
-      change = true;
-    }
-    if (ads[1] < 0) {
-      ads[3] = Number(ads[3] - parseInt(ads[1]));
-      ads[1] = 0;
-      change = true;
-    }
-    if (ads[2] < 0) {
-    }
-    if (ads[3] < 0) {
-    }
+      if (ads[0] < 0) {
+        ads[2] = Number(ads[2] - parseInt(ads[0]));
+        ads[0] = 0;
+        change = true;
+      }
+      if (ads[1] < 0) {
+        ads[3] = Number(ads[3] - parseInt(ads[1]));
+        ads[1] = 0;
+        change = true;
+      }
+      if (ads[2] < 0) {
+      }
+      if (ads[3] < 0) {
+      }
 
-    if (ads[0] > w) {
-    }
-    if (ads[2] > w) {
-    }
+      if (ads[0] > w) {
+      }
+      if (ads[2] > w) {
+      }
 
-    if (ads[1] > h) {
-    }
-    if (ads[3] > h) {
-    }
+      if (ads[1] > h) {
+      }
+      if (ads[3] > h) {
+      }
 
-    console.log(ads);
-    return [ads.join(","), change];
-    //
-  }
-}
-// -------------------------------------
-
-// 编辑位置时---改变矩形位置
-edit_position_tochange_rect(data, change?, before_address?, edit?) {
-  var no = data["no"],
-    rid = data["rid"],
-    address = this.anti_conversion(data["address"]),
-    rect_list = this.rects,
-    planetLabel_list = this.planetLabel_list,
-    rect_index = null,
-    row_item_list = this.row_item_list;
-  row_item_list.forEach((row, index) => {
-    if (row[row.length - 1] === rid) {
-      row[1] = address;
-      rect_index = index;
-    }
-  });
-  // -------矩形移动
-  var rect_list_item = rect_list[rect_index];
-  console.error("address，change-------------", address, change); // 0,30,101,131
-  // console.error("before_address-------------", before_address);
-
-  // // 动画----
-  rect_list_item.animate("left", Number(address.split(",")[0]), {
-    duration: 1000,
-    onChange: this.canvas.renderAll.bind(this.canvas),
-  });
-  rect_list_item.animate("top", Number(address.split(",")[1]), {
-    duration: 1000,
-    onChange: this.canvas.renderAll.bind(this.canvas),
-  });
-
-  // -------得到当前的宽高-----------
-  var rect_width = Math.round(rect_list_item.get("width"));
-  var rect_height = Math.round(rect_list_item.get("height"));
-  console.error("得到当前的宽高->>", rect_width, rect_height);
-
-  var width, height;
-  if (change) {
-    width =
-      Number(before_address.split(",")[2]) -
-      Number(before_address.split(",")[0]);
-    height =
-      Number(before_address.split(",")[3]) -
-      Number(before_address.split(",")[1]);
-  } else {
-    if (typeof before_address === "string") {
-      width =
-        Number(before_address.split(",")[2]) -
-        Number(before_address.split(",")[0]);
-      height =
-        Number(before_address.split(",")[3]) -
-        Number(before_address.split(",")[1]);
-    } else {
-      // 1280*780----> 800*450
-      width = before_address.split(",")[2] - before_address.split(",")[0];
-      height = before_address.split(",")[3] - before_address.split(",")[1];
-      console.error("before_address>>>>", before_address);
+      console.log(ads);
+      return [ads.join(","), change];
+      //
     }
   }
-  console.error(
-    "data, change, before_address,edit---->",
-    data,
-    change,
-    before_address,
-    edit
-  );
+  // -------------------------------------
 
-  if (edit === "edit") {
-    console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
-    console.error("width,height---------->>>", width, height);
-    // rect_list_item.animate("width", Math.round(Number(width)), {
-    //   duration: 1000,
-    //   onChange: this.canvas.renderAll.bind(this.canvas),
-    // });
-    // rect_list_item.animate("height", Math.round(Number(height)), {
-    //   duration: 1000,
-    //   onChange: this.canvas.renderAll.bind(this.canvas),
-    // });
-
-    rect_list_item.set({
-      width: width,
-      height: height,
+  // 编辑位置时---改变矩形位置
+  edit_position_tochange_rect(data, change?, before_address?, edit?) {
+    var no = data["no"],
+      rid = data["rid"],
+      address = this.anti_conversion(data["address"]),
+      rect_list = this.rects,
+      planetLabel_list = this.planetLabel_list,
+      rect_index = null,
+      row_item_list = this.row_item_list;
+    row_item_list.forEach((row, index) => {
+      if (row[row.length - 1] === rid) {
+        row[1] = address;
+        rect_index = index;
+      }
     });
+    // -------矩形移动
+    var rect_list_item = rect_list[rect_index];
+    console.error("data-------------", data);
+    console.error("address，change-------------", address, change); // 0,30,101,131
+    console.error("before_address,edit-------------", before_address, edit);
 
     var translatedPoints = rect_list_item["aCoords"];
-    // var translatedPoints = this.canvas.getActiveObject().get("aCoords");
-    console.error("监听鼠标 ‘松开’ 得到 顶点坐标>>>", translatedPoints);
-    rect_list_item.set({
-      // width: Math.round(width),
-      // height: Math.round(height),
-      aCoords: {
-        bl: {
-          //----左下
-          x: Math.round(Number(before_address.split(",")[0])),
-          y: Math.round(Number(before_address.split(",")[3])),
-        },
-        br: {
-          // 右下
-          x: Math.round(Number(before_address.split(",")[2])),
-          y: Math.round(Number(before_address.split(",")[3])),
-        },
-        tl: {
-          // 左上
-          x: Math.round(Number(before_address.split(",")[0])),
-          y: Math.round(Number(before_address.split(",")[1])),
-        },
-        tr: {
-          // --- 右上-----
-          x: Math.round(Number(before_address.split(",")[2])),
-          y: Math.round(Number(before_address.split(",")[1])),
-        },
-      },
-    });
-    rect_list_item.setCoords();
-  }
+    var tl_br = [
+      Math.round(translatedPoints["tl"]["x"]),
+      Math.round(translatedPoints["tl"]["y"]),
+      Math.round(translatedPoints["br"]["x"]) - 1,
+      Math.round(translatedPoints["br"]["y"]) - 1,
+    ];
 
-  this.canvas.renderAll();
-  // console.error(
-  //   "监听鼠标 ‘松开’ 得到 顶点坐标222>>>",
-  //   rect_list_item.get("aCoords")
-  // );
+    console.error("=====tl_br=======>>>", tl_br);
 
-  // ---------矩形对应的title移动
-  var planetLabel_list_item = planetLabel_list[rect_index];
-  if (typeof address === "string") {
-    planetLabel_list_item.animate(
-      "left",
-      Number(address.split(",")[0]) + 10,
-      {
-        duration: 1000,
-        onChange: this.canvas.renderAll.bind(this.canvas),
-      }
-    );
-    planetLabel_list_item.animate(
-      "top",
-      Number(address.split(",")[1]) - 20 < 0
-        ? 0
-        : Number(address.split(",")[1]) - 20,
-      {
-        duration: 1000,
-        onChange: this.canvas.renderAll.bind(this.canvas),
-      }
-    );
-  } else {
-    planetLabel_list_item.animate("left", Number(address.address[0]) + 10, {
+    // // 动画----
+    rect_list_item.animate("left", Number(address.split(",")[0]), {
       duration: 1000,
       onChange: this.canvas.renderAll.bind(this.canvas),
     });
-    planetLabel_list_item.animate(
-      "top",
-      Number(address.address[1]) - 20 < 0
-        ? 0
-        : Number(address.address[1]) - 20,
-      {
+    rect_list_item.animate("top", Number(address.split(",")[1]), {
+      duration: 1000,
+      onChange: this.canvas.renderAll.bind(this.canvas),
+    });
+
+    var width, height, b_w, b_h;
+    width = tl_br[2] - tl_br[0];
+    height = tl_br[3] - tl_br[1];
+    var before_address_list = before_address.split(",");
+
+    b_w = Number(before_address_list[2]) - Number(before_address_list[0]);
+    b_h = Number(before_address_list[3]) - Number(before_address_list[1]);
+
+    if (edit === "edit") {
+      console.error("width,height---------->>>", width, height);
+      console.error("b_w,b_h---------->>>", b_w, b_h);
+      if (Math.abs(width - b_w) > 2 || Math.abs(height - b_h) > 2) {
+        console.error("***************************************************");
+        console.error("***scale>>", rect_list_item.getObjectScaling());
+        var scaleX = rect_list_item.getObjectScaling().scaleX,
+          scaleY = rect_list_item.getObjectScaling().scaleY;
+        console.error("***scaleX,scaleY==>>", scaleX, scaleY);
+
+        // rect_list_item.animate("width", Math.round(Number(b_w)), {
+        //   duration: 1000,
+        //   onChange: this.canvas.renderAll.bind(this.canvas),
+        // });
+        // rect_list_item.animate("height", Math.round(Number(b_h)), {
+        //   duration: 1000,
+        //   onChange: this.canvas.renderAll.bind(this.canvas),
+        // });
+        rect_list_item.set({
+          // width: b_w,
+          // height: b_h,
+          scaleX: b_w / 100,
+          scaleY: b_w / 100,
+        });
+
+        rect_list_item.setCoords();
+        this.canvas.renderAll();
+      } else {
+        console.error("|||||||||else|||||||||||b_w,b_h---------->>>", b_w, b_h);
+      }
+    }
+
+    // ---------矩形对应的title移动
+    var planetLabel_list_item = planetLabel_list[rect_index];
+    if (typeof address === "string") {
+      planetLabel_list_item.animate(
+        "left",
+        Number(address.split(",")[0]) + 10,
+        {
+          duration: 1000,
+          onChange: this.canvas.renderAll.bind(this.canvas),
+        }
+      );
+      planetLabel_list_item.animate(
+        "top",
+        Number(address.split(",")[1]) - 20 < 0
+          ? 0
+          : Number(address.split(",")[1]) - 20,
+        {
+          duration: 1000,
+          onChange: this.canvas.renderAll.bind(this.canvas),
+        }
+      );
+    } else {
+      planetLabel_list_item.animate("left", Number(address.address[0]) + 10, {
         duration: 1000,
         onChange: this.canvas.renderAll.bind(this.canvas),
+      });
+      planetLabel_list_item.animate(
+        "top",
+        Number(address.address[1]) - 20 < 0
+          ? 0
+          : Number(address.address[1]) - 20,
+        {
+          duration: 1000,
+          onChange: this.canvas.renderAll.bind(this.canvas),
+        }
+      );
+    }
+
+    // this.canvas.requestRenderAll();
+
+    // 要得到对角线的坐标点， 左上---右下
+    if (typeof address === "string") {
+      var tl_br = [
+        Number(address.split(",")[0]),
+        Number(address.split(",")[1]),
+        Number(address.split(",")[2]),
+        Number(address.split(",")[3]),
+      ];
+      console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+    } else {
+      var tl_br = [
+        Number(address.address[0]),
+        Number(address.address[1]),
+        Number(address.address[2]),
+        Number(address.address[3]),
+      ];
+      console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
+    }
+  }
+
+  // 编辑名称时---改变矩形title
+  edit_name_tochange_recttitle(data) {
+    console.error("编辑位置时---改变矩形位置>>>", data);
+    var no = data["no"],
+      rid = data["rid"],
+      address = data["address"],
+      rect_list = this.rects,
+      planetLabel_list = this.planetLabel_list,
+      rect_index = null,
+      row_item_list = this.row_item_list;
+    row_item_list.forEach((row, index) => {
+      if (row[row.length - 1] === rid) {
+        row[0] = no;
+        rect_index = index;
       }
-    );
+    });
+    var planetLabel_list_item = planetLabel_list[rect_index];
+
+    // 更新title
+    planetLabel_list_item.set({
+      text: no,
+    });
+    this.canvas.renderAll();
   }
 
-  // this.canvas.requestRenderAll();
-
-  // 要得到对角线的坐标点， 左上---右下
-  if (typeof address === "string") {
-    var tl_br = [
-      Number(address.split(",")[0]),
-      Number(address.split(",")[1]),
-      Number(address.split(",")[2]),
-      Number(address.split(",")[3]),
-    ];
-    console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
-  } else {
-    var tl_br = [
-      Number(address.address[0]),
-      Number(address.address[1]),
-      Number(address.address[2]),
-      Number(address.address[3]),
-    ];
-    console.error("要得到对角线的坐标点， 左上---右下>>", tl_br);
-  }
-
-  // 更新table数据 tl_br  [100, 99, 233, 233]  rect_index
-  setTimeout(() => {
-    console.error(
-      "监听鼠标 ‘松开’ 得到 顶点坐标222>>>",
-      rect_list_item.get("aCoords")
-    );
-    var tl_br = [
-      Math.round(before_address.split(",")[0]),
-      Math.round(before_address.split(",")[1]),
-      Math.round(before_address.split(",")[2]),
-      Math.round(before_address.split(",")[3]),
-    ];
-    const [_address, _change] = this.out_of_bounds(tl_br.join(","));
-    console.error("_address??????", _address);
-
-    row_item_list[rect_index][1] = _address;
-    var rows = [];
-    var row = {
-      no: row_item_list[rect_index][0],
-      address: row_item_list[rect_index][1],
-      description: row_item_list[rect_index][2],
-      rid: row_item_list[rect_index][3],
-    };
-    row = this.conversion(row);
-    rows.push(row);
-    console.error("row_item_list, rect_index", row_item_list, rect_index);
-    this.source.load(rows);
-  }, 200);
-}
-
-// 编辑名称时---改变矩形title
-edit_name_tochange_recttitle(data) {
-  console.error("编辑位置时---改变矩形位置>>>", data);
-  var no = data["no"],
-    rid = data["rid"],
-    address = data["address"],
-    rect_list = this.rects,
-    planetLabel_list = this.planetLabel_list,
-    rect_index = null,
-    row_item_list = this.row_item_list;
-  row_item_list.forEach((row, index) => {
-    if (row[row.length - 1] === rid) {
-      row[0] = no;
-      rect_index = index;
-    }
-  });
-  var planetLabel_list_item = planetLabel_list[rect_index];
-
-  // 更新title
-  planetLabel_list_item.set({
-    text: no,
-  });
-  this.canvas.renderAll();
-}
-
-// 删除table中的行时，删除矩形和矩形对应的title
-remove_row_to_deleteobject(data) {
-  console.error("删除table中的行时，删除矩形和矩形对应的title", data);
-  var no = data["no"],
-    rid = data["rid"],
-    address = data["address"],
-    rect_list = this.rects,
-    planetLabel_list = this.planetLabel_list,
-    rect_index = null,
-    row_item_list = this.row_item_list;
-  row_item_list.forEach((row, index) => {
-    if (row[row.length - 1] === rid) {
-      rect_index = index;
-    }
-  });
-
-  var target = rect_list[rect_index];
-  var text_item = planetLabel_list[rect_index]; // rect 对应的 title
-  this.canvas.remove(text_item); // 删除提示
-  this.canvas.remove(target); // 删除矩形
-
-  row_item_list.splice(rect_index, 1);
-  planetLabel_list.splice(rect_index, 1);
-  rect_list.splice(rect_index, 1);
-  // console.error(
-  //   "删除 row_item_list",
-  //   row_item_list,
-  //   planetLabel_list,
-  //   rect_list
-  // );
-
-  this.canvas.requestRenderAll();
-}
-
-deleteObject(that) {
-  var source = this.source;
-  return function deleteObject(eventData, transform) {
-    var target = transform.target;
-    var canvas = target.canvas;
-
-    var rect_list = that.rects;
-    var rect_index = rect_list.indexOf(target);
-    var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
-
-    var r_list = canvas.getObjects();
-
-    // console.error("r_list>>>>>>", r_list);
-    // console.error("text_item", text_item);
-    // console.error("target", target);
-
-    console.error(
-      "planetLabel_list, rect_list",
-      that.planetLabel_list,
-      rect_list
-    );
-
-    r_list.forEach((element, index) => {
-      if (element == text_item) {
-        canvas.remove(element); // 删除提示
+  // 删除table中的行时，删除矩形和矩形对应的title
+  remove_row_to_deleteobject(data) {
+    console.error("删除table中的行时，删除矩形和矩形对应的title", data);
+    var no = data["no"],
+      rid = data["rid"],
+      address = data["address"],
+      rect_list = this.rects,
+      planetLabel_list = this.planetLabel_list,
+      rect_index = null,
+      row_item_list = this.row_item_list;
+    row_item_list.forEach((row, index) => {
+      if (row[row.length - 1] === rid) {
+        rect_index = index;
       }
     });
 
-    console.error(
-      "删除的table的row数据：>>>>>>",
-      that.row_item_list[rect_index]
-    );
+    var target = rect_list[rect_index];
+    var text_item = planetLabel_list[rect_index]; // rect 对应的 title
+    this.canvas.remove(text_item); // 删除提示
+    this.canvas.remove(target); // 删除矩形
 
-    canvas.remove(target);
-    that.row_item_list.splice(rect_index, 1);
-    that.planetLabel_list.splice(rect_index, 1);
+    row_item_list.splice(rect_index, 1);
+    planetLabel_list.splice(rect_index, 1);
     rect_list.splice(rect_index, 1);
-    console.error(
-      "planetLabel_list, rect_list",
-      that.planetLabel_list,
-      rect_list
-    );
+    // console.error(
+    //   "删除 row_item_list",
+    //   row_item_list,
+    //   planetLabel_list,
+    //   rect_list
+    // );
 
-    var rows = []; // 删除时候的 table数据
-    that.row_item_list.forEach((item) => {
-      var row = {
-        no: item[0],
-        address: item[1],
-        description: item[2],
-        rid: item[3],
-      };
-      rows.push(row);
+    this.canvas.requestRenderAll();
+  }
+
+  deleteObject(that) {
+    var source = this.source;
+    return function deleteObject(eventData, transform) {
+      var target = transform.target;
+      var canvas = target.canvas;
+
+      var rect_list = that.rects;
+      var rect_index = rect_list.indexOf(target);
+      var text_item = that.planetLabel_list[rect_index]; // rect 对应的 title
+
+      var r_list = canvas.getObjects();
+
+      // console.error("r_list>>>>>>", r_list);
+      // console.error("text_item", text_item);
+      // console.error("target", target);
+
+      console.error(
+        "planetLabel_list, rect_list",
+        that.planetLabel_list,
+        rect_list
+      );
+
+      r_list.forEach((element, index) => {
+        if (element == text_item) {
+          canvas.remove(element); // 删除提示
+        }
+      });
+
+      console.error(
+        "删除的table的row数据：>>>>>>",
+        that.row_item_list[rect_index]
+      );
+
+      canvas.remove(target);
+      that.row_item_list.splice(rect_index, 1);
+      that.planetLabel_list.splice(rect_index, 1);
+      rect_list.splice(rect_index, 1);
+      console.error(
+        "planetLabel_list, rect_list",
+        that.planetLabel_list,
+        rect_list
+      );
+
+      var rows = []; // 删除时候的 table数据
+      that.row_item_list.forEach((item) => {
+        var row = {
+          no: item[0],
+          address: item[1],
+          description: item[2],
+          rid: item[3],
+        };
+        rows.push(row);
+      });
+      console.error("删除tabel>>>>", rows);
+      source.load(rows);
+
+      // 点击图标删除矩形时，同时删除table
+      canvas.requestRenderAll();
+    };
+  }
+
+  // 新增 矩形
+  AddRect(item) {
+    this.row_item_list.push(item);
+    // item 0:名称、1:位置("100,100,200,200")、2:说明
+    var top = Number(item[1].split(",")[1]),
+      left = Number(item[1].split(",")[0]),
+      width = Number(item[1].split(",")[2] - item[1].split(",")[0]),
+      height = Number(item[1].split(",")[3] - item[1].split(",")[1]);
+
+    // @ts-ignore
+    var rect = new fabric.Rect({
+      top: top,
+      left: left,
+      width: width,
+      height: height,
+      fill: "",
+      borderColor: "red",
+      // objectCaching: false,
+      stroke: "lightgreen",
+      strokeWidth: 1,
+      cornerSize: 6,
+      cornerColor: "#ff0000",
+      transparentCorners: false,
     });
-    console.error("删除tabel>>>>", rows);
-    source.load(rows);
+    rect.lockRotation = true;
+    rect.setControlVisible("mtr", false);
+    // console.error("-----------rect->", rect);
 
-    // 点击图标删除矩形时，同时删除table
-    canvas.requestRenderAll();
-  };
-}
+    this.rects.push(rect);
+    this.canvas.add(rect);
+    // borderColor 要求激活
+    this.canvas.setActiveObject(rect);
 
-// 新增 矩形
-AddRect(item) {
-  this.row_item_list.push(item);
-  // item 0:名称、1:位置("100,100,200,200")、2:说明
-  var top = Number(item[1].split(",")[1]),
-    left = Number(item[1].split(",")[0]),
-    width = Number(item[1].split(",")[2] - item[1].split(",")[0]),
-    height = Number(item[1].split(",")[3] - item[1].split(",")[1]);
+    // -----------------------------------------对应的 title
+    // @ts-ignore
+    var planetLabel = new fabric.Textbox("", {
+      fill: "#fff",
+      fontSize: 16,
+      fontFamily: "Open Sans",
+      textBackgroundColor: "#002244",
+    });
 
-  // @ts-ignore
-  var rect = new fabric.Rect({
-    top: top,
-    left: left,
-    width: width,
-    height: height,
-    fill: "",
-    borderColor: "red",
-    // objectCaching: false,
-    stroke: "lightgreen",
-    strokeWidth: 1,
-    cornerSize: 6,
-    cornerColor: "#ff0000",
-    transparentCorners: false,
-  });
-  rect.lockRotation = true;
-  rect.setControlVisible("mtr", false);
-  // console.error("-----------rect->", rect);
+    planetLabel.set({
+      left: Number(item[1].split(",")[1]) + 10,
+      top: Number(item[1].split(",")[0]) - 20,
+      text: item[0],
+    });
+    this.planetLabel_list.push(planetLabel);
 
-  this.rects.push(rect);
-  this.canvas.add(rect);
-  // borderColor 要求激活
-  this.canvas.setActiveObject(rect);
+    this.canvas.add(planetLabel);
 
-  // -----------------------------------------对应的 title
-  // @ts-ignore
-  var planetLabel = new fabric.Textbox("", {
-    fill: "#fff",
-    fontSize: 16,
-    fontFamily: "Open Sans",
-    textBackgroundColor: "#002244",
-  });
+    // ------监听 鼠标移出矩形
+  }
+  // 更新 矩形
+  updaterect(position, index) {}
 
-  planetLabel.set({
-    left: Number(item[1].split(",")[1]) + 10,
-    top: Number(item[1].split(",")[0]) - 20,
-    text: item[0],
-  });
-  this.planetLabel_list.push(planetLabel);
-
-  this.canvas.add(planetLabel);
-
-  // ------监听 鼠标移出矩形
-}
-// 更新 矩形
-updaterect(position, index) {}
-
-// -------------------------------------
+  // -------------------------------------
 }
