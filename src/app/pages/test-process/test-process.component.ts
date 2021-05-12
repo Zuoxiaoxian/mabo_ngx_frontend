@@ -240,7 +240,6 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
           var b_h = tl_br[3] - tl_br[1]; // 当前的搞
           var before_address_ = this.tl_br.join(","); // 之前的
 
-          console.error("***改变 对应的矩形的宽高-b_w,b_h>>", b_w, b_h);
           var width = Math.round(
             Number(before_address_.split(",")[2]) -
               Number(before_address_.split(",")[0])
@@ -249,17 +248,18 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
             Number(before_address_.split(",")[3]) -
               Number(before_address_.split(",")[1])
           );
-          console.error("***之前的width,height>>", width, height);
-          console.error("***scale>>", select_item.getObjectScaling());
+          // console.error("***改变 对应的矩形的宽高-b_w,b_h>>", b_w, b_h);
+          // console.error("***之前的width,height>>", width, height);
+          // console.error("***scale>>", select_item.getObjectScaling());
           var scaleX = select_item.getObjectScaling().scaleX,
             scaleY = select_item.getObjectScaling().scaleY;
-          console.error("***scaleX,scaleY==>>", scaleX, scaleY);
+          // console.error("***scaleX,scaleY==>>", scaleX, scaleY);
           if (Math.abs(width - b_w) > 2 || Math.abs(height - b_h) > 2) {
             select_item.set({
-              // width: Math.round(100 * scaleX),
-              // height: Math.round(100 * scaleY),
-              scaleX: b_w / width,
-              scaleY: b_h / height,
+              scaleX: b_w / 100,
+              scaleY: b_h / 100,
+              // scaleX: b_w / width,
+              // scaleY: b_h / height,
             });
             select_item.setCoords();
             that.canvas.renderAll();
@@ -831,15 +831,18 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
   out_of_bounds(address) {
     // return [address, true];
     let ads = [];
-    let w = document.getElementsByTagName("video")[0].scrollWidth;
-    let h = document.getElementsByTagName("video")[0].scrollHeight;
-    // let w = this.video.w;
-    // let h = this.video.h;
+    // let w = document.getElementsByTagName("video")[0].scrollWidth;
+    // let h = document.getElementsByTagName("video")[0].scrollHeight;
+    let w = this.video.w;
+    let h = this.video.h;
     if (typeof address === "string") {
       // ads = address.split(",");
       ads = address.split(",").map(function (a) {
         return Number(a);
       });
+      // console.error("画框的坐标越界判断>>", ads);
+      // console.error("画框的坐标越界判断,w,h>>", w, h);
+
       let change = false; //是否需要重新修改位置
 
       if (ads[0] < 0) {
@@ -860,11 +863,19 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
       if (ads[0] > w) {
       }
       if (ads[2] > w) {
+        // w,h 800 450
+        ads[0] = Number(ads[0] - parseInt(ads[2]) + w);
+        ads[2] = w;
+        change = true;
       }
 
       if (ads[1] > h) {
       }
       if (ads[3] > h) {
+        // w,h 800 450
+        ads[1] = Number(ads[1] - parseInt(ads[3]) + h);
+        ads[3] = h;
+        change = true;
       }
 
       console.log(ads);
@@ -891,9 +902,9 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
     });
     // -------矩形移动
     var rect_list_item = rect_list[rect_index];
-    console.error("data-------------", data);
-    console.error("address，change-------------", address, change); // 0,30,101,131
-    console.error("before_address,edit-------------", before_address, edit);
+    // console.error("data-------------", data);
+    // console.error("address，change-------------", address, change); // 0,30,101,131
+    // console.error("before_address,edit-------------", before_address, edit);
 
     var translatedPoints = rect_list_item["aCoords"];
     var tl_br = [
@@ -922,28 +933,15 @@ export class TestProcessComponent implements OnInit, AfterViewInit {
 
     b_w = Number(before_address_list[2]) - Number(before_address_list[0]);
     b_h = Number(before_address_list[3]) - Number(before_address_list[1]);
-
     if (edit === "edit") {
-      console.error("width,height---------->>>", width, height);
-      console.error("b_w,b_h---------->>>", b_w, b_h);
+      // console.error("width,height---------->>>", width, height);
+      // console.error("b_w,b_h---------->>>", b_w, b_h);
       if (Math.abs(width - b_w) > 2 || Math.abs(height - b_h) > 2) {
         console.error("***************************************************");
-        console.error("***scale>>", rect_list_item.getObjectScaling());
         var scaleX = rect_list_item.getObjectScaling().scaleX,
           scaleY = rect_list_item.getObjectScaling().scaleY;
         console.error("***scaleX,scaleY==>>", scaleX, scaleY);
-
-        // rect_list_item.animate("width", Math.round(Number(b_w)), {
-        //   duration: 1000,
-        //   onChange: this.canvas.renderAll.bind(this.canvas),
-        // });
-        // rect_list_item.animate("height", Math.round(Number(b_h)), {
-        //   duration: 1000,
-        //   onChange: this.canvas.renderAll.bind(this.canvas),
-        // });
         rect_list_item.set({
-          // width: b_w,
-          // height: b_h,
           scaleX: b_w / 100,
           scaleY: b_w / 100,
         });
